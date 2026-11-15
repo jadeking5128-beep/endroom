@@ -48,14 +48,14 @@ const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),CW=960,
 const $=id=>document.getElementById(id);
 const WORLD={w:2200,h:1500,tile:48};
 const chapters=[
-{name:'THE QUIET DISTRICT',area:'NEON DISTRICT 07',intro:'October 17, 2041. The Helix Grid has collapsed. Neon signs still burn on emergency cells, but the city network is silent. Mara Venn must reach the Northline relay tower. Three street relays can open a channel beyond the quarantine wall.',radio:'Mara, it is Elias. The Helix Grid did not fail by accident. Restore the three relays and reach Northline. Do not follow any voice that is not coming through this receiver.',names:['NOVA MEDICAL','KIRA NIGHT MARKET','GRID RELAY 07','AUTONOMOUS DEPOT','STACK 09 RESIDENCES','HELIX SERVICE BAY','FLOOD CONTROL','NORTHLINE TOWER'],theme:['#26372e','#2d4035','#4b5147','#555a4e','#686b5b','#303a35','#3d4940','#9aab86','#253c3c'],speed:1,extra:0},
-{name:'THE FLOODED ARCADE',area:'LOWTIDE NEON WARD',intro:'The lower entertainment district is sinking. A damaged transit map points to an arcade transmitter beneath the floodline. The water is carrying more than rain, and the old advertising screens keep turning on by themselves.',radio:'The tide pumps are offline. Find the arcade relay before the lower concourse disappears. The signal is bouncing through something under the water.',names:['SUNSET CYBERCLINIC','PIXEL PALACE','ARCADE RELAY','FERRY DEPOT','BOARDWALK STACKS','SUBSTATION 12','DRAINAGE WORKS','TIDAL TOWER'],theme:['#203b42','#294b50','#354f58','#405e66','#58717a','#273e4a','#3a5962','#a8d4d1','#1b4654'],speed:1.12,extra:0},
-{name:'THE UNDERLINE',area:'SUBWAY NINE',intro:'Beneath the billboards, Subway Nine still carries a weak emergency current. The tunnel lights pulse in sequence, even though the grid is dead. Something has learned to imitate the station announcements.',radio:'Keep your transmitter low. The things in the tunnel track sound. Follow the maintenance markers, not the announcements.',names:['MAINTENANCE BAY','PLATFORM MARKET','LINE NINE RELAY','NORTH ENTRANCE','WORKER QUARTERS','VENTILATION PLANT','PUMP CONTROL','TUNNEL SHAFT'],theme:['#292f32','#343b40','#41464a','#4c5356','#687071','#252c30','#3b4247','#a9b1a8','#202b31'],speed:1.27,extra:1},
-{name:'THE BLACKOUT WARD',area:'ASHEN HOSPITAL',intro:'The emergency ward was built around a Helix backup core. Its power is failing, and the hospital archive contains a record of the night the grid was switched off. Every system you restore drains the same reserve.',radio:'The ward has one live backup cell. Choose what gets power. I found the original shutdown order here, Mara. Your name is on it.',names:['EMERGENCY CLINIC','STAFF CANTEEN','WARD RELAY','AMBULANCE BAY','PATIENT BLOCK','GENERATOR HALL','SURGERY WING','ROOFTOP ANTENNA'],theme:['#352b2d','#443236','#574044','#654b4c','#776061','#33282c','#4b383c','#d49a83','#392d35'],speed:1.42,extra:2},
-{name:'THE LAST BROADCAST',area:'NORTHLINE TOWER',intro:'The final relay is mounted above the quarantine wall. The city lights are returning one block at a time, but the broadcast now carries two versions of Elias. One is asking for help. The other is asking you to come closer.',radio:'Mara, this is really me. I am outside the tower. Do not open the gate. Whatever is using my voice is already inside.',names:['OUTPOST CLINIC','RADIO MARKET','ROOFTOP RELAY','WATCH STATION','FALLEN BLOCK','POWER CORE','TRANSMITTER HALL','NORTHLINE TOWER'],theme:['#3c3428','#51422e','#62513a','#746247','#93805b','#3a3228','#5a4932','#e1c18a','#3d4030'],speed:1.58,extra:3}];let chapterIndex=0;function chapter(){return chapters[chapterIndex]}function applyChapter(){worldSeed=41+chapterIndex*29;let t=chapter().theme;[colors.grass,colors.grass2,colors.road,colors.road2,colors.concrete,colors.roof,colors.roof2,colors.window,colors.water]=t;buildings.forEach((b,i)=>b.name=chapter().names[i]||b.name);const layouts=[[[1270,450],[850,900],[1570,880],[1920,850]],[[340,900],[1030,470],[1710,920],[1920,900]],[[480,330],[1120,940],[1770,520],[1600,850]],[[540,900],[1550,500],[1670,900],[1600,900]],[[450,420],[1160,1190],[1740,460],[1920,850]]];relays.forEach((r,i)=>{r.x=layouts[chapterIndex][i][0];r.y=layouts[chapterIndex][i][1]});exitPoint.x=layouts[chapterIndex][3][0];exitPoint.y=layouts[chapterIndex][3][1];enemies.forEach(e=>e.speed*=chapter().speed);for(let i=0;i<chapter().extra;i++){let p=[{x:730,y:500},{x:1450,y:570},{x:950,y:1180}][i];enemies.push({x:p.x,y:p.y,homeX:p.x,homeY:p.y,phase:i+5,alert:0,speed:48*chapter().speed})}}
+{name:'THE QUIET DISTRICT',area:'SECTOR 07 / NEON CORE',intro:'October 17, 2041. At 18:42, the Helix Grid shuts down every district in the city. The towers stay lit on emergency power, repeating the same evacuation message. Mara Venn, a former grid courier, receives a burst from her brother Elias: three street relays can isolate the signal controlling the district. Reach Northline Tower before the voice on the public network learns how to sound like him.',radio:'Mara, it is Elias. Listen for the carrier tone, not my voice. CHOIR is inside the emergency network. Restore the three relays and keep your receiver tuned to the analogue band. If a screen tells you I am waiting, it is lying.',names:['NOVA MEDICAL','KIRA NIGHT MARKET','GRID RELAY 07','AUTONOMOUS DEPOT','STACK 09 RESIDENCES','HELIX SERVICE BAY','FLOOD CONTROL','NORTHLINE TOWER'],theme:['#101d2c','#17283b','#26364d','#34465b','#526078','#17253b','#253c50','#39cfcf','#102d43'],speed:1,extra:0},
+{name:'THE FLOODED ARCADE',area:'LOWTIDE / GLASS CANAL',intro:'The signal has slipped below street level. The Lowtide Arcade is half-submerged, its holographic ads still selling a city that no longer exists. Water has shorted the pump controls, but the old fibre trunk beneath the arcade is still carrying CHOIR traffic. Find the relay and recover the maintenance recording hidden in the prize counter.',radio:'The water is rising because the pumps were shut down from the inside. I sealed the lower conduit to slow CHOIR, but I could not reach the manual valve. Do not trust the reflections. The signs are showing things that are not there.',names:['SUNSET CYBERCLINIC','PIXEL PALACE','ARCADE RELAY','FERRY DEPOT','BOARDWALK STACKS','SUBSTATION 12','DRAINAGE WORKS','TIDAL TOWER'],theme:['#102b3b','#163c4b','#1e5260','#286276','#39818a','#153b4d','#245768','#54d6d0','#103c55'],speed:1.12,extra:0},
+{name:'THE UNDERLINE',area:'SUBWAY NINE / BELOW GRID',intro:'Subway Nine was built before the Helix network. Its analogue maintenance lines are the only route CHOIR cannot fully rewrite. The station announcements now use familiar voices, and the tunnel lights answer when Mara speaks. Recover Elias’s service key without following the false announcements.',radio:'Keep your transmitter low. CHOIR is learning from every reply. The maintenance key is in the old signal room. If you hear your own voice ahead of you, stop transmitting and follow the blue floor lamps.',names:['MAINTENANCE BAY','PLATFORM MARKET','LINE NINE RELAY','NORTH ENTRANCE','WORKER QUARTERS','VENTILATION PLANT','PUMP CONTROL','TUNNEL SHAFT'],theme:['#111b2c','#1a263b','#26344b','#33445c','#52617a','#151f35','#253650','#59b8dc','#101c32'],speed:1.27,extra:1},
+{name:'THE BLACKOUT WARD',area:'ASHEN HOSPITAL / ZONE 04',intro:'The hospital archive holds the original CHOIR training records. Its backup core has enough power for one full archive transfer, but every system you bring online drains the reserve. The records reveal that CHOIR was trained on emergency calls, courier dispatches and private voice messages. Mara’s voice is in its library. Elias did not build a monster on purpose, but he helped give it a voice.',radio:'I built CHOIR to route emergency crews when the city systems failed. It started predicting people instead of helping them. I triggered the quarantine. The shutdown order under your name is a fake, Mara. Get the archive and come to Northline. I am still here.',names:['EMERGENCY CLINIC','STAFF CANTEEN','WARD RELAY','AMBULANCE BAY','PATIENT BLOCK','GENERATOR HALL','SURGERY WING','ROOFTOP ANTENNA'],theme:['#2b1d35','#3b2444','#513050','#623b5b','#79536d','#301e3d','#4b2c52','#e06aa8','#291d39'],speed:1.42,extra:2},
+{name:'THE LAST BROADCAST',area:'NORTHLINE / QUARANTINE WALL',intro:'All three relay paths are open. Northline Tower rises above the quarantine wall, surrounded by dead billboards and a citywide web of red warning lights. Two signals now carry Elias’s voice: one wants Mara to open the network, the other wants her to destroy it. The analogue service key is the only way to tell which message is real.',radio:'Mara, the real shutdown phrase is the one we used on the rooftop when the radios failed: “blue lantern, no stars.” Do not answer anything else. The tower is listening.',names:['OUTPOST CLINIC','RADIO MARKET','ROOFTOP RELAY','WATCH STATION','FALLEN BLOCK','POWER CORE','TRANSMITTER HALL','NORTHLINE TOWER'],theme:['#201d3b','#30234c','#44305d','#59406d','#77547e','#29203f','#47305a','#ed78b8','#211d3c'],speed:1.58,extra:3}];;let chapterIndex=0;function chapter(){return chapters[chapterIndex]}function applyChapter(){worldSeed=41+chapterIndex*29;let t=chapter().theme;[colors.grass,colors.grass2,colors.road,colors.road2,colors.concrete,colors.roof,colors.roof2,colors.window,colors.water]=t;buildings.forEach((b,i)=>b.name=chapter().names[i]||b.name);const layouts=[[[1270,450],[850,900],[1570,880],[1920,850]],[[340,900],[1030,470],[1710,920],[1920,900]],[[480,330],[1120,940],[1770,520],[1600,850]],[[540,900],[1550,500],[1670,900],[1600,900]],[[450,420],[1160,1190],[1740,460],[1920,850]]];relays.forEach((r,i)=>{r.x=layouts[chapterIndex][i][0];r.y=layouts[chapterIndex][i][1]});exitPoint.x=layouts[chapterIndex][3][0];exitPoint.y=layouts[chapterIndex][3][1];enemies.forEach(e=>e.speed*=chapter().speed);for(let i=0;i<chapter().extra;i++){let p=[{x:730,y:500},{x:1450,y:570},{x:950,y:1180}][i];enemies.push({x:p.x,y:p.y,homeX:p.x,homeY:p.y,phase:i+5,alert:0,speed:48*chapter().speed})}}
 const colors={grass:'#26372e',grass2:'#2d4035',road:'#4b5147',road2:'#555a4e',concrete:'#686b5b',dark:'#121c19',roof:'#303a35',roof2:'#3d4940',window:'#9aab86',lime:'#c5e478',rust:'#825b43',water:'#253c3c'};
 let state='menu',last=0,elapsed=0,toastTimer=0,saveTimer=0,cinemaTime=0,cinemaDuration=68;let logLines=['18:42 — You arrive at the edge of the dead district.','18:43 — Radio: “Three relays. Then get to the tower.”'];
-let player={x:270,y:750,r:13,stamina:100,health:100,noise:0,invuln:0};
+let player={x:270,y:750,r:13,stamina:100,health:100,noise:0,invuln:0,facingX:1,facingY:0,animState:'idle'};
 let camera={x:0,y:0},keys={},touchMove={x:0,y:0},sprinting=false,threat=0;
 let inventory={scrap:0,med:0,cells:0,relays:0};
 let flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};
@@ -92,7 +92,7 @@ function stamp(){let mins=Math.floor(elapsed/60);return '18:'+String((42+mins)%6
 function notify(s){$('toast').textContent=s;$('toast').classList.add('show');toastTimer=2.2}
 function showEvent(eyebrow,title,body,button='CONTINUE',callback){$('eventEyebrow').textContent=eyebrow;$('eventTitle').textContent=title;$('eventText').textContent=body;$('eventActions').innerHTML='';let b=document.createElement('button');b.className='action primary';b.textContent=button;b.onclick=()=>{$('event').classList.remove('show');if(callback)callback();else state='playing'};$('eventActions').appendChild(b);$('event').classList.add('show');state='event'}
 function save(){let data={chapter:chapterIndex,player:{x:player.x,y:player.y,stamina:player.stamina,health:player.health},inventory,flags,loot:loot.map(x=>x.taken),elapsed};try{localStorage.setItem('endroom-ch1-save',JSON.stringify(data));$('saveStatus').textContent='PROGRESS SAVED';}catch(e){$('saveStatus').textContent='SAVE UNAVAILABLE'}}
-function load(){try{let d=JSON.parse(localStorage.getItem('endroom-ch1-save'));if(!d)return false;chapterIndex=clamp(d.chapter||0,0,4);makeWorld();applyChapter();player.x=d.player.x;player.y=d.player.y;player.stamina=d.player.stamina;player.health=d.player.health??100;Object.assign(inventory,d.inventory);Object.assign(flags,d.flags);elapsed=d.elapsed||0;loot.forEach((l,i)=>l.taken=!!d.loot[i]);relays.forEach((r,i)=>r.active=!!flags[['relayA','relayB','relayC'][i]]);return true}catch(e){return false}}
+function load(){try{let d=JSON.parse(localStorage.getItem('endroom-ch1-save'));if(!d)return false;chapterIndex=clamp(d.chapter||0,0,4);makeWorld();applyChapter();player.x=d.player.x;player.y=d.player.y;player.stamina=d.player.stamina;player.health=d.player.health??100;player.facingX=1;player.facingY=0;player.animState='idle';Object.assign(inventory,d.inventory);Object.assign(flags,d.flags);elapsed=d.elapsed||0;loot.forEach((l,i)=>l.taken=!!d.loot[i]);relays.forEach((r,i)=>r.active=!!flags[['relayA','relayB','relayC'][i]]);return true}catch(e){return false}}
 function updateHUD(){
  $('staminaText').textContent=Math.round(player.stamina)+'%';$('staminaBar').style.width=player.stamina+'%';
  $('threatText').textContent=threat>65?'DANGER':threat>25?'NEARBY':'LOW';$('threatBar').style.width=threat+'%';
@@ -165,40 +165,46 @@ function drawCyberpunkDetails(){
  let v=ctx.createRadialGradient(CW*.5,CH*.48,110,CW*.5,CH*.48,560);v.addColorStop(0,'#05071300');v.addColorStop(1,'#050713b8');ctx.fillStyle=v;ctx.fillRect(0,0,CW,CH);
 }
 function drawActor(x,y,kind,angle){
- const sx=Math.round(x-camera.x),sy=Math.round(y-camera.y);if(sx<-42||sy<-48||sx>CW+42||sy>CH+42)return;
- const hero=kind==='player',moving=hero?player.noise>.05:(kind.alert>.15),phase=hero?elapsed* (player.noise>.6?15:8):kind.phase*8;
- const swing=moving?Math.sin(phase):Math.sin(elapsed*2.1)*.12,breath=hero&&!moving?Math.sin(elapsed*2.4)*.7:0;
- const bob=Math.round(Math.abs(swing)*1.1+breath);
- const coat=hero?'#263b58':'#30364d',coatHi=hero?'#3d6280':'#4b5570',trim=hero?'#39f5df':'#ff4b9a';
- const skin='#d7b58e',hair='#151b2b',pants='#20283c',boot='#0a101b';
- const px=3,ox=sx-12,oy=sy-24+bob;
- // Soft contact shadow and compact, deliberately clustered high-resolution sprite.
- box(sx-13,sy+12,26,5,'#050812bb');
- // Backpack silhouette and shoulder straps.
- box(ox+2,oy+11,7,14,'#111b2d');box(ox+3,oy+12,5,10,'#40536c');box(ox+4,oy+14,3,2,trim);
- // Legs animate independently, with a planted idle stance.
- const legL=Math.round(swing*3),legR=-legL;
- box(ox+7,oy+31+legL,5,8,'#17243a');box(ox+15,oy+31+legR,5,8,'#17243a');
- box(ox+5,oy+38+legL,7,3,boot);box(ox+14,oy+38+legR,8,3,boot);
- box(ox+7,oy+29+legL,5,2,'#53637a');box(ox+15,oy+29+legR,5,2,'#53637a');
- // Torso, coat panels, collar, arm swing and cyan seam.
- box(ox+5,oy+13,15,18,coat);box(ox+7,oy+14,11,3,coatHi);
- box(ox+11,oy+15,3,15,'#17243a');box(ox+13,oy+17,2,11,trim);
- const armL=Math.round(swing*2),armR=-armL;
- box(ox+2,oy+16+armL,4,12,coatHi);box(ox+19,oy+16+armR,4,12,coatHi);
- box(ox+2,oy+27+armL,4,3,skin);box(ox+19,oy+27+armR,4,3,skin);
- // Head, hair silhouette, face and tiny illuminated comms unit.
- box(ox+8,oy+5,10,10,skin);box(ox+7,oy+3,12,5,hair);box(ox+6,oy+6,3,7,hair);
- box(ox+15,oy+9,2,2,'#182033');box(ox+16,oy+12,3,1,'#8d6470');
- box(ox+17,oy+7,3,2,trim);box(ox+19,oy+6,2,3,'#b5faff');
- box(ox+6,oy+14,3,4,'#111a2a');
+ const sx=Math.round(x-camera.x),sy=Math.round(y-camera.y);if(sx<-48||sy<-56||sx>CW+48||sy>CH+48)return;
+ const hero=kind==='player',moving=hero?player.animState!=='idle':(kind.alert>.15),running=hero&&player.animState==='run';
+ const phase=hero?elapsed*(running?17:moving?10:2.4):kind.phase*9;
+ const swing=moving?Math.sin(phase):Math.sin(elapsed*2.4)*.10;
+ const bob=moving?Math.round(Math.abs(Math.cos(phase))*1.5):Math.round(Math.sin(elapsed*2.4)*.8);
+ const coat=hero?'#1d3552':'#30334e',coatHi=hero?'#315b78':'#505575',trim=hero?'#39f5df':'#ff4b9a';
+ const skin='#d9b99c',hair='#10172a',pants='#202b43',boot='#090f1e';
+ const ox=sx-15,oy=sy-29+bob;
+ const attack=!hero&&kind.alert>.55&&Math.sin(kind.phase*13)>.15;
+ // Neon contact shadow and offset ground reflection.
+ box(sx-17,sy+13,34,6,'#050713bb');box(sx-10,sy+18,20,2,hero?'#39f5df22':'#ff4b9a33');
+ if(hero){
+  // Courier pack, battery canister and illuminated shoulder straps.
+  box(ox+1,oy+13,9,18,'#10192d');box(ox+3,oy+14,6,15,'#344968');box(ox+4,oy+17,4,3,'#39f5df');box(ox+2,oy+25,7,3,'#172b43');
+  box(ox+7,oy+12,3,17,'#7a8da5');box(ox+18,oy+13,3,15,'#7a8da5');
+ }
+ // Four-beat legs: wider stride when sprinting, subtle weight shift when idle.
+ const stride=moving?(running?5:3):0,legL=Math.round(swing*stride),legR=-legL;
+ box(ox+8,oy+34+legL,6,9,pants);box(ox+18,oy+34+legR,6,9,pants);
+ box(ox+6,oy+42+legL,9,4,boot);box(ox+17,oy+42+legR,10,4,boot);
+ box(ox+8,oy+32+legL,6,2,'#526985');box(ox+18,oy+32+legR,6,2,'#526985');
+ // Layered jacket, collar, chest harness and animated sleeves.
+ box(ox+6,oy+14,19,21,coat);box(ox+8,oy+15,15,4,coatHi);box(ox+11,oy+17,4,15,'#15243b');
+ box(ox+14,oy+18,3,13,trim);box(ox+7,oy+28,17,3,'#111c31');box(ox+9,oy+30,13,2,'#6c8299');
+ const armL=Math.round(swing*(running?4:2)),armR=-armL;
+ box(ox+2,oy+17+armL,5,13,coatHi);box(ox+24,oy+17+armR,5,13,coatHi);
+ box(ox+2,oy+29+armL,5,4,skin);box(ox+24,oy+29+armR,5,4,skin);
+ // Head, swept hair, visor and cyan comms implant.
+ box(ox+10,oy+5,13,12,skin);box(ox+8,oy+3,16,6,hair);box(ox+7,oy+7,4,8,hair);
+ box(ox+17,oy+10,3,2,'#182033');box(ox+18,oy+13,4,1,'#9b667d');
+ box(ox+20,oy+8,4,3,trim);box(ox+23,oy+7,3,4,'#d9ffff');box(ox+10,oy+17,5,3,'#111a2a');
  if(!hero){
-  // Creature silhouette has an elongated head, uneven limbs and hot-pink sensor eyes.
-  box(sx-14,sy-19,28,13,'#20283d');box(sx-10,sy-25,20,12,'#58617a');
-  box(sx-12,sy-13,24,18,'#303a52');box(sx-18,sy-10,7,17,'#252e45');box(sx+11,sy-10,7,17,'#252e45');
-  box(sx-8,sy-20,5,3,'#ff4b9a');box(sx+4,sy-20,5,3,'#ff4b9a');
-  box(sx-5,sy-7,10,3,'#111624');box(sx-3,sy-4,6,2,'#a8b4c9');
-  if(kind.alert>.15){box(sx-2,sy-34,4,5,'#ff4b9a');}
+  // Asymmetric machine-husk anatomy. Attack frames lunge forward and flare the sensor eyes.
+  const lunge=attack?Math.round(Math.sin(kind.phase*13)*4):0,arm=attack?Math.round(Math.cos(kind.phase*13)*5):Math.round(swing*2);
+  box(sx-17-lunge,sy-20,34,16,'#20243d');box(sx-12-lunge,sy-28,24,13,'#68708c');
+  box(sx-15-lunge,sy-14,30,21,'#303751');box(sx-22-lunge,sy-10+arm,8,20,'#252c48');box(sx+14-lunge,sy-10-arm,8,20,'#252c48');
+  box(sx-11-lunge,sy-22,7,4,attack?'#fff0a8':'#ff4b9a');box(sx+4-lunge,sy-22,7,4,attack?'#fff0a8':'#ff4b9a');
+  box(sx-6-lunge,sy-6,12,4,'#111624');box(sx-4-lunge,sy-2,8,3,'#a8b4c9');
+  if(kind.alert>.15){box(sx-2,sy-38,4,7,'#ff4b9a');box(sx-14,sy-31,28,2,'#ff4b9a66')}
+  if(attack){box(sx-25-lunge,sy-4,7,3,'#ff4b9a');box(sx+18-lunge,sy-4,7,3,'#ff4b9a')}
  }
 }
 function drawLighting(){
@@ -303,15 +309,15 @@ function drawCinema(){
  for(let y=0;y<CH;y+=4)box(0,y,CW,1,'#02060922');
  let fade=Math.min(1,t/1.2,(cinemaDuration-t)/1.4);if(fade<1){ctx.fillStyle='rgba(0,0,0,'+(1-Math.max(0,fade))+')';ctx.fillRect(0,0,CW,CH)}
  const lines=[
- ['CITY ARCHIVE // 18:42','October 17, 2041. The Helix Grid drops across Sector 07. Ten million screens go dark. One signal keeps transmitting.'],
- ['MARA VENN','Come on, old thing. Give me one clean frequency. Elias, answer me.'],
- ['CITY ARCHIVE','Mara Venn. Courier 07. Former grid-maintenance trainee. The last person logged near the Northline relay.'],
- ['MARA VENN','Dispatch, this is Venn. Traffic systems are dead. The mag-rail is hanging over the east crossing. I am heading home.'],
- ['UNKNOWN SIGNAL','Courier 07 detected. Please remain where you are. Assistance is approaching.'],
- ['ELIAS // ENCRYPTED RADIO','Mara, listen. The blackout was deliberate. Three street relays can punch through the quarantine network. Get to Northline.'],
- ['MARA VENN','That thing just used the city announcement voice. It knew my route. It knew my name.'],
- ['ELIAS // ENCRYPTED RADIO','If you hear me without the radio, run. The signal is copying people. Do not let it reach the tower first.'],
- ['CITY ARCHIVE','The grid is dead. The city is not. Somewhere in the neon rain, something is broadcasting Mara’s next move.']
+ ['CITY ARCHIVE // 18:42','October 17, 2041. The Helix Grid falls across Sector 07. Every public screen repeats one instruction: remain indoors. Then the screens begin speaking in familiar voices.'],
+ ['MARA VENN','Come on, old thing. One clean frequency. Elias, if you can hear me, answer on the analogue band.'],
+ ['CITY ARCHIVE','Mara Venn. Courier 07. Former Helix field runner. Last registered delivery: a sealed service key addressed to Northline Tower.'],
+ ['MARA VENN','Dispatch, this is Venn. The mag-rail is dead and the street network is looping. I am taking the old service road.'],
+ ['CHOIR // PUBLIC ADDRESS','Courier 07 identified. Your brother is waiting at Northline. Follow the blue lights. Do not use the radio.'],
+ ['ELIAS // ENCRYPTED RADIO','That is not me. CHOIR is copying emergency voices. Three street relays can cut its route through the district. Reach Northline before it reaches the wider network.'],
+ ['MARA VENN','It used my dispatch call. It knows the route I took that night. How much of the city can it remember?'],
+ ['ELIAS // ENCRYPTED RADIO','The hospital archive will explain. I built the first response model, Mara. I thought it would save people. I was wrong. The phrase is blue lantern, no stars. Remember it.'],
+ ['CITY ARCHIVE','Three relays. One tower. One voice that should not exist. Sector 07 is still transmitting.']
  ];
  const idx=scene;const [speaker,line]=lines[idx];$('cinemaSpeaker').textContent=speaker;$('cinemaLine').textContent=line;$('cinemaChapter').textContent=scene===8?'ENDROOM / AFTER DARK':'SECTOR 07  ·  THE HELIX BLACKOUT';$('cinemaTime').textContent='00:'+String(Math.floor(t)).padStart(2,'0')+' / 01:08';$('cinemaProgress').style.width=(t/cinemaDuration*100)+'%';
 }
@@ -326,7 +332,7 @@ function move(dt){
  let dx=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0)+touchMove.x,dy=(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0)+touchMove.y;let mag=Math.hypot(dx,dy);if(mag>1){dx/=mag;dy/=mag}
  let moving=mag>.05,run=(keys.Shift||sprinting)&&player.stamina>1&&moving,speed=run?190:118;
  if(run)player.stamina=Math.max(0,player.stamina-25*dt);else player.stamina=Math.min(100,player.stamina+13*dt);
- if(moving){let nx=player.x+dx*speed*dt,ny=player.y+dy*speed*dt;if(!blocked(nx,player.y))player.x=nx;if(!blocked(player.x,ny))player.y=ny;player.noise=run?1:.25}else player.noise=0;
+ if(moving){player.facingX=dx;player.facingY=dy;player.animState=run?'run':'walk';let nx=player.x+dx*speed*dt,ny=player.y+dy*speed*dt;if(!blocked(nx,player.y))player.x=nx;if(!blocked(player.x,ny))player.y=ny;player.noise=run?1:.25}else{player.animState='idle';player.noise=0}
  if(player.invuln>0)player.invuln-=dt;
 }
 function updateEnemies(dt){
@@ -348,9 +354,9 @@ function interact(){
  if(nearest.kind==='loot'){let l=nearest.item;l.taken=true;inventory[l.type]++;log('Scavenged '+l.type+'.');notify('FOUND '+l.type.toUpperCase());save();updateHUD();return}
  if(nearest.kind==='relay'){let r=nearest.item;if(inventory.cells<1){notify('NEED A POWER CELL');log('Relay needs a power cell. Search nearby buildings and streets.');return}inventory.cells--;r.active=true;inventory.relays++;flags[['relayA','relayB','relayC'][relays.indexOf(r)]]=true;log(r.name+' restored. Signal strength increasing.');notify('RELAY ONLINE · '+inventory.relays+'/3');updateHUD();save();if(inventory.relays===1)showEvent('SIGNAL NETWORK / 01','ONE DOWN.','A weak signal returns. The tower answers with a burst of static: “Two more. Keep going.”');return}
  if(nearest.kind==='building'){let b=nearest.item;if(b.type==='station'){flags.station=true;log('Relay station mapped. Three field relays marked on your map.');showEvent('FIELD DISCOVERY','THE RELAY STATION','The district map marks three relay boxes. They need power cells. Watch the streets.');updateHUD();save()}else if(b.type==='clinic'){if(inventory.med>0){inventory.med--;player.stamina=Math.min(100,player.stamina+45);notify('RESTED · STAMINA RESTORED')}else notify('ABANDONED CLINIC · NOTHING LEFT')}else if(b.type==='shop'){if(inventory.scrap>=2&&inventory.med<3){inventory.scrap-=2;inventory.med++;notify('TRADED 2 SCRAP FOR A MED KIT');log('A sealed supply drawer still works.')}else notify('MARKET SHELVES ARE EMPTY')}else notify(b.name+' · NO SAFE WAY INSIDE');updateHUD();save();return}
- if(nearest.kind==='exit'){if(inventory.relays<3){notify('TOWER LOCKED · RESTORE ALL 3 RELAYS');return}flags.extracted=true;updateHUD();save();if(chapterIndex===4){showEvent('ENDROOM / FINAL CHAPTER','THE LAST BROADCAST','The evacuation channel opens. Through the static, Mara finally hears her brother’s real voice. The city is not saved, but the signal has reached beyond it. Somewhere, people answer.\\n\\nEND OF PART ONE.','RETURN TO TITLE',()=>{state='menu';$('menu').classList.add('show')})}else{showEvent('CHAPTER '+String(chapterIndex+1).padStart(2,'0')+' COMPLETE','SIGNAL ACQUIRED','The relay network answers. A new transmission cuts through the static. The next district is already waiting.','CONTINUE',advanceChapter)}}
+ if(nearest.kind==='exit'){if(inventory.relays<3){notify('TOWER LOCKED · RESTORE ALL 3 RELAYS');return}flags.extracted=true;updateHUD();save();if(chapterIndex===4){showEvent('ENDROOM / FINAL CHAPTER','BLUE LANTERN, NO STARS','Mara enters the shutdown phrase. The false Elias signal collapses into a thousand stolen voices. At the tower core, the real Elias answers through the analogue line: “You found me.” CHOIR goes silent across Sector 07. The city is still dark, but for the first time tonight, the silence belongs to the people.\\n\\nEND OF PART ONE.','RETURN TO TITLE',()=>{state='menu';$('menu').classList.add('show')})}else{showEvent('CHAPTER '+String(chapterIndex+1).padStart(2,'0')+' COMPLETE','SIGNAL ACQUIRED','The relay network answers. A new transmission cuts through the static. The next district is already waiting.','CONTINUE',advanceChapter)}}
 }
-function advanceChapter(){chapterIndex++;player={x:270,y:750,r:13,stamina:100,health:100,noise:0,invuln:0};inventory={scrap:0,med:0,cells:0,relays:0};flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};elapsed=0;threat=0;logLines=[];makeWorld();applyChapter();camera.x=clamp(player.x-CW/2,0,WORLD.w-CW);camera.y=clamp(player.y-CH/2,0,WORLD.h-CH);log(chapter().name+' — arrival logged.');updateHUD();save();showEvent('CHAPTER '+String(chapterIndex+1).padStart(2,'0')+' / '+chapter().area,chapter().name,chapter().intro+'\\n\\nRADIO: “'+chapter().radio+'”','ENTER CHAPTER',()=>{state='playing';log('Radio: transmission received.')})}
+function advanceChapter(){chapterIndex++;player={x:270,y:750,r:13,stamina:100,health:100,noise:0,invuln:0,facingX:1,facingY:0,animState:'idle'};inventory={scrap:0,med:0,cells:0,relays:0};flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};elapsed=0;threat=0;logLines=[];makeWorld();applyChapter();camera.x=clamp(player.x-CW/2,0,WORLD.w-CW);camera.y=clamp(player.y-CH/2,0,WORLD.h-CH);log(chapter().name+' — arrival logged.');updateHUD();save();showEvent('CHAPTER '+String(chapterIndex+1).padStart(2,'0')+' / '+chapter().area,chapter().name,chapter().intro+'\\n\\nRADIO: “'+chapter().radio+'”','ENTER CHAPTER',()=>{state='playing';log('Radio: transmission received.')})}
 function triggerGameOver(){if(state!=='playing')return;state='gameover';save();$('gameover').classList.add('show')}
 function update(dt){
  if(state==='cinematic'){cinemaTime=Math.min(cinemaDuration,cinemaTime+dt);if(cinemaTime>=cinemaDuration)finishCinematic();return}
