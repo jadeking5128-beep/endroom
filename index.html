@@ -13,7 +13,7 @@
 header{display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--line);background:#0b1011eF;z-index:2}.brand{font-size:15px;font-weight:700;letter-spacing:.2em}.brand b{color:var(--lime)}.chapter{font:11px 'DM Mono';letter-spacing:.16em;color:var(--muted)}.headright{display:flex;align-items:center;gap:18px}.online{font:10px 'DM Mono';color:var(--lime);letter-spacing:.1em}.iconbtn{border:1px solid var(--line);background:#131a1b;padding:8px 11px;font:10px 'DM Mono';letter-spacing:.08em}
 main{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:0}.world{min-width:0;min-height:0;padding:16px;display:flex;flex-direction:column;border-right:1px solid var(--line)}.scenehead{display:flex;justify-content:space-between;align-items:center;padding:0 2px 12px}.scenehead h1{font-size:12px;letter-spacing:.2em;margin:0;font-weight:600}.scenehead span{font:10px 'DM Mono';color:var(--muted)}.viewport{position:relative;flex:1;min-height:0;overflow:hidden;border:1px solid #3b4b43;background:#101715;box-shadow:0 12px 55px #0009,inset 0 0 0 4px #070a0a}.viewport canvas{width:100%;height:100%;display:block;image-rendering:pixelated;touch-action:none}.hintbar{display:flex;justify-content:space-between;padding:10px 2px 0;color:var(--muted);font:10px 'DM Mono';letter-spacing:.04em}.sidebar{padding:16px;display:flex;flex-direction:column;gap:15px;overflow:auto;background:#0c1213}.panel{border:1px solid var(--line);background:linear-gradient(145deg,#141c1d,#0f1516);padding:13px}.label{font:9px 'DM Mono';letter-spacing:.18em;color:var(--muted);margin:0 0 12px;text-transform:uppercase}.objective{font-size:13px;line-height:1.55}.objective strong{color:var(--lime);font-weight:600}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#0a1011;border:1px solid #253231;padding:9px}.stat small{display:block;font:9px 'DM Mono';color:var(--muted);letter-spacing:.1em;margin-bottom:7px}.stat b{font:15px 'DM Mono';font-weight:500}.meter{height:4px;background:#273130;margin-top:7px;overflow:hidden}.meter i{display:block;height:100%;background:var(--lime);width:100%;transition:width .2s}.meter.alert i{background:var(--red)}.lootgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.loot{min-height:52px;border:1px solid #2b3936;background:#0a1011;display:grid;place-items:center;align-content:center;gap:4px;color:var(--muted);font:9px 'DM Mono'}.loot b{font-size:17px;color:var(--text);font-weight:500}.loot.have{border-color:#6d8251;color:var(--lime)}.missionlist{display:grid;gap:8px}.mission{display:flex;gap:9px;align-items:flex-start;font-size:11px;color:var(--muted);line-height:1.45}.mission i{width:14px;height:14px;border:1px solid #58665b;display:grid;place-items:center;flex:none;font:9px 'DM Mono';font-style:normal}.mission.done{color:#b9c99a}.mission.done i{background:#9ab75e;border-color:#9ab75e;color:#10160d}.feed{height:102px;overflow:auto;font:10px/1.6 'DM Mono';color:#9aa8a0}.feed p{margin:0 0 5px}.feed p:last-child{color:var(--lime)}.bottom{border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;color:#62716c;font:9px 'DM Mono';letter-spacing:.12em}.actions{display:flex;gap:7px}.action{border:2px solid #91a4b8;background:#202b22;color:#e8f1f5;padding:9px 12px;font:bold 10px monospace;letter-spacing:.08em;border-radius:0;box-shadow:3px 3px 0 #05080d}.action.primary{background:var(--lime);color:#10160d;border-color:var(--lime);font-weight:500}.action:disabled{opacity:.35;cursor:default}
 .overlay{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:18px;background:#070b12ed;backdrop-filter:none}.overlay.show{display:flex}#event.overlay{background:#02060966;align-items:flex-end;padding:0 3vw 3vh}#event .dialog{width:min(960px,100%);border:4px solid #d8e4d5;background:#101b25;box-shadow:7px 7px 0 #03070b;border-radius:0;padding:20px 24px 18px}#event .dialog:before{content:'TRANSMISSION // INCOMING';display:block;color:#b7f36b;font:bold 10px monospace;letter-spacing:.18em;margin-bottom:12px}#event .eyebrow{display:none}#event .dialog h2{font-size:clamp(18px,3vw,27px);margin-bottom:9px;color:#f2c14e}#event .dialog p{font:clamp(12px,1.5vw,15px)/1.65 monospace;color:#e1e9e9;white-space:pre-line;max-width:none;margin:0}#event .dialog .actions{justify-content:flex-end;margin-top:12px}#event .action{min-width:145px}.dialog{width:min(540px,100%);border:3px solid #91a4b8;background:#111923;padding:clamp(20px,4vw,34px);box-shadow:8px 8px 0 #05080d;border-radius:0}.eyebrow{font:10px 'DM Mono';letter-spacing:.22em;color:var(--lime);margin-bottom:18px}.dialog h2{font-family:monospace;font-size:clamp(27px,5vw,44px);line-height:1.02;letter-spacing:0;margin:0 0 15px;max-width:440px;text-transform:uppercase}.dialog p{font-size:14px;line-height:1.7;color:#aab8af;max-width:440px}.dialog .actions{margin-top:24px;flex-wrap:wrap}.menu-meta{display:flex;gap:22px;margin-top:24px;color:#718078;font:9px 'DM Mono';letter-spacing:.1em}.toast{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);padding:10px 15px;background:#101819ed;border:1px solid #71845a;color:#e6edda;font:11px 'DM Mono';pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}.toast.show{opacity:1}
-.touch{display:none;position:absolute;inset:auto 14px 14px;justify-content:space-between;align-items:end;pointer-events:none}.stick{width:126px;height:126px;border:1px solid #b3c39a66;border-radius:50%;background:#101a17a8;display:grid;place-items:center;pointer-events:auto;touch-action:none}.nub{width:48px;height:48px;border-radius:50%;background:#b8d879aa;border:1px solid #d9edb6;box-shadow:0 0 22px #b8d87944}.touchright{display:grid;grid-template-columns:58px 58px;gap:8px;align-items:end;pointer-events:auto}.touchright button{width:58px;height:58px;border-radius:50%;border:1px solid #c5df8b88;background:#18241dcc;color:#e8f2d5;font:10px 'DM Mono';touch-action:none}.touchright button.big{grid-column:2;grid-row:1/3;width:68px;height:68px;background:#a9cb65;color:#10170d;border:0;font-weight:700}
+#cinemaHud{display:none;position:absolute;inset:0;z-index:8;pointer-events:none;color:#f1f0df;font-family:monospace;text-shadow:2px 2px #000}.cinemaTop{position:absolute;top:18px;left:22px;right:22px;display:flex;justify-content:space-between;font-size:10px;letter-spacing:.2em;color:#c4d1b4}.cinemaCaption{position:absolute;left:5%;right:5%;bottom:8%;min-height:92px;padding:14px 18px;background:linear-gradient(90deg,#05090bea,#05090bbd);border-left:4px solid #c5e478;box-shadow:0 8px 35px #0008}.cinemaCaption small{font-size:9px;letter-spacing:.2em;color:#c5e478}.cinemaCaption p{font-size:clamp(13px,2vw,19px);line-height:1.5;margin:8px 0 0;max-width:900px}.cinemaProgress{position:absolute;left:0;right:0;bottom:0;height:3px;background:#ffffff22}.cinemaProgress i{display:block;height:100%;width:0;background:#c5e478}#skipCinema{pointer-events:auto;position:absolute;right:22px;top:48px;padding:10px 13px;border:1px solid #b8c7b0;background:#08100dcc;color:#e8f1df;font:10px monospace;letter-spacing:.12em}#skipCinema:focus-visible{outline:2px solid #c5e478;outline-offset:3px}.viewport:has(#cinemaHud[style*="block"]){background:#05080a} .viewport canvas{object-fit:contain;background:#05080a}.touch{display:none;position:absolute;inset:auto 14px 14px;justify-content:space-between;align-items:end;pointer-events:none}.stick{width:126px;height:126px;border:1px solid #b3c39a66;border-radius:50%;background:#101a17a8;display:grid;place-items:center;pointer-events:auto;touch-action:none}.nub{width:48px;height:48px;border-radius:50%;background:#b8d879aa;border:1px solid #d9edb6;box-shadow:0 0 22px #b8d87944}.touchright{display:grid;grid-template-columns:58px 58px;gap:8px;align-items:end;pointer-events:auto}.touchright button{width:58px;height:58px;border-radius:50%;border:1px solid #c5df8b88;background:#18241dcc;color:#e8f2d5;font:10px 'DM Mono';touch-action:none}.touchright button.big{grid-column:2;grid-row:1/3;width:68px;height:68px;background:#a9cb65;color:#10170d;border:0;font-weight:700}
 @media(max-width:850px){#app{grid-template-rows:48px minmax(0,1fr) 28px}header{padding:0 13px}.chapter,.online{display:none}.headright{gap:8px}main{grid-template-columns:minmax(0,1fr) 230px}.world{padding:10px}.sidebar{padding:10px;gap:8px}.panel{padding:10px}.feed{height:74px}.loot{min-height:45px}.scenehead{padding-bottom:8px}.hintbar{font-size:8px}}
 @media(max-width:620px){#app{grid-template-rows:44px minmax(0,1fr) 25px}main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 180px}.world{border:0;padding:7px 7px 4px}.scenehead{padding:0 2px 7px}.scenehead h1{font-size:10px}.scenehead span{font-size:8px}.hintbar{padding-top:5px}.hintbar span:first-child{display:none}.sidebar{border-top:1px solid var(--line);display:grid;grid-template-columns:1.2fr 1fr;grid-template-rows:auto auto;gap:6px;padding:7px;overflow:hidden}.sidebar .panel{padding:7px}.sidebar .panel:nth-child(1){grid-column:1;grid-row:1}.sidebar .panel:nth-child(2){grid-column:2;grid-row:1}.sidebar .panel:nth-child(3){grid-column:1;grid-row:2}.sidebar .panel:nth-child(4){grid-column:2;grid-row:2}.label{font-size:8px;margin-bottom:6px}.objective{font-size:10px;line-height:1.35}.stats{gap:5px}.stat{padding:5px}.stat small{font-size:7px;margin-bottom:3px}.stat b{font-size:11px}.meter{margin-top:4px}.lootgrid{gap:3px}.loot{min-height:30px;font-size:7px;gap:1px}.loot b{font-size:12px}.missionlist{gap:4px}.mission{font-size:8px;gap:5px;line-height:1.2}.mission i{width:11px;height:11px;font-size:7px}.feed{height:43px;font-size:8px;line-height:1.35}.bottom{font-size:7px;padding:0 8px}.touch{display:flex}.stick{width:94px;height:94px}.nub{width:38px;height:38px}.touchright{grid-template-columns:48px 48px;gap:5px}.touchright button{width:48px;height:48px;font-size:8px}.touchright button.big{width:56px;height:56px}}
 </style>
@@ -37,6 +37,7 @@ main{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:0}.
 <footer class="bottom"><span>ENDROOM STUDIOS</span><span>CHAPTER 01 · THE QUIET DISTRICT</span><span id="saveStatus">PROGRESS SAVED LOCALLY</span></footer>
 </div>
 <div class="overlay show" id="menu"><div class="dialog"><div class="eyebrow">ENDROOM STUDIOS PRESENTS / 001</div><h2>THE CITY<br>WENT QUIET.</h2><p>OCTOBER 17, 2041. At 18:42, every radio in the city went silent. The grid failed first. Then the emergency broadcasts stopped. By morning, the streets belonged to things that only moved when the lights went out.<br><br>You are Mara Venn, a courier carrying the last working receiver. A broken transmission from the northern tower gave you one instruction: restore three relays, and the evacuation channel will open. Your brother was last heard near that tower.<br><br>Tonight, you enter the Quiet District. Find the signal. Find him. Do not let the dark find you first.</p><div class="actions"><button class="action primary" id="startBtn">NEW GAME ↗</button><button class="action" id="continueBtn">CONTINUE</button></div><div class="menu-meta"><span>CHAPTER 01</span><span>THE QUIET DISTRICT</span><span>WASD / E / SHIFT · TOUCH ON MOBILE</span></div></div></div>
+<div id="cinemaHud" aria-live="polite"><div class="cinemaTop"><span id="cinemaChapter">ENDROOM PICTURES PRESENTS</span><span id="cinemaTime">00:00 / 01:08</span></div><div class="cinemaCaption"><small id="cinemaSpeaker">NARRATOR</small><p id="cinemaLine">The city forgot how to breathe.</p></div><button id="skipCinema" type="button">SKIP INTRO »</button><div class="cinemaProgress"><i id="cinemaProgress"></i></div></div>
 <div class="overlay" id="gameover"><div class="dialog"><div class="eyebrow">SIGNAL LOST / MARA VENN</div><h2>YOU WERE<br>FOUND.</h2><p>The creatures have overwhelmed you. The district is still waiting. Restart Chapter 01 to begin this level again.</p><div class="actions"><button class="action primary" id="retryBtn">RETRY CHAPTER ↻</button><button class="action" id="titleBtn">RETURN TO TITLE</button></div></div></div>
 <div class="overlay" id="pause"><div class="dialog"><div class="eyebrow">FIELD PAUSED</div><h2>TAKE A BREATH.</h2><p>The district is still out there. Your progress is saved automatically.</p><div class="actions"><button class="action primary" id="resumeBtn">RESUME</button><button class="action" id="saveQuitBtn">SAVE & MENU</button></div></div></div>
 <div class="overlay" id="event"><div class="dialog"><div class="eyebrow" id="eventEyebrow">FIELD REPORT</div><h2 id="eventTitle">SIGNAL RESTORED</h2><p id="eventText"></p><div class="actions" id="eventActions"><button class="action primary" id="eventOk">CONTINUE</button></div></div></div>
@@ -48,7 +49,7 @@ const $=id=>document.getElementById(id);
 const WORLD={w:2200,h:1500,tile:48};
 const chapters=[{name:'THE QUIET DISTRICT',area:'THE OUTSKIRTS',intro:'October 17, 2041. The city has gone silent. Your brother is somewhere near the northern tower. Three relays are the only way to open the evacuation channel.',radio:'Mara? If this reaches you, I am still at the tower. Three relays, then get here. Whatever you hear outside... it is not me.',names:['OLD CLINIC','CORNER MARKET','RELAY STATION','BUS DEPOT','ROW HOUSES','MACHINE WORKS','PUMP HOUSE','SIGNAL TOWER'],theme:['#26372e','#2d4035','#4b5147','#555a4e','#686b5b','#303a35','#3d4940','#9aab86','#253c3c'],speed:1,extra:0},{name:'THE FLOODED ARCADE',area:'LOWTIDE WARD',intro:'The receiver leads Mara beneath the old entertainment quarter. Water fills the streets, and a second voice is broadcasting from the abandoned arcade.',radio:'You made it out. The arcade has a backup transmitter. Find it before the water rises.',names:['SUNSET CLINIC','PIXEL PALACE','ARCADE RELAY','FERRY DEPOT','BOARDWALK HOMES','SUBSTATION','DRAINAGE WORKS','TIDAL TOWER'],theme:['#203b42','#294b50','#354f58','#405e66','#58717a','#273e4a','#3a5962','#a8d4d1','#1b4654'],speed:1.12,extra:0},{name:'THE UNDERLINE',area:'SUBWAY NINE',intro:'A service tunnel beneath the city carries the signal toward the central station. The lights flicker in sequence, as if something is following the power.',radio:'The things down there react to sound. Keep your receiver quiet.',names:['MAINTENANCE BAY','PLATFORM MARKET','LINE NINE RELAY','NORTH ENTRANCE','WORKER QUARTERS','VENTILATION PLANT','PUMP CONTROL','TUNNEL SHAFT'],theme:['#292f32','#343b40','#41464a','#4c5356','#687071','#252c30','#3b4247','#a9b1a8','#202b31'],speed:1.27,extra:1},{name:'THE BLACKOUT WARD',area:'ASHEN HOSPITAL',intro:'The signal points to the medical ward where the emergency network was built. A recorded message suggests Mara’s brother knew the blackout was coming.',radio:'I found your name in the hospital logs. The ward has gone dark. Do not trust the emergency lights.',names:['EMERGENCY CLINIC','STAFF CANTEEN','WARD RELAY','AMBULANCE BAY','PATIENT BLOCK','GENERATOR HALL','SURGERY WING','ROOFTOP ANTENNA'],theme:['#352b2d','#443236','#574044','#654b4c','#776061','#33282c','#4b383c','#d49a83','#392d35'],speed:1.42,extra:2},{name:'THE LAST BROADCAST',area:'NORTH TOWER',intro:'The final signal comes from the tower at the edge of the city. The evacuation channel is ready. But the voice guiding Mara may not be her brother at all.',radio:'Do not come to the tower. I am not the one speaking on this frequency. I am still looking for you.',names:['OUTPOST CLINIC','RADIO MARKET','ROOFTOP RELAY','WATCH STATION','FALLEN BLOCK','POWER CORE','TRANSMITTER HALL','NORTH TOWER'],theme:['#3c3428','#51422e','#62513a','#746247','#93805b','#3a3228','#5a4932','#e1c18a','#3d4030'],speed:1.58,extra:3}];let chapterIndex=0;function chapter(){return chapters[chapterIndex]}function applyChapter(){worldSeed=41+chapterIndex*29;let t=chapter().theme;[colors.grass,colors.grass2,colors.road,colors.road2,colors.concrete,colors.roof,colors.roof2,colors.window,colors.water]=t;buildings.forEach((b,i)=>b.name=chapter().names[i]||b.name);const layouts=[[[1270,450],[850,900],[1570,880],[1920,850]],[[340,900],[1030,470],[1710,920],[1920,900]],[[480,330],[1120,940],[1770,520],[1600,850]],[[540,900],[1550,500],[1670,900],[1600,900]],[[450,420],[1160,1190],[1740,460],[1920,850]]];relays.forEach((r,i)=>{r.x=layouts[chapterIndex][i][0];r.y=layouts[chapterIndex][i][1]});exitPoint.x=layouts[chapterIndex][3][0];exitPoint.y=layouts[chapterIndex][3][1];enemies.forEach(e=>e.speed*=chapter().speed);for(let i=0;i<chapter().extra;i++){let p=[{x:730,y:500},{x:1450,y:570},{x:950,y:1180}][i];enemies.push({x:p.x,y:p.y,homeX:p.x,homeY:p.y,phase:i+5,alert:0,speed:48*chapter().speed})}}
 const colors={grass:'#26372e',grass2:'#2d4035',road:'#4b5147',road2:'#555a4e',concrete:'#686b5b',dark:'#121c19',roof:'#303a35',roof2:'#3d4940',window:'#9aab86',lime:'#c5e478',rust:'#825b43',water:'#253c3c'};
-let state='menu',last=0,elapsed=0,toastTimer=0,saveTimer=0;let logLines=['18:42 — You arrive at the edge of the dead district.','18:43 — Radio: “Three relays. Then get to the tower.”'];
+let state='menu',last=0,elapsed=0,toastTimer=0,saveTimer=0,cinemaTime=0,cinemaDuration=68;let logLines=['18:42 — You arrive at the edge of the dead district.','18:43 — Radio: “Three relays. Then get to the tower.”'];
 let player={x:270,y:750,r:13,stamina:100,health:100,noise:0,invuln:0};
 let camera={x:0,y:0},keys={},touchMove={x:0,y:0},sprinting=false,threat=0;
 let inventory={scrap:0,med:0,cells:0,relays:0};
@@ -137,25 +138,23 @@ function drawWorld(){
  let ex=exitPoint.x-camera.x,ey=exitPoint.y-camera.y;box(ex-22,ey+19,44,5,'#101813');box(ex-18,ey-18,36,36,'#17241c');box(ex-13,ey-13,26,26,'#8eaa5c');box(ex-7,ey-7,14,14,'#d9ed9d');box(ex-3,ey-22,6,44,'#e3efb5');
 }
 function drawActor(x,y,kind,angle){
- let sx=Math.round(x-camera.x),sy=Math.round(y-camera.y);if(sx<-30||sy<-35||sx>CW+30||sy>CH+30)return;
- box(sx-12,sy+10,24,5,'#0b100dcc');
- if(kind==='player'){
-  // Mara: readable 16-bit courier silhouette with backpack, coat and face.
-  box(sx-8,sy+7,6,8,'#26332c');box(sx+3,sy+7,6,8,'#26332c');
-  box(sx-9,sy+2,7,6,'#7a6045');box(sx+3,sy+2,7,6,'#7a6045');
-  box(sx-10,sy-7,20,13,'#435f50');box(sx-13,sy-5,5,12,'#293d34');box(sx+8,sy-5,5,12,'#293d34');
-  box(sx-8,sy-15,16,10,'#d0b58a');box(sx-9,sy-18,18,6,'#252c25');box(sx-7,sy-21,14,5,'#394337');
-  box(sx-5,sy-11,3,2,'#202820');box(sx+3,sy-11,3,2,'#202820');box(sx+6,sy-4,4,6,'#b7c18c');
-  box(sx-12,sy-4,4,9,'#9b805d');box(sx+10,sy-2,4,8,'#9b805d');
-  if(player.invuln>0&&Math.floor(elapsed*12)%2===0){box(sx-14,sy-22,28,39,'#f5e7c544')}
- }else{
-  // Creatures have a hunched head, ragged shoulders and distinct glowing eyes.
-  box(sx-10,sy+6,8,8,'#333d35');box(sx+3,sy+6,8,8,'#333d35');
-  box(sx-12,sy-5,24,15,'#4b5144');box(sx-9,sy-13,18,12,'#888b70');
-  box(sx-7,sy-17,14,6,'#686f5d');box(sx-6,sy-9,4,3,'#e77a6d');box(sx+3,sy-9,4,3,'#e77a6d');
-  box(sx-16,sy-2,6,12,'#3b463b');box(sx+10,sy-2,6,12,'#3b463b');
-  if(kind.alert>0){box(sx-2,sy-27,4,4,'#e77a6d')}
- }
+ const sx=Math.round(x-camera.x),sy=Math.round(y-camera.y);if(sx<-35||sy<-40||sx>CW+35||sy>CH+35)return;
+ box(sx-13,sy+11,26,5,'#080d0bc9');
+ const hero=kind==='player',step=Math.floor(elapsed*9)%2,skin='#d7b58e',coat='#486d58',dark='#1c2924',pants='#29352f';
+ const rows=hero?[
+ '....HHHH....','...HHHHHH...','...SSSSSS...','...SEESSS...','....SSSS....',
+ '..CCCCCCCC..','.CCCCCCCCCC.','.CCCLCCCCCC.','..CCCCCCCC..','...CCDDCC...',
+ '...PP..PP...','...PP..PP...','...PP..PP...','..PP....PP..'
+ ]:[
+ '....MMMM....','...MMMMMM...','..MMMMMMMM..','.MMMMMMMMMM.','MMMMMMMMMMMM',
+ '.MMMRRRRMMM.','..MMRRRRMM..','...RRRRRR...','..RRRRRRRR..','.RRRR..RRRR.',
+ 'RRR......RRR','..LL....LL..','..LL....LL..','................'
+ ];
+ const pal=hero?{H:'#252e29',S:skin,E:'#20291f',C:coat,L:'#91a77a',D:'#26372e',P:pants}:{M:'#727967',R:'#424c40',L:'#262f29'};
+ const px=3,py=3,ox=sx-rows[0].length*px/2,oy=sy-22;
+ rows.forEach((row,ry)=>{for(let rx=0;rx<row.length;rx++){let ch=row[rx];if(ch==='.'||(!hero&&ch===' '))continue;let col=pal[ch]||'#fff';let yy=oy+ry*py;if(hero&&ry>=10&&((rx<6&&step===0)||(rx>5&&step===1)))yy+=2;box(ox+rx*px,yy,px,py,col)}});
+ if(hero){box(sx+8,sy-9,4,10,'#b6c38d');box(sx+9,sy-7,2,5,'#e8f2c2');box(sx-15,sy-6,5,13,'#76583f')}
+ else{box(sx-5,sy-8,4,3,'#ef766b');box(sx+2,sy-8,4,3,'#ef766b');if(kind.alert>0)box(sx-2,sy-31,4,4,'#f18b75')}
 }
 function drawLighting(){
  // soft dusk vignette and player light
@@ -189,7 +188,92 @@ function drawGameUI(){
  box(mx+player.x/WORLD.w*mw-2,my+player.y/WORLD.h*mh-2,5,5,'#fff2c6');
  if(threat>20){panel(CW/2-82,12,164,25);ctx.fillStyle='#ff647c';ctx.font='bold 10px monospace';ctx.fillText('! MOVEMENT HEARD',CW/2-68,29)}
 }
+function cinemaText(text,x,y,size,color,align='left'){ctx.fillStyle=color;ctx.font='bold '+size+'px monospace';ctx.textAlign=align;ctx.fillText(text,x,y);ctx.textAlign='left'}
+function cinemaPerson(x,y,scale,coat, facing=1){
+ const p=Math.max(1,Math.round(scale/8)),px=Math.round(x),py=Math.round(y);
+ box(px-10*p,py+27*p,20*p,4*p,'#080b0b');box(px-6*p,py+15*p,5*p,13*p,'#202b28');box(px+2*p,py+15*p,5*p,13*p,'#202b28');
+ box(px-8*p,py+2*p,16*p,17*p,coat);box(px-10*p,py+4*p,4*p,12*p,'#293a32');box(px+6*p,py+4*p,4*p,12*p,'#293a32');
+ box(px-6*p,py-9*p,12*p,12*p,'#d4ae88');box(px-7*p,py-13*p,14*p,6*p,'#252c27');box(px-5*p,py-17*p,10*p,5*p,'#3c473a');
+ box(px+(facing>0?2:-5)*p,py-4*p,3*p,2*p,'#20251f');
+}
+function drawCinema(){
+ const t=cinemaTime,scene=Math.min(8,Math.floor(t/8)),local=(t-scene*8)/8;
+ let sky=['#17242d','#17232a','#1a2529','#111a20','#17212a','#20252a','#111a20','#171d22','#090f13'][scene];
+ let ground=['#27352e','#28342e','#303637','#1c2928','#202b2c','#31312d','#222d2d','#292d2a','#101a1c'][scene];
+ let g=ctx.createLinearGradient(0,0,0,CH);g.addColorStop(0,sky);g.addColorStop(1,ground);ctx.fillStyle=g;ctx.fillRect(0,0,CW,CH);
+ const pan=local*70;
+ // Distant skyline, windows and power lines move at a slower parallax rate.
+ for(let i=0;i<16;i++){let x=i*82-(pan*.28%82),h=90+(i*47%170);box(x,310-h,58,h,'#10191d');box(x+5,315-h,48,h-8,'#26332f');for(let wy=0;wy<h-25;wy+=22)for(let wx=0;wx<3;wx++)if((i+wx+wy)%4===0)box(x+10+wx*13,320-h+wy,5,8,'#b08c59')}
+ for(let x=-100;x<CW+100;x+=140){box(x-pan*.55,190,2,130,'#0b1418');box(x-pan*.55,190,140,2,'#0b1418')}
+ // Scene-specific animated storyboards, composed from chunky pixel silhouettes.
+ if(scene===0){
+  box(0,430,CW,170,'#121c20');for(let i=0;i<7;i++){let x=i*155-((t*18)%155);box(x,370,85,110,'#0b1418');box(x+8,382,69,91,'#293832');box(x+18,398,12,13,'#bd9860');box(x+48,398,12,13,'#bd9860')}
+  // City lights blink out in a wave.
+  for(let i=0;i<22;i++){let x=i*47,y=220+(i*31%130);if(t<i*.18)box(x,y,5,7,'#d2ae70')}
+  cinemaText('OCTOBER 17, 2041',CW/2,105,16,'#e4d6b4','center');
+  cinemaText('THE CITY LOST POWER AT 18:42.',CW/2,137,12,'#a8b6a8','center');
+ }else if(scene===1){
+  // Apartment interior and a radio close-up.
+  box(0,0,CW,CH,'#12191b');box(60,70,390,360,'#28332f');box(78,90,354,320,'#10191c');box(95,105,320,275,'#26383a');box(108,118,294,245,'#10191c');
+  for(let i=0;i<6;i++)box(125+i*47,150,25,2,'#65736a');box(515,0,445,600,'#1a2223');
+  box(570,350,245,120,'#0a1114');box(590,330,205,25,'#6a5842');box(610,355,165,90,'#29322e');box(630,372,130,48,'#11191a');box(675,387,36,14,'#8da56d');box(689,391,8,6,'#d9e9a5');
+  cinemaPerson(310,340,5,'#465f50');box(276,286,62,45,'#101719');box(286,298,40,8,'#a5b47e');
+  cinemaText('THE LAST WORKING RECEIVER',CW/2,70,13,'#d5c6a2','center');
+ }else if(scene===2){
+  box(0,390,CW,210,'#11191c');box(0,420,CW,180,'#354448');for(let i=0;i<9;i++){let x=i*130-((t*45)%130);box(x,395,82,70,'#151e20');box(x+8,402,66,54,'#45504a');box(x+14,412,12,12,'#b18e5b')}
+  cinemaPerson(480,330,8,'#496d57');box(520,325,170,12,'#7d6748');box(540,337,125,6,'#202c2b');cinemaText('MARA VENN / COURIER 07',CW/2,95,14,'#e6d8b5','center');
+ }else if(scene===3){
+  // Street-level walk with rain and distant lightning.
+  box(0,455,CW,145,'#10191b');for(let i=0;i<6;i++){let x=i*190-((t*55)%190);box(x,255,120,210,'#0d171b');box(x+8,265,104,190,'#293530');box(x+20,300,20,20,'#8d7955');box(x+58,300,20,20,'#8d7955')}
+  cinemaPerson(440+local*90,365,7,'#486c56');box(0,485,CW,3,'#6c7160');for(let i=0;i<80;i++){let x=(i*127+t*95)%CW,y=(i*83+t*170)%CH;box(x,y,2,7,'#9eafb0')}
+  if(local>.62){box(0,0,CW,CH,'#c8d4d322')}
+ }else if(scene===4){
+  // A shape crosses behind the bus shelter.
+  box(0,450,CW,150,'#0b1418');box(90,300,340,180,'#222c2a');box(110,320,300,145,'#46504a');box(145,350,90,50,'#10191c');box(265,350,90,50,'#10191c');
+  cinemaPerson(590,350,7,'#486c56');let ex=740+Math.sin(t*2)*18;cinemaPerson(ex,365,8,'#697563',-1);box(ex-30,335,60,12,'#252c27');
+  cinemaText('MOTION DETECTED',CW/2,100,14,'#ef8b7e','center');
+ }else if(scene===5){
+  // Tower and a transmission that seems to know her name.
+  box(0,0,CW,CH,'#0c1419');box(690,110,160,380,'#202c2b');box(710,130,120,350,'#39433b');box(750,40,12,80,'#b8c18a');box(675,40,180,8,'#7f8e79');
+  for(let i=0;i<8;i++){box(720+i*16,170,4,280,'#182320')}
+  cinemaPerson(360,390,8,'#496c55');for(let i=0;i<5;i++){let yy=205+i*46;box(160,yy,120,2,'#7f9a80');box(180,yy-7,6,14,'#c5e478')}
+  cinemaText('INCOMING TRANSMISSION',CW/2,95,14,'#c5e478','center');
+ }else if(scene===6){
+  // The creature is glimpsed in the rain, not fully revealed.
+  box(0,440,CW,160,'#0a1216');for(let i=0;i<9;i++){let x=i*120;box(x,250,70,210,'#111b20');box(x+8,260,54,190,'#28342e')}
+  cinemaPerson(400,370,7,'#496c55');let cx=650+Math.sin(t)*12;box(cx-35,315,70,60,'#465043');box(cx-25,285,50,45,'#777c64');box(cx-14,300,8,6,'#e47c70');box(cx+7,300,8,6,'#e47c70');
+  for(let i=0;i<50;i++){let x=(i*89+t*70)%CW,y=(i*51+t*140)%CH;box(x,y,2,8,'#849a9a')}
+ }else if(scene===7){
+  // Brother's recorded voice: an old family photo and a distorted signal.
+  box(0,0,CW,CH,'#0d1518');box(210,90,540,370,'#594c3b');box(226,106,508,338,'#c1a77c');box(242,122,476,306,'#303b36');cinemaPerson(390,310,7,'#496c55');cinemaPerson(570,310,7,'#6b6250',-1);
+  for(let i=0;i<24;i++){let x=80+i*35;let h=12+Math.sin(t*4+i)*8;box(x,520-h/2,3,h,'#b6d68a')}
+  cinemaText('MARA... IF YOU CAN HEAR THIS...',CW/2,70,13,'#d9e5c7','center');
+ }else{
+  box(0,440,CW,160,'#0b1115');box(690,105,170,400,'#182522');box(712,125,126,360,'#344238');box(744,55,9,70,'#c5e478');cinemaPerson(440,375,8,'#496d58');
+  let glow=ctx.createRadialGradient(780,200,5,780,200,220);glow.addColorStop(0,'#c5e47866');glow.addColorStop(1,'#c5e47800');ctx.fillStyle=glow;ctx.fillRect(500,0,460,500);
+  cinemaText('ENDROOM',CW/2,125,30,'#e6e0c8','center');cinemaText('AFTER DARK',CW/2,160,13,'#c5e478','center');
+ }
+ // Film grain, scanlines and cinematic fades.
+ for(let i=0;i<45;i++){let x=(i*173+t*31)%CW,y=(i*97+t*53)%CH;box(x,y,1,1,'#ffffff22')}
+ for(let y=0;y<CH;y+=4)box(0,y,CW,1,'#02060922');
+ let fade=Math.min(1,t/1.2,(cinemaDuration-t)/1.4);if(fade<1){ctx.fillStyle='rgba(0,0,0,'+(1-Math.max(0,fade))+')';ctx.fillRect(0,0,CW,CH)}
+ const lines=[
+ ['NARRATOR','October 17, 2041. At exactly 18:42, every light in the city went out.'],
+ ['MARA','Come on. One signal. Just give me one signal.'],
+ ['NARRATOR','Mara Venn was a courier. Tonight, she was carrying the last working radio in the district.'],
+ ['MARA','Dispatch? This is Venn. I am at the east crossing. The whole street is empty.'],
+ ['UNKNOWN','...Mara... don’t turn around.'],
+ ['ELIAS / RADIO','Mara, it’s Elias. I’m at the north tower. Listen carefully. Three relays can open the evacuation channel.'],
+ ['MARA','I heard something behind the shelter. That wasn’t a person.'],
+ ['ELIAS / RADIO','If you hear my voice outside the radio, it isn’t me. Do you understand?'],
+ ['NARRATOR','Her brother had left one final warning. The city was listening. And something had learned her name.']
+ ];
+ const idx=scene;const [speaker,line]=lines[idx];$('cinemaSpeaker').textContent=speaker;$('cinemaLine').textContent=line;$('cinemaChapter').textContent=scene===8?'ENDROOM / AFTER DARK':'CHAPTER 01  ·  THE QUIET DISTRICT';$('cinemaTime').textContent='00:'+String(Math.floor(t)).padStart(2,'0')+' / 01:08';$('cinemaProgress').style.width=(t/cinemaDuration*100)+'%';
+}
+function beginCinematic(){cinemaTime=0;state='cinematic';$('cinemaHud').style.display='block';$('skipCinema').style.display='block';}
+function finishCinematic(){ $('cinemaHud').style.display='none';state='playing';log('The receiver crackles. The Quiet District is waiting.');notify('CHAPTER 01 · THE QUIET DISTRICT');}
 function draw(){
+ if(state==='cinematic'){ctx.clearRect(0,0,CW,CH);drawCinema();return}
  ctx.clearRect(0,0,CW,CH);drawWorld();for(let e of enemies)drawActor(e.x,e.y,e,e.phase);drawActor(player.x,player.y,'player');drawLighting();drawMinimap();drawGameUI();
 }
 function blocked(x,y){if(x<28||y<28||x>WORLD.w-28||y>WORLD.h-28)return true;for(let b of buildings)if(x>b.x-16&&x<b.x+b.w+16&&y>b.y-16&&y<b.y+b.h+16)return true;for(let t of trees)if(Math.hypot(x-t.x,y-t.y)<t.r+12)return true;for(let f of fences)if(Math.abs(x-f.x)<13&&Math.abs(y-f.y)<13)return true;return false}
@@ -224,18 +308,19 @@ function interact(){
 function advanceChapter(){chapterIndex++;player={x:270,y:750,r:13,stamina:100,health:100,noise:0,invuln:0};inventory={scrap:0,med:0,cells:0,relays:0};flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};elapsed=0;threat=0;logLines=[];makeWorld();applyChapter();camera.x=clamp(player.x-CW/2,0,WORLD.w-CW);camera.y=clamp(player.y-CH/2,0,WORLD.h-CH);log(chapter().name+' — arrival logged.');updateHUD();save();showEvent('CHAPTER '+String(chapterIndex+1).padStart(2,'0')+' / '+chapter().area,chapter().name,chapter().intro+'\\n\\nRADIO: “'+chapter().radio+'”','ENTER CHAPTER',()=>{state='playing';log('Radio: transmission received.')})}
 function triggerGameOver(){if(state!=='playing')return;state='gameover';save();$('gameover').classList.add('show')}
 function update(dt){
+ if(state==='cinematic'){cinemaTime=Math.min(cinemaDuration,cinemaTime+dt);if(cinemaTime>=cinemaDuration)finishCinematic();return}
  if(state!=='playing')return;elapsed+=dt;move(dt);updateEnemies(dt);camera.x=clamp(player.x-CW/2,0,WORLD.w-CW);camera.y=clamp(player.y-CH/2,0,WORLD.h-CH);
  let zone=buildings.find(b=>player.x>b.x-25&&player.x<b.x+b.w+25&&player.y>b.y-25&&player.y<b.y+b.h+25);$('areaName').textContent=zone?zone.name:player.y>1000?'SOUTH BLOCK':player.x>1500?'EAST ROAD':player.x<650?'WEST END':'THE OUTSKIRTS';$('clock').textContent=stamp()+' / '+(elapsed>300?'NIGHTFALL':'DUSK');
  if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('toast').classList.remove('show')}
  saveTimer+=dt;if(saveTimer>8){save();saveTimer=0}updateHUD();
 }
 function frame(t){let dt=Math.min(.04,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(frame)}
-function start(newGame){$('gameover').classList.remove('show');if(newGame){player={x:270,y:750,r:13,stamina:100,health:100,noise:0,invuln:0};inventory={scrap:0,med:0,cells:0,relays:0};flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};elapsed=0;makeWorld();applyChapter();localStorage.removeItem('endroom-ch1-save');log('You enter '+chapter().name+'. The receiver crackles.')}else{if(!load()){chapterIndex=0;start(true);return}log('Save restored. The district is where you left it.')}
+function start(newGame,playIntro=false){$('gameover').classList.remove('show');if(newGame){player={x:270,y:750,r:13,stamina:100,health:100,noise:0,invuln:0};inventory={scrap:0,med:0,cells:0,relays:0};flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};elapsed=0;makeWorld();applyChapter();localStorage.removeItem('endroom-ch1-save');log('You enter '+chapter().name+'. The receiver crackles.')}else{if(!load()){chapterIndex=0;start(true);return}log('Save restored. The district is where you left it.')}
  $('menu').classList.remove('show');$('pause').classList.remove('show');updateHUD();save();
- if(newGame){camera.x=clamp(player.x-CW/2,0,WORLD.w-CW);camera.y=clamp(player.y-CH/2,0,WORLD.h-CH);showEvent('PROLOGUE / 18:42','A VOICE IN THE STATIC',chapter().intro+'\\n\\nRADIO: “'+chapter().radio+'”','ENTER THE DISTRICT',()=>{state='playing';log('Radio: transmission received.')})}else state='playing';
+ if(newGame){camera.x=clamp(player.x-CW/2,0,WORLD.w-CW);camera.y=clamp(player.y-CH/2,0,WORLD.h-CH);if(playIntro)beginCinematic();else state='playing'}else state='playing';
 }
 function pause(){if(state==='playing'){state='paused';$('pause').classList.add('show')}else if(state==='paused'){state='playing';$('pause').classList.remove('show')}}
-$('retryBtn').onclick=()=>start(true);$('titleBtn').onclick=()=>{$('gameover').classList.remove('show');state='menu';$('menu').classList.add('show')};$('startBtn').onclick=()=>{chapterIndex=0;start(true)};$('continueBtn').onclick=()=>{if(localStorage.getItem('endroom-ch1-save'))start(false);else notify('NO SAVE FOUND')};$('pauseBtn').onclick=pause;$('resumeBtn').onclick=pause;$('saveQuitBtn').onclick=()=>{save();state='menu';$('pause').classList.remove('show');$('menu').classList.add('show')};
+$('retryBtn').onclick=()=>start(true,false);$('titleBtn').onclick=()=>{$('gameover').classList.remove('show');state='menu';$('menu').classList.add('show')};$('startBtn').onclick=()=>{chapterIndex=0;start(true,true)};$('continueBtn').onclick=()=>{if(localStorage.getItem('endroom-ch1-save'))start(false);else notify('NO SAVE FOUND')};$('pauseBtn').onclick=pause;$('resumeBtn').onclick=pause;$('saveQuitBtn').onclick=()=>{save();state='menu';$('pause').classList.remove('show');$('menu').classList.add('show')};
 $('eventOk').onclick=()=>$('event').classList.remove('show');
 document.addEventListener('keydown',e=>{let k=e.key;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(k))e.preventDefault();keys[k]=true;if(k.toLowerCase()==='e'&&state==='playing')interact();if(k.toLowerCase()==='p'||k==='Escape')pause()});
 document.addEventListener('keyup',e=>keys[e.key]=false);
@@ -245,7 +330,7 @@ let stick=$('stick'),nub=$('nub');function stickMove(e){let r=stick.getBoundingC
 stick.addEventListener('pointerdown',e=>{stick.setPointerCapture(e.pointerId);stickMove(e)});stick.addEventListener('pointermove',e=>{if(stick.hasPointerCapture(e.pointerId))stickMove(e)});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>stick.addEventListener(ev,()=>{touchMove={x:0,y:0};nub.style.transform='translate(0,0)'}));
 canvas.addEventListener('pointerdown',e=>{if(state!=='playing')return;let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*CW/r.width+camera.x,y=(e.clientY-r.top)*CH/r.height+camera.y;if(Math.hypot(x-player.x,y-player.y)<90)interact()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing')pause()});
-canvas.width=480;canvas.height=300;ctx.scale(.5,.5);ctx.imageSmoothingEnabled=false;makeWorld();applyChapter();requestAnimationFrame(frame);
+const lowPower=(navigator.hardwareConcurrency||4)<=4;const renderScale=lowPower?.75:1;canvas.width=Math.round(CW*renderScale);canvas.height=Math.round(CH*renderScale);ctx.setTransform(renderScale,0,0,renderScale,0,0);ctx.imageSmoothingEnabled=false;makeWorld();applyChapter();$('skipCinema').onclick=finishCinematic;document.addEventListener('keydown',e=>{if(state==='cinematic'&&(e.key==='Escape'||e.key.toLowerCase()===' ')){e.preventDefault();finishCinematic()}});requestAnimationFrame(frame);
 })();
 </script>
 </body>
