@@ -47,7 +47,12 @@ main{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:0}.
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),CW=960,CH=600;
 const $=id=>document.getElementById(id);
 const WORLD={w:2200,h:1500,tile:48};
-const chapters=[{name:'THE QUIET DISTRICT',area:'THE OUTSKIRTS',intro:'October 17, 2041. The city has gone silent. Your brother is somewhere near the northern tower. Three relays are the only way to open the evacuation channel.',radio:'Mara? If this reaches you, I am still at the tower. Three relays, then get here. Whatever you hear outside... it is not me.',names:['OLD CLINIC','CORNER MARKET','RELAY STATION','BUS DEPOT','ROW HOUSES','MACHINE WORKS','PUMP HOUSE','SIGNAL TOWER'],theme:['#26372e','#2d4035','#4b5147','#555a4e','#686b5b','#303a35','#3d4940','#9aab86','#253c3c'],speed:1,extra:0},{name:'THE FLOODED ARCADE',area:'LOWTIDE WARD',intro:'The receiver leads Mara beneath the old entertainment quarter. Water fills the streets, and a second voice is broadcasting from the abandoned arcade.',radio:'You made it out. The arcade has a backup transmitter. Find it before the water rises.',names:['SUNSET CLINIC','PIXEL PALACE','ARCADE RELAY','FERRY DEPOT','BOARDWALK HOMES','SUBSTATION','DRAINAGE WORKS','TIDAL TOWER'],theme:['#203b42','#294b50','#354f58','#405e66','#58717a','#273e4a','#3a5962','#a8d4d1','#1b4654'],speed:1.12,extra:0},{name:'THE UNDERLINE',area:'SUBWAY NINE',intro:'A service tunnel beneath the city carries the signal toward the central station. The lights flicker in sequence, as if something is following the power.',radio:'The things down there react to sound. Keep your receiver quiet.',names:['MAINTENANCE BAY','PLATFORM MARKET','LINE NINE RELAY','NORTH ENTRANCE','WORKER QUARTERS','VENTILATION PLANT','PUMP CONTROL','TUNNEL SHAFT'],theme:['#292f32','#343b40','#41464a','#4c5356','#687071','#252c30','#3b4247','#a9b1a8','#202b31'],speed:1.27,extra:1},{name:'THE BLACKOUT WARD',area:'ASHEN HOSPITAL',intro:'The signal points to the medical ward where the emergency network was built. A recorded message suggests Mara’s brother knew the blackout was coming.',radio:'I found your name in the hospital logs. The ward has gone dark. Do not trust the emergency lights.',names:['EMERGENCY CLINIC','STAFF CANTEEN','WARD RELAY','AMBULANCE BAY','PATIENT BLOCK','GENERATOR HALL','SURGERY WING','ROOFTOP ANTENNA'],theme:['#352b2d','#443236','#574044','#654b4c','#776061','#33282c','#4b383c','#d49a83','#392d35'],speed:1.42,extra:2},{name:'THE LAST BROADCAST',area:'NORTH TOWER',intro:'The final signal comes from the tower at the edge of the city. The evacuation channel is ready. But the voice guiding Mara may not be her brother at all.',radio:'Do not come to the tower. I am not the one speaking on this frequency. I am still looking for you.',names:['OUTPOST CLINIC','RADIO MARKET','ROOFTOP RELAY','WATCH STATION','FALLEN BLOCK','POWER CORE','TRANSMITTER HALL','NORTH TOWER'],theme:['#3c3428','#51422e','#62513a','#746247','#93805b','#3a3228','#5a4932','#e1c18a','#3d4030'],speed:1.58,extra:3}];let chapterIndex=0;function chapter(){return chapters[chapterIndex]}function applyChapter(){worldSeed=41+chapterIndex*29;let t=chapter().theme;[colors.grass,colors.grass2,colors.road,colors.road2,colors.concrete,colors.roof,colors.roof2,colors.window,colors.water]=t;buildings.forEach((b,i)=>b.name=chapter().names[i]||b.name);const layouts=[[[1270,450],[850,900],[1570,880],[1920,850]],[[340,900],[1030,470],[1710,920],[1920,900]],[[480,330],[1120,940],[1770,520],[1600,850]],[[540,900],[1550,500],[1670,900],[1600,900]],[[450,420],[1160,1190],[1740,460],[1920,850]]];relays.forEach((r,i)=>{r.x=layouts[chapterIndex][i][0];r.y=layouts[chapterIndex][i][1]});exitPoint.x=layouts[chapterIndex][3][0];exitPoint.y=layouts[chapterIndex][3][1];enemies.forEach(e=>e.speed*=chapter().speed);for(let i=0;i<chapter().extra;i++){let p=[{x:730,y:500},{x:1450,y:570},{x:950,y:1180}][i];enemies.push({x:p.x,y:p.y,homeX:p.x,homeY:p.y,phase:i+5,alert:0,speed:48*chapter().speed})}}
+const chapters=[
+{name:'THE QUIET DISTRICT',area:'NEON DISTRICT 07',intro:'October 17, 2041. The Helix Grid has collapsed. Neon signs still burn on emergency cells, but the city network is silent. Mara Venn must reach the Northline relay tower. Three street relays can open a channel beyond the quarantine wall.',radio:'Mara, it is Elias. The Helix Grid did not fail by accident. Restore the three relays and reach Northline. Do not follow any voice that is not coming through this receiver.',names:['NOVA MEDICAL','KIRA NIGHT MARKET','GRID RELAY 07','AUTONOMOUS DEPOT','STACK 09 RESIDENCES','HELIX SERVICE BAY','FLOOD CONTROL','NORTHLINE TOWER'],theme:['#26372e','#2d4035','#4b5147','#555a4e','#686b5b','#303a35','#3d4940','#9aab86','#253c3c'],speed:1,extra:0},
+{name:'THE FLOODED ARCADE',area:'LOWTIDE NEON WARD',intro:'The lower entertainment district is sinking. A damaged transit map points to an arcade transmitter beneath the floodline. The water is carrying more than rain, and the old advertising screens keep turning on by themselves.',radio:'The tide pumps are offline. Find the arcade relay before the lower concourse disappears. The signal is bouncing through something under the water.',names:['SUNSET CYBERCLINIC','PIXEL PALACE','ARCADE RELAY','FERRY DEPOT','BOARDWALK STACKS','SUBSTATION 12','DRAINAGE WORKS','TIDAL TOWER'],theme:['#203b42','#294b50','#354f58','#405e66','#58717a','#273e4a','#3a5962','#a8d4d1','#1b4654'],speed:1.12,extra:0},
+{name:'THE UNDERLINE',area:'SUBWAY NINE',intro:'Beneath the billboards, Subway Nine still carries a weak emergency current. The tunnel lights pulse in sequence, even though the grid is dead. Something has learned to imitate the station announcements.',radio:'Keep your transmitter low. The things in the tunnel track sound. Follow the maintenance markers, not the announcements.',names:['MAINTENANCE BAY','PLATFORM MARKET','LINE NINE RELAY','NORTH ENTRANCE','WORKER QUARTERS','VENTILATION PLANT','PUMP CONTROL','TUNNEL SHAFT'],theme:['#292f32','#343b40','#41464a','#4c5356','#687071','#252c30','#3b4247','#a9b1a8','#202b31'],speed:1.27,extra:1},
+{name:'THE BLACKOUT WARD',area:'ASHEN HOSPITAL',intro:'The emergency ward was built around a Helix backup core. Its power is failing, and the hospital archive contains a record of the night the grid was switched off. Every system you restore drains the same reserve.',radio:'The ward has one live backup cell. Choose what gets power. I found the original shutdown order here, Mara. Your name is on it.',names:['EMERGENCY CLINIC','STAFF CANTEEN','WARD RELAY','AMBULANCE BAY','PATIENT BLOCK','GENERATOR HALL','SURGERY WING','ROOFTOP ANTENNA'],theme:['#352b2d','#443236','#574044','#654b4c','#776061','#33282c','#4b383c','#d49a83','#392d35'],speed:1.42,extra:2},
+{name:'THE LAST BROADCAST',area:'NORTHLINE TOWER',intro:'The final relay is mounted above the quarantine wall. The city lights are returning one block at a time, but the broadcast now carries two versions of Elias. One is asking for help. The other is asking you to come closer.',radio:'Mara, this is really me. I am outside the tower. Do not open the gate. Whatever is using my voice is already inside.',names:['OUTPOST CLINIC','RADIO MARKET','ROOFTOP RELAY','WATCH STATION','FALLEN BLOCK','POWER CORE','TRANSMITTER HALL','NORTHLINE TOWER'],theme:['#3c3428','#51422e','#62513a','#746247','#93805b','#3a3228','#5a4932','#e1c18a','#3d4030'],speed:1.58,extra:3}];let chapterIndex=0;function chapter(){return chapters[chapterIndex]}function applyChapter(){worldSeed=41+chapterIndex*29;let t=chapter().theme;[colors.grass,colors.grass2,colors.road,colors.road2,colors.concrete,colors.roof,colors.roof2,colors.window,colors.water]=t;buildings.forEach((b,i)=>b.name=chapter().names[i]||b.name);const layouts=[[[1270,450],[850,900],[1570,880],[1920,850]],[[340,900],[1030,470],[1710,920],[1920,900]],[[480,330],[1120,940],[1770,520],[1600,850]],[[540,900],[1550,500],[1670,900],[1600,900]],[[450,420],[1160,1190],[1740,460],[1920,850]]];relays.forEach((r,i)=>{r.x=layouts[chapterIndex][i][0];r.y=layouts[chapterIndex][i][1]});exitPoint.x=layouts[chapterIndex][3][0];exitPoint.y=layouts[chapterIndex][3][1];enemies.forEach(e=>e.speed*=chapter().speed);for(let i=0;i<chapter().extra;i++){let p=[{x:730,y:500},{x:1450,y:570},{x:950,y:1180}][i];enemies.push({x:p.x,y:p.y,homeX:p.x,homeY:p.y,phase:i+5,alert:0,speed:48*chapter().speed})}}
 const colors={grass:'#26372e',grass2:'#2d4035',road:'#4b5147',road2:'#555a4e',concrete:'#686b5b',dark:'#121c19',roof:'#303a35',roof2:'#3d4940',window:'#9aab86',lime:'#c5e478',rust:'#825b43',water:'#253c3c'};
 let state='menu',last=0,elapsed=0,toastTimer=0,saveTimer=0,cinemaTime=0,cinemaDuration=68;let logLines=['18:42 — You arrive at the edge of the dead district.','18:43 — Radio: “Three relays. Then get to the tower.”'];
 let player={x:270,y:750,r:13,stamina:100,health:100,noise:0,invuln:0};
@@ -155,28 +160,46 @@ function drawCyberpunkDetails(){
  const cars=[[470,620,1],[1260,690,-1],[1580,330,1],[760,1160,-1],[1870,760,1]];
  cars.forEach(([wx,wy,dir],i)=>{let x=wx-camera.x,y=wy-camera.y;if(x<-70||x>CW+70||y<-40||y>CH+40)return;let c=i%2?'#ff4b9a':'#39f5df';box(x-28,y+12,58,5,'#080a12');box(x-25,y-7,50,19,'#202a3d');box(x-14,y-16,28,11,'#35465b');box(x-10,y-14,20,7,'#8cb4c4');box(x-27,y+5,54,5,'#0b101b');box(x-24,y+1,8,4,'#ffb34f');box(x+16,y+1,8,4,'#ff4b9a');box(x+(dir>0?25:-29),y-3,4,3,c);glow(x,y,40,c)});
  // Atmospheric rain is screen-space so it remains consistent while the camera moves.
- ctx.save();ctx.globalAlpha=.42;ctx.lineWidth=1;for(let i=0;i<105;i++){let x=(i*97+elapsed*115*(1+(i%3)*.22))%(CW+30)-15,y=(i*53+elapsed*270)%(CH+30)-15;ctx.strokeStyle=i%5===0?'#ff9acb':'#a9d9ed';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y+13);ctx.stroke()}ctx.restore();
+ ctx.save();ctx.globalAlpha=.42;ctx.lineWidth=1;for(let i=0;i<105;i++){let x=(i*97+elapsed*115*(1+(i%3)*.22))%(CW+30)-15,y=(i*53+elapsed*270)%(CH+30)-15;ctx.strokeStyle=i%5===0?'#ff4b9a':'#8cefff';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y+13);ctx.stroke()}ctx.restore();
  // Chromatic haze around the edges.
  let v=ctx.createRadialGradient(CW*.5,CH*.48,110,CW*.5,CH*.48,560);v.addColorStop(0,'#05071300');v.addColorStop(1,'#050713b8');ctx.fillStyle=v;ctx.fillRect(0,0,CW,CH);
 }
 function drawActor(x,y,kind,angle){
- const sx=Math.round(x-camera.x),sy=Math.round(y-camera.y);if(sx<-35||sy<-40||sx>CW+35||sy>CH+35)return;
- box(sx-13,sy+11,26,5,'#080d0bc9');
- const hero=kind==='player',step=Math.floor(elapsed*9)%2,skin='#d7b58e',coat='#273d58',dark='#101827',pants='#20283c';
- const rows=hero?[
- '....HHHH....','...HHHHHH...','...SSSSSS...','...SEESSS...','....SSSS....',
- '..CCCCCCCC..','.CCCCCCCCCC.','.CCCLCCCCCC.','..CCCCCCCC..','...CCDDCC...',
- '...PP..PP...','...PP..PP...','...PP..PP...','..PP....PP..'
- ]:[
- '....MMMM....','...MMMMMM...','..MMMMMMMM..','.MMMMMMMMMM.','MMMMMMMMMMMM',
- '.MMMRRRRMMM.','..MMRRRRMM..','...RRRRRR...','..RRRRRRRR..','.RRRR..RRRR.',
- 'RRR......RRR','..LL....LL..','..LL....LL..','................'
- ];
- const pal=hero?{H:'#151b2b',S:skin,E:'#101522',C:coat,L:'#39f5df',D:'#27354e',P:pants}:{M:'#68758d',R:'#29334a',L:'#ff4b9a'};
- const px=3,py=3,ox=sx-rows[0].length*px/2,oy=sy-22;
- rows.forEach((row,ry)=>{for(let rx=0;rx<row.length;rx++){let ch=row[rx];if(ch==='.'||(!hero&&ch===' '))continue;let col=pal[ch]||'#fff';let yy=oy+ry*py;if(hero&&ry>=10&&((rx<6&&step===0)||(rx>5&&step===1)))yy+=2;box(ox+rx*px,yy,px,py,col)}});
- if(hero){box(sx+8,sy-9,4,10,'#b6c38d');box(sx+9,sy-7,2,5,'#e8f2c2');box(sx-15,sy-6,5,13,'#76583f')}
- else{box(sx-5,sy-8,4,3,'#ff4b9a');box(sx+2,sy-8,4,3,'#ff4b9a');if(kind.alert>0)box(sx-2,sy-31,4,4,'#f18b75')}
+ const sx=Math.round(x-camera.x),sy=Math.round(y-camera.y);if(sx<-42||sy<-48||sx>CW+42||sy>CH+42)return;
+ const hero=kind==='player',moving=hero?player.noise>.05:(kind.alert>.15),phase=hero?elapsed* (player.noise>.6?15:8):kind.phase*8;
+ const swing=moving?Math.sin(phase):Math.sin(elapsed*2.1)*.12,breath=hero&&!moving?Math.sin(elapsed*2.4)*.7:0;
+ const bob=Math.round(Math.abs(swing)*1.1+breath);
+ const coat=hero?'#263b58':'#30364d',coatHi=hero?'#3d6280':'#4b5570',trim=hero?'#39f5df':'#ff4b9a';
+ const skin='#d7b58e',hair='#151b2b',pants='#20283c',boot='#0a101b';
+ const px=3,ox=sx-12,oy=sy-24+bob;
+ // Soft contact shadow and compact, deliberately clustered high-resolution sprite.
+ box(sx-13,sy+12,26,5,'#050812bb');
+ // Backpack silhouette and shoulder straps.
+ box(ox+2,oy+11,7,14,'#111b2d');box(ox+3,oy+12,5,10,'#40536c');box(ox+4,oy+14,3,2,trim);
+ // Legs animate independently, with a planted idle stance.
+ const legL=Math.round(swing*3),legR=-legL;
+ box(ox+7,oy+31+legL,5,8,'#17243a');box(ox+15,oy+31+legR,5,8,'#17243a');
+ box(ox+5,oy+38+legL,7,3,boot);box(ox+14,oy+38+legR,8,3,boot);
+ box(ox+7,oy+29+legL,5,2,'#53637a');box(ox+15,oy+29+legR,5,2,'#53637a');
+ // Torso, coat panels, collar, arm swing and cyan seam.
+ box(ox+5,oy+13,15,18,coat);box(ox+7,oy+14,11,3,coatHi);
+ box(ox+11,oy+15,3,15,'#17243a');box(ox+13,oy+17,2,11,trim);
+ const armL=Math.round(swing*2),armR=-armL;
+ box(ox+2,oy+16+armL,4,12,coatHi);box(ox+19,oy+16+armR,4,12,coatHi);
+ box(ox+2,oy+27+armL,4,3,skin);box(ox+19,oy+27+armR,4,3,skin);
+ // Head, hair silhouette, face and tiny illuminated comms unit.
+ box(ox+8,oy+5,10,10,skin);box(ox+7,oy+3,12,5,hair);box(ox+6,oy+6,3,7,hair);
+ box(ox+15,oy+9,2,2,'#182033');box(ox+16,oy+12,3,1,'#8d6470');
+ box(ox+17,oy+7,3,2,trim);box(ox+19,oy+6,2,3,'#b5faff');
+ box(ox+6,oy+14,3,4,'#111a2a');
+ if(!hero){
+  // Creature silhouette has an elongated head, uneven limbs and hot-pink sensor eyes.
+  box(sx-14,sy-19,28,13,'#20283d');box(sx-10,sy-25,20,12,'#58617a');
+  box(sx-12,sy-13,24,18,'#303a52');box(sx-18,sy-10,7,17,'#252e45');box(sx+11,sy-10,7,17,'#252e45');
+  box(sx-8,sy-20,5,3,'#ff4b9a');box(sx+4,sy-20,5,3,'#ff4b9a');
+  box(sx-5,sy-7,10,3,'#111624');box(sx-3,sy-4,6,2,'#a8b4c9');
+  if(kind.alert>.15){box(sx-2,sy-34,4,5,'#ff4b9a');}
+ }
 }
 function drawLighting(){
  // soft dusk vignette and player light
@@ -220,20 +243,20 @@ function cinemaPerson(x,y,scale,coat, facing=1){
 }
 function drawCinema(){
  const t=cinemaTime,scene=Math.min(8,Math.floor(t/8)),local=(t-scene*8)/8;
- let sky=['#17242d','#17232a','#1a2529','#111a20','#17212a','#20252a','#111a20','#171d22','#090f13'][scene];
- let ground=['#27352e','#28342e','#303637','#1c2928','#202b2c','#31312d','#222d2d','#292d2a','#101a1c'][scene];
+ let sky=['#090d20','#10132b','#0b1726','#090e20','#111326','#171126','#080f1c','#120d20','#050914'][scene];
+ let ground=['#171b31','#172338','#1a2835','#111b30','#182235','#252038','#101b2b','#21192e','#0a1020'][scene];
  let g=ctx.createLinearGradient(0,0,0,CH);g.addColorStop(0,sky);g.addColorStop(1,ground);ctx.fillStyle=g;ctx.fillRect(0,0,CW,CH);
  const pan=local*70;
  // Distant skyline, windows and power lines move at a slower parallax rate.
- for(let i=0;i<16;i++){let x=i*82-(pan*.28%82),h=90+(i*47%170);box(x,310-h,58,h,'#10191d');box(x+5,315-h,48,h-8,'#26332f');for(let wy=0;wy<h-25;wy+=22)for(let wx=0;wx<3;wx++)if((i+wx+wy)%4===0)box(x+10+wx*13,320-h+wy,5,8,'#b08c59')}
+ for(let i=0;i<16;i++){let x=i*82-(pan*.28%82),h=90+(i*47%170);box(x,310-h,58,h,'#10191d');box(x+5,315-h,48,h-8,'#26332f');for(let wy=0;wy<h-25;wy+=22)for(let wx=0;wx<3;wx++)if((i+wx+wy)%4===0)box(x+10+wx*13,320-h+wy,5,8,(i%2?'#ff4b9a':'#39f5df'))}
  for(let x=-100;x<CW+100;x+=140){box(x-pan*.55,190,2,130,'#0b1418');box(x-pan*.55,190,140,2,'#0b1418')}
  // Scene-specific animated storyboards, composed from chunky pixel silhouettes.
  if(scene===0){
   box(0,430,CW,170,'#121c20');for(let i=0;i<7;i++){let x=i*155-((t*18)%155);box(x,370,85,110,'#0b1418');box(x+8,382,69,91,'#293832');box(x+18,398,12,13,'#bd9860');box(x+48,398,12,13,'#bd9860')}
   // City lights blink out in a wave.
   for(let i=0;i<22;i++){let x=i*47,y=220+(i*31%130);if(t<i*.18)box(x,y,5,7,'#d2ae70')}
-  cinemaText('OCTOBER 17, 2041',CW/2,105,16,'#e4d6b4','center');
-  cinemaText('THE CITY LOST POWER AT 18:42.',CW/2,137,12,'#a8b6a8','center');
+  cinemaText('SECTOR 07  //  18:42',CW/2,105,16,'#39f5df','center');
+  cinemaText('HELIX GRID FAILURE  //  TOTAL BLACKOUT',CW/2,137,12,'#ffb34f','center');
  }else if(scene===1){
   // Apartment interior and a radio close-up.
   box(0,0,CW,CH,'#12191b');box(60,70,390,360,'#28332f');box(78,90,354,320,'#10191c');box(95,105,320,275,'#26383a');box(108,118,294,245,'#10191c');
@@ -273,24 +296,24 @@ function drawCinema(){
  }else{
   box(0,440,CW,160,'#0b1115');box(690,105,170,400,'#182522');box(712,125,126,360,'#344238');box(744,55,9,70,'#c5e478');cinemaPerson(440,375,8,'#496d58');
   let glow=ctx.createRadialGradient(780,200,5,780,200,220);glow.addColorStop(0,'#c5e47866');glow.addColorStop(1,'#c5e47800');ctx.fillStyle=glow;ctx.fillRect(500,0,460,500);
-  cinemaText('ENDROOM',CW/2,125,30,'#e6e0c8','center');cinemaText('AFTER DARK',CW/2,160,13,'#c5e478','center');
+  cinemaText('ENDROOM',CW/2,125,30,'#e8efff','center');cinemaText('AFTER DARK',CW/2,160,13,'#39f5df','center');
  }
  // Film grain, scanlines and cinematic fades.
  for(let i=0;i<45;i++){let x=(i*173+t*31)%CW,y=(i*97+t*53)%CH;box(x,y,1,1,'#ffffff22')}
  for(let y=0;y<CH;y+=4)box(0,y,CW,1,'#02060922');
  let fade=Math.min(1,t/1.2,(cinemaDuration-t)/1.4);if(fade<1){ctx.fillStyle='rgba(0,0,0,'+(1-Math.max(0,fade))+')';ctx.fillRect(0,0,CW,CH)}
  const lines=[
- ['NARRATOR','October 17, 2041. At exactly 18:42, every light in the city went out.'],
- ['MARA','Come on. One signal. Just give me one signal.'],
- ['NARRATOR','Mara Venn was a courier. Tonight, she was carrying the last working radio in the district.'],
- ['MARA','Dispatch? This is Venn. I am at the east crossing. The whole street is empty.'],
- ['UNKNOWN','...Mara... don’t turn around.'],
- ['ELIAS / RADIO','Mara, it’s Elias. I’m at the north tower. Listen carefully. Three relays can open the evacuation channel.'],
- ['MARA','I heard something behind the shelter. That wasn’t a person.'],
- ['ELIAS / RADIO','If you hear my voice outside the radio, it isn’t me. Do you understand?'],
- ['NARRATOR','Her brother had left one final warning. The city was listening. And something had learned her name.']
+ ['CITY ARCHIVE // 18:42','October 17, 2041. The Helix Grid drops across Sector 07. Ten million screens go dark. One signal keeps transmitting.'],
+ ['MARA VENN','Come on, old thing. Give me one clean frequency. Elias, answer me.'],
+ ['CITY ARCHIVE','Mara Venn. Courier 07. Former grid-maintenance trainee. The last person logged near the Northline relay.'],
+ ['MARA VENN','Dispatch, this is Venn. Traffic systems are dead. The mag-rail is hanging over the east crossing. I am heading home.'],
+ ['UNKNOWN SIGNAL','Courier 07 detected. Please remain where you are. Assistance is approaching.'],
+ ['ELIAS // ENCRYPTED RADIO','Mara, listen. The blackout was deliberate. Three street relays can punch through the quarantine network. Get to Northline.'],
+ ['MARA VENN','That thing just used the city announcement voice. It knew my route. It knew my name.'],
+ ['ELIAS // ENCRYPTED RADIO','If you hear me without the radio, run. The signal is copying people. Do not let it reach the tower first.'],
+ ['CITY ARCHIVE','The grid is dead. The city is not. Somewhere in the neon rain, something is broadcasting Mara’s next move.']
  ];
- const idx=scene;const [speaker,line]=lines[idx];$('cinemaSpeaker').textContent=speaker;$('cinemaLine').textContent=line;$('cinemaChapter').textContent=scene===8?'ENDROOM / AFTER DARK':'CHAPTER 01  ·  THE QUIET DISTRICT';$('cinemaTime').textContent='00:'+String(Math.floor(t)).padStart(2,'0')+' / 01:08';$('cinemaProgress').style.width=(t/cinemaDuration*100)+'%';
+ const idx=scene;const [speaker,line]=lines[idx];$('cinemaSpeaker').textContent=speaker;$('cinemaLine').textContent=line;$('cinemaChapter').textContent=scene===8?'ENDROOM / AFTER DARK':'SECTOR 07  ·  THE HELIX BLACKOUT';$('cinemaTime').textContent='00:'+String(Math.floor(t)).padStart(2,'0')+' / 01:08';$('cinemaProgress').style.width=(t/cinemaDuration*100)+'%';
 }
 function beginCinematic(){cinemaTime=0;state='cinematic';$('cinemaHud').style.display='block';$('skipCinema').style.display='block';}
 function finishCinematic(){ $('cinemaHud').style.display='none';state='playing';log('The receiver crackles. The Quiet District is waiting.');notify('CHAPTER 01 · THE QUIET DISTRICT');}
