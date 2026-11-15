@@ -25,18 +25,18 @@ main{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:0}.
 <section class="world">
 <div class="scenehead"><h1 id="areaName">THE OUTSKIRTS</h1><span id="clock">18:42 / DUSK</span></div>
 <div class="viewport"><canvas id="game" width="960" height="600" aria-label="ENDROOM survival adventure game"></canvas><div class="touch" id="touch"><div class="stick" id="stick"><div class="nub" id="nub"></div></div><div class="touchright"><button id="sprint">RUN</button><button class="big" id="interact">USE</button></div></div><div class="toast" id="toast"></div></div>
-<div class="hintbar"><span>WASD / ARROWS MOVE · SHIFT SPRINT · E INTERACT</span><span>FIND THE SIGNAL. GET OUT.</span></div>
+
 </section>
 <aside class="sidebar">
 <section class="panel"><h3 class="label">PRIMARY OBJECTIVE</h3><div class="objective" id="objective">Reach the old relay station. Restore the district signal.</div></section>
 <section class="panel"><h3 class="label">CONDITION</h3><div class="stats"><div class="stat"><small>STAMINA</small><b id="staminaText">100%</b><div class="meter"><i id="staminaBar"></i></div></div><div class="stat"><small>THREAT</small><b id="threatText">LOW</b><div class="meter alert"><i id="threatBar"></i></div></div></div></section>
-<section class="panel"><h3 class="label">FIELD KIT</h3><div class="lootgrid"><div class="loot" id="scrap"><b>◇</b>SCRAP ×0</div><div class="loot" id="med"><b>＋</b>MED ×0</div><div class="loot" id="cells"><b>▣</b>CELLS ×0</div><div class="loot" id="relays"><b>⌁</b>RELAYS 0/3</div></div></section>
+
 <section class="panel"><h3 class="label">FIELD LOG</h3><div class="missionlist" id="missions"><div class="mission"><i>1</i><span>Find the relay station.</span></div><div class="mission"><i>2</i><span>Activate three signal relays.</span></div><div class="mission"><i>3</i><span>Reach the extraction point.</span></div></div><div class="feed" id="feed"><p>18:42 — You arrive at the edge of the dead district.</p><p>18:43 — Radio: “Three relays. Then get to the tower.”</p></div></section>
 </aside>
 </main>
 <footer class="bottom"><span>ENDROOM STUDIOS</span><span>CHAPTER 01 · THE QUIET DISTRICT</span><span id="saveStatus">PROGRESS SAVED LOCALLY</span></footer>
 </div>
-<div class="overlay show" id="menu"><div class="dialog"><div class="eyebrow">ENDROOM STUDIOS PRESENTS / 001</div><h2>THE CITY<br>WENT QUIET.</h2><p>Three signal relays have gone dark across the district. Find them, avoid what still moves in the streets, and reach the tower before night closes in.</p><div class="actions"><button class="action primary" id="startBtn">NEW GAME ↗</button><button class="action" id="continueBtn">CONTINUE</button></div><div class="menu-meta"><span>CHAPTER 01</span><span>SURVIVAL / EXPLORATION</span><span>NO CONNECTION REQUIRED</span></div></div></div>
+<div class="overlay show" id="menu"><div class="dialog"><div class="eyebrow">ENDROOM STUDIOS PRESENTS / 001</div><h2>THE CITY<br>WENT QUIET.</h2><p>OCTOBER 17, 2041. At 18:42, every radio in the city went silent. The grid failed first. Then the emergency broadcasts stopped. By morning, the streets belonged to things that only moved when the lights went out.<br><br>You are Mara Venn, a courier carrying the last working receiver. A broken transmission from the northern tower gave you one instruction: restore three relays, and the evacuation channel will open. Your brother was last heard near that tower.<br><br>Tonight, you enter the Quiet District. Find the signal. Find him. Do not let the dark find you first.</p><div class="actions"><button class="action primary" id="startBtn">NEW GAME ↗</button><button class="action" id="continueBtn">CONTINUE</button></div><div class="menu-meta"><span>CHAPTER 01</span><span>THE QUIET DISTRICT</span><span>WASD / E / SHIFT · TOUCH ON MOBILE</span></div></div></div>
 <div class="overlay" id="pause"><div class="dialog"><div class="eyebrow">FIELD PAUSED</div><h2>TAKE A BREATH.</h2><p>The district is still out there. Your progress is saved automatically.</p><div class="actions"><button class="action primary" id="resumeBtn">RESUME</button><button class="action" id="saveQuitBtn">SAVE & MENU</button></div></div></div>
 <div class="overlay" id="event"><div class="dialog"><div class="eyebrow" id="eventEyebrow">FIELD REPORT</div><h2 id="eventTitle">SIGNAL RESTORED</h2><p id="eventText"></p><div class="actions" id="eventActions"><button class="action primary" id="eventOk">CONTINUE</button></div></div></div>
 <script>
@@ -121,9 +121,22 @@ function drawLighting(){
  let a=ctx.createRadialGradient(px,py,5,px,py,175);a.addColorStop(0,'#f0e6bd20');a.addColorStop(1,'#f0e6bd00');ctx.fillStyle=a;ctx.fillRect(0,0,CW,CH);
 }
 function drawMinimap(){let x=CW-155,y=15,w=138,h=92;box(x-5,y-5,w+10,h+10,'#0a1110dd');box(x,y,w,h,'#26342d');for(let b of buildings)box(x+b.x/WORLD.w*w,y+b.y/WORLD.h*h,b.w/WORLD.w*w,b.h/WORLD.h*h,'#566357');box(x+1000/WORLD.w*w,y,150/WORLD.w*w,h,'#717566');box(x,y+650/WORLD.h*h,w,140/WORLD.h*h,'#717566');for(let r of relays)circle(x+r.x/WORLD.w*w,y+r.y/WORLD.h*h,3,r.active?'#d3ef8d':'#d5a36d');circle(x+player.x/WORLD.w*w,y+player.y/WORLD.h*h,4,'#fff2c6');}
+function drawGameUI(){
+ // On-screen controls and inventory are rendered inside the playable world.
+ box(14,14,250,48,'#07100ee0');ctx.strokeStyle='#607052';ctx.strokeRect(14.5,14.5,249,47);
+ ctx.fillStyle='#c5e478';ctx.font='10px DM Mono';ctx.fillText('FIELD CONTROLS',25,29);
+ ctx.fillStyle='#dce4d2';ctx.font='10px DM Mono';ctx.fillText('MOVE  WASD / ARROWS     RUN  SHIFT',25,44);
+ ctx.fillStyle='#aab8a7';ctx.fillText('INTERACT  E     PAUSE  P',25,56);
+ const items=[['SCRAP','◇',inventory.scrap],['MED KIT','＋',inventory.med],['POWER CELL','▣',inventory.cells],['RELAYS','⌁',inventory.relays+'/3']];
+ const total=items.length*116+15,x=(CW-total)/2,y=CH-66;
+ box(x-8,y-22,total+16,55,'#07100ee8');ctx.strokeStyle='#53644e';ctx.strokeRect(x-7.5,y-21.5,total+15,54);
+ ctx.fillStyle='#c5e478';ctx.font='9px DM Mono';ctx.fillText('INVENTORY',x,y-8);
+ items.forEach((it,i)=>{let sx=x+i*121;box(sx,y,116,31,'#17211e');ctx.strokeStyle='#394a3c';ctx.strokeRect(sx+.5,y+.5,115,30);ctx.fillStyle='#d6e5bd';ctx.font='14px DM Mono';ctx.fillText(it[1],sx+9,y+20);ctx.fillStyle='#e5ebdd';ctx.font='10px DM Mono';ctx.fillText(String(it[2]),sx+31,y+19);ctx.fillStyle='#849187';ctx.font='8px DM Mono';ctx.fillText(it[0],sx+65,y+19)});
+ if(threat>20){box(15,72,140,23,'#261411e8');ctx.fillStyle='#e9a08e';ctx.font='10px DM Mono';ctx.fillText('! MOVEMENT HEARD',24,87)}
+ if(state==='playing'&&inventory.relays===0&&!flags.station){box(CW-260,CH-135,244,38,'#07100ee0');ctx.fillStyle='#c5e478';ctx.font='10px DM Mono';ctx.fillText('OBJECTIVE / FIND THE RELAY STATION',CW-249,CH-112)}
+}
 function draw(){
- ctx.clearRect(0,0,CW,CH);drawWorld();for(let e of enemies)drawActor(e.x,e.y,e,e.phase);drawActor(player.x,player.y,'player');drawLighting();drawMinimap();
- if(threat>20){box(15,15,105,24,'#111916bb');ctx.fillStyle='#e9a08e';ctx.font='11px DM Mono';ctx.fillText('MOVEMENT HEARD',24,31)}
+ ctx.clearRect(0,0,CW,CH);drawWorld();for(let e of enemies)drawActor(e.x,e.y,e,e.phase);drawActor(player.x,player.y,'player');drawLighting();drawMinimap();drawGameUI();
 }
 function blocked(x,y){if(x<28||y<28||x>WORLD.w-28||y>WORLD.h-28)return true;for(let b of buildings)if(x>b.x-16&&x<b.x+b.w+16&&y>b.y-16&&y<b.y+b.h+16)return true;for(let t of trees)if(Math.hypot(x-t.x,y-t.y)<t.r+12)return true;for(let f of fences)if(Math.abs(x-f.x)<13&&Math.abs(y-f.y)<13)return true;return false}
 function move(dt){
@@ -161,8 +174,11 @@ function update(dt){
  saveTimer+=dt;if(saveTimer>8){save();saveTimer=0}updateHUD();
 }
 function frame(t){let dt=Math.min(.04,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(frame)}
-function start(newGame){if(newGame){player={x:270,y:750,r:13,stamina:100,noise:0,invuln:0};inventory={scrap:0,med:0,cells:0,relays:0};flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};elapsed=0;makeWorld();localStorage.removeItem('endroom-ch1-save');log('You step into the Quiet District. Find the relay station.')}else{makeWorld();if(!load()){start(true);return}log('Save restored. The district is where you left it.')}
- state='playing';$('menu').classList.remove('show');$('pause').classList.remove('show');$('event').classList.remove('show');updateHUD();save()}
+function start(newGame){if(newGame){player={x:270,y:750,r:13,stamina:100,noise:0,invuln:0};inventory={scrap:0,med:0,cells:0,relays:0};flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};elapsed=0;makeWorld();localStorage.removeItem('endroom-ch1-save');log('You enter the Quiet District. The receiver crackles with a voice you know.')}else{makeWorld();if(!load()){start(true);return}log('Save restored. The district is where you left it.')}
+ $('menu').classList.remove('show');$('pause').classList.remove('show');updateHUD();save();
+ if(newGame){showEvent('PROLOGUE / 18:42','A VOICE IN THE STATIC','“Mara? If this reaches you, I am still at the tower. The north relay is dead. The others too. Three relays, then the evacuation channel opens. Do not follow the lights. They are not ours.”\\n\\nThe transmission cuts. Your receiver points toward the old relay station. Somewhere out there, your brother is waiting. Somewhere closer, something is listening.','ENTER THE DISTRICT',()=>{state='playing';log('Radio: “Three relays. Then get to the tower.”')})}
+ else state='playing';
+}
 function pause(){if(state==='playing'){state='paused';$('pause').classList.add('show')}else if(state==='paused'){state='playing';$('pause').classList.remove('show')}}
 $('startBtn').onclick=()=>start(true);$('continueBtn').onclick=()=>{if(localStorage.getItem('endroom-ch1-save'))start(false);else notify('NO SAVE FOUND')};$('pauseBtn').onclick=pause;$('resumeBtn').onclick=pause;$('saveQuitBtn').onclick=()=>{save();state='menu';$('pause').classList.remove('show');$('menu').classList.add('show')};
 $('eventOk').onclick=()=>$('event').classList.remove('show');
