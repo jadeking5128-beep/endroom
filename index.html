@@ -189,7 +189,7 @@ let stick=$('stick'),nub=$('nub');function stickMove(e){let r=stick.getBoundingC
 stick.addEventListener('pointerdown',e=>{stick.setPointerCapture(e.pointerId);stickMove(e)});stick.addEventListener('pointermove',e=>{if(stick.hasPointerCapture(e.pointerId))stickMove(e)});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>stick.addEventListener(ev,()=>{touchMove={x:0,y:0};nub.style.transform='translate(0,0)'}));
 canvas.addEventListener('pointerdown',e=>{if(state!=='playing')return;let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*CW/r.width+camera.x,y=(e.clientY-r.top)*CH/r.height+camera.y;if(Math.hypot(x-player.x,y-player.y)<90)interact()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing')pause()});
-makeWorld();ctx.imageSmoothingEnabled=false;requestAnimationFrame(frame);
+canvas.width=240;canvas.height=150;ctx.scale(.25,.25);ctx.imageSmoothingEnabled=false;makeWorld();requestAnimationFrame(frame);
 })();
 </script>
 </body>
