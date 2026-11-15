@@ -3,94 +3,178 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#11120f">
-<meta name="description" content="ENDROOM — a tiny room, a locked door, and a way out. A retro pixel escape-room game.">
-<title>ENDROOM — The Second Room</title>
+<meta name="theme-color" content="#080b0d">
+<meta name="description" content="ENDROOM: AFTER DARK — Chapter 1. Explore the abandoned district, restore the signal, and make it out before nightfall.">
+<title>ENDROOM: AFTER DARK — Chapter 1</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap');
-:root{--bg:#11120f;--panel:#1b1d18;--line:#45483b;--muted:#999b85;--paper:#e7e1c9;--gold:#d5b76a;--green:#8eaa79;--red:#c66d59}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--paper);font-family:'Space Mono',monospace}body{min-height:100vh;display:flex;justify-content:center;align-items:stretch;padding:0;background-image:radial-gradient(ellipse at 50% 40%,#25271d 0%,#11120f 68%)}button{font:inherit;color:inherit;cursor:pointer}.shell{width:100%;min-height:100vh;border:0;background:#171913;display:flex;flex-direction:column}.layout{flex:1;min-height:0}.top{height:58px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:12px}.brand{font:14px 'Press Start 2P';letter-spacing:-1px;color:var(--gold)}.brand span{color:#f0e9d2}.top small{font-size:10px;color:var(--muted);letter-spacing:2px}.top-right{display:flex;align-items:center;gap:16px}.top-actions{display:flex;align-items:center;gap:9px}.pixel-btn.mini{padding:7px 9px;font-size:9px}.status{font-size:10px;color:var(--green)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:0}.stage{padding:clamp(10px,2vw,22px);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0;min-height:0}.stage-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.stage-head h1{font:10px 'Press Start 2P';font-weight:400;margin:0;color:#e8dfc2}.stage-head span{font-size:10px;color:var(--muted)}.screen-wrap{position:relative;border:1px solid #6b6a50;background:#10130f;padding:8px;box-shadow:inset 0 0 0 3px #080a08;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}.screen{display:block;width:100%;height:100%;max-height:calc(100dvh - 160px);aspect-ratio:16/9;object-fit:contain;image-rendering:pixelated;background:#25291d;touch-action:none}.screen-hint{display:flex;justify-content:space-between;gap:12px;color:#92927b;font-size:10px;padding:11px 2px 0}.sidebar{padding:clamp(10px,1.5vw,20px) 17px;display:flex;flex-direction:column;gap:clamp(10px,1.5vh,18px);overflow:auto;min-height:0}.section-title{font:8px 'Press Start 2P';color:var(--gold);margin:0 0 12px;line-height:1.7}.objective{font-size:12px;line-height:1.7;color:#d4cfb7;border-left:2px solid var(--gold);padding-left:11px}.inventory{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.slot{height:65px;border:1px solid #464938;background:#12140f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#797d69;font-size:8px}.slot.filled{color:var(--paper);border-color:#8d8056;background:#24251a}.slot .emoji{font-size:21px;filter:grayscale(.25)}.slot.selected{outline:2px solid var(--gold);outline-offset:1px}.log{height:125px;overflow:auto;background:#10120e;border:1px solid #393d31;padding:9px;font-size:10px;line-height:1.65;color:#a9ad94}.log p{margin:0 0 5px}.log p:last-child{color:var(--gold)}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.pixel-btn{border:1px solid #66664c;background:#24261d;padding:10px 7px;font-size:10px;letter-spacing:1px}.pixel-btn:active{transform:translateY(1px);background:#353727}.pixel-btn.primary{background:#74613a;border-color:#d0b46a;color:#fff2cc}.footer{border-top:1px solid var(--line);padding:8px 20px;display:flex;justify-content:space-between;color:#777b68;font-size:9px;letter-spacing:1px}.modal-back{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:20px;z-index:5}.modal-back.open{display:flex}.modal{width:min(420px,100%);border:1px solid #b19a5e;background:#1a1c15;padding:23px;box-shadow:0 15px 70px #000}.modal h2{font:11px 'Press Start 2P';line-height:1.8;color:var(--gold);margin:0 0 17px}.modal p{font-size:12px;line-height:1.8;color:#d2ceb9}.modal input{width:100%;background:#0d0f0b;border:1px solid #77704f;color:white;padding:12px;font:16px 'Space Mono';letter-spacing:5px;margin:9px 0 13px;outline:none}.modal-actions{display:flex;gap:8px}.modal-actions button{flex:1}.dpad{display:none;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(2,38px);gap:4px;justify-content:center;margin-top:12px}.dpad button{background:#24261d;border:1px solid #555943;font-size:17px;touch-action:none}.dpad .up{grid-column:2}.dpad .left{grid-column:1;grid-row:2}.dpad .down{grid-column:2;grid-row:2}.dpad .right{grid-column:3;grid-row:2}
-@media(max-width:760px){body{padding:0;align-items:flex-start}.shell{border-left:0;border-right:0;width:100%;min-height:100dvh;box-shadow:none}.layout{grid-template-columns:1fr;grid-template-rows:minmax(220px,48dvh) auto}.stage{padding:9px}.screen-wrap{min-height:0}.screen{max-height:42dvh}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-height:48dvh;overflow:auto}.sidebar section:first-child{grid-column:1/-1}.inventory{grid-template-columns:repeat(3,1fr)}.slot{height:48px}.log{height:90px}.footer{display:none}.top{height:52px;padding:0 13px}.brand{font-size:11px}.top small{display:none}.layout{grid-template-columns:1fr}.stage{border-right:0;padding:13px}.sidebar{border-top:1px solid var(--line);padding:15px;display:grid;grid-template-columns:1fr 1fr;gap:15px}.sidebar section:first-child{grid-column:1/-1}.inventory{grid-template-columns:repeat(3,1fr)}.slot{height:55px}.log{height:105px}.screen-hint{font-size:9px}.dpad{display:grid}.footer{font-size:8px}}
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+:root{color-scheme:dark;--bg:#080b0d;--panel:#111719;--panel2:#171f20;--line:#2c3938;--muted:#81908b;--text:#e4e9dc;--lime:#c5e478;--amber:#d9a86c;--red:#df766d}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif}button{font:inherit;color:inherit;cursor:pointer}#app{height:100dvh;display:grid;grid-template-rows:58px minmax(0,1fr) 34px;background:radial-gradient(ellipse at 50% 10%,#182322,#080b0d 70%)}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--line);background:#0b1011eF;z-index:2}.brand{font-size:15px;font-weight:700;letter-spacing:.2em}.brand b{color:var(--lime)}.chapter{font:11px 'DM Mono';letter-spacing:.16em;color:var(--muted)}.headright{display:flex;align-items:center;gap:18px}.online{font:10px 'DM Mono';color:var(--lime);letter-spacing:.1em}.iconbtn{border:1px solid var(--line);background:#131a1b;padding:8px 11px;font:10px 'DM Mono';letter-spacing:.08em}
+main{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:0}.world{min-width:0;min-height:0;padding:16px;display:flex;flex-direction:column;border-right:1px solid var(--line)}.scenehead{display:flex;justify-content:space-between;align-items:center;padding:0 2px 12px}.scenehead h1{font-size:12px;letter-spacing:.2em;margin:0;font-weight:600}.scenehead span{font:10px 'DM Mono';color:var(--muted)}.viewport{position:relative;flex:1;min-height:0;overflow:hidden;border:1px solid #3b4b43;background:#101715;box-shadow:0 12px 55px #0009,inset 0 0 0 4px #070a0a}.viewport canvas{width:100%;height:100%;display:block;image-rendering:pixelated;touch-action:none}.hintbar{display:flex;justify-content:space-between;padding:10px 2px 0;color:var(--muted);font:10px 'DM Mono';letter-spacing:.04em}.sidebar{padding:16px;display:flex;flex-direction:column;gap:15px;overflow:auto;background:#0c1213}.panel{border:1px solid var(--line);background:linear-gradient(145deg,#141c1d,#0f1516);padding:13px}.label{font:9px 'DM Mono';letter-spacing:.18em;color:var(--muted);margin:0 0 12px;text-transform:uppercase}.objective{font-size:13px;line-height:1.55}.objective strong{color:var(--lime);font-weight:600}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#0a1011;border:1px solid #253231;padding:9px}.stat small{display:block;font:9px 'DM Mono';color:var(--muted);letter-spacing:.1em;margin-bottom:7px}.stat b{font:15px 'DM Mono';font-weight:500}.meter{height:4px;background:#273130;margin-top:7px;overflow:hidden}.meter i{display:block;height:100%;background:var(--lime);width:100%;transition:width .2s}.meter.alert i{background:var(--red)}.lootgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.loot{min-height:52px;border:1px solid #2b3936;background:#0a1011;display:grid;place-items:center;align-content:center;gap:4px;color:var(--muted);font:9px 'DM Mono'}.loot b{font-size:17px;color:var(--text);font-weight:500}.loot.have{border-color:#6d8251;color:var(--lime)}.missionlist{display:grid;gap:8px}.mission{display:flex;gap:9px;align-items:flex-start;font-size:11px;color:var(--muted);line-height:1.45}.mission i{width:14px;height:14px;border:1px solid #58665b;display:grid;place-items:center;flex:none;font:9px 'DM Mono';font-style:normal}.mission.done{color:#b9c99a}.mission.done i{background:#9ab75e;border-color:#9ab75e;color:#10160d}.feed{height:102px;overflow:auto;font:10px/1.6 'DM Mono';color:#9aa8a0}.feed p{margin:0 0 5px}.feed p:last-child{color:var(--lime)}.bottom{border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;color:#62716c;font:9px 'DM Mono';letter-spacing:.12em}.actions{display:flex;gap:7px}.action{border:1px solid #53644e;background:#202b22;color:#dce8c5;padding:9px 12px;font:10px 'DM Mono';letter-spacing:.08em}.action.primary{background:var(--lime);color:#10160d;border-color:var(--lime);font-weight:500}.action:disabled{opacity:.35;cursor:default}
+.overlay{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:18px;background:#030708df;backdrop-filter:blur(8px)}.overlay.show{display:flex}.dialog{width:min(540px,100%);border:1px solid #53684b;background:linear-gradient(145deg,#182221,#0d1314);padding:clamp(20px,4vw,34px);box-shadow:0 25px 100px #000}.eyebrow{font:10px 'DM Mono';letter-spacing:.22em;color:var(--lime);margin-bottom:18px}.dialog h2{font-size:clamp(27px,5vw,44px);line-height:1.02;letter-spacing:-.04em;margin:0 0 15px;max-width:440px}.dialog p{font-size:14px;line-height:1.7;color:#aab8af;max-width:440px}.dialog .actions{margin-top:24px;flex-wrap:wrap}.menu-meta{display:flex;gap:22px;margin-top:24px;color:#718078;font:9px 'DM Mono';letter-spacing:.1em}.toast{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);padding:10px 15px;background:#101819ed;border:1px solid #71845a;color:#e6edda;font:11px 'DM Mono';pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}.toast.show{opacity:1}
+.touch{display:none;position:absolute;inset:auto 14px 14px;justify-content:space-between;align-items:end;pointer-events:none}.stick{width:126px;height:126px;border:1px solid #b3c39a66;border-radius:50%;background:#101a17a8;display:grid;place-items:center;pointer-events:auto;touch-action:none}.nub{width:48px;height:48px;border-radius:50%;background:#b8d879aa;border:1px solid #d9edb6;box-shadow:0 0 22px #b8d87944}.touchright{display:grid;grid-template-columns:58px 58px;gap:8px;align-items:end;pointer-events:auto}.touchright button{width:58px;height:58px;border-radius:50%;border:1px solid #c5df8b88;background:#18241dcc;color:#e8f2d5;font:10px 'DM Mono';touch-action:none}.touchright button.big{grid-column:2;grid-row:1/3;width:68px;height:68px;background:#a9cb65;color:#10170d;border:0;font-weight:700}
+@media(max-width:850px){#app{grid-template-rows:48px minmax(0,1fr) 28px}header{padding:0 13px}.chapter,.online{display:none}.headright{gap:8px}main{grid-template-columns:minmax(0,1fr) 230px}.world{padding:10px}.sidebar{padding:10px;gap:8px}.panel{padding:10px}.feed{height:74px}.loot{min-height:45px}.scenehead{padding-bottom:8px}.hintbar{font-size:8px}}
+@media(max-width:620px){#app{grid-template-rows:44px minmax(0,1fr) 25px}main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 180px}.world{border:0;padding:7px 7px 4px}.scenehead{padding:0 2px 7px}.scenehead h1{font-size:10px}.scenehead span{font-size:8px}.hintbar{padding-top:5px}.hintbar span:first-child{display:none}.sidebar{border-top:1px solid var(--line);display:grid;grid-template-columns:1.2fr 1fr;grid-template-rows:auto auto;gap:6px;padding:7px;overflow:hidden}.sidebar .panel{padding:7px}.sidebar .panel:nth-child(1){grid-column:1;grid-row:1}.sidebar .panel:nth-child(2){grid-column:2;grid-row:1}.sidebar .panel:nth-child(3){grid-column:1;grid-row:2}.sidebar .panel:nth-child(4){grid-column:2;grid-row:2}.label{font-size:8px;margin-bottom:6px}.objective{font-size:10px;line-height:1.35}.stats{gap:5px}.stat{padding:5px}.stat small{font-size:7px;margin-bottom:3px}.stat b{font-size:11px}.meter{margin-top:4px}.lootgrid{gap:3px}.loot{min-height:30px;font-size:7px;gap:1px}.loot b{font-size:12px}.missionlist{gap:4px}.mission{font-size:8px;gap:5px;line-height:1.2}.mission i{width:11px;height:11px;font-size:7px}.feed{height:43px;font-size:8px;line-height:1.35}.bottom{font-size:7px;padding:0 8px}.touch{display:flex}.stick{width:94px;height:94px}.nub{width:38px;height:38px}.touchright{grid-template-columns:48px 48px;gap:5px}.touchright button{width:48px;height:48px;font-size:8px}.touchright button.big{width:56px;height:56px}}
 </style>
 </head>
 <body>
-<div class="shell">
-<header class="top"><div class="brand">END<span>ROOM</span></div><div class="top-right"><span class="status">● SYSTEM ONLINE</span><small id="case-label">CASE 001 / THE LOCKED ROOM</small><div class="top-actions"><button class="pixel-btn mini" id="fullscreen">FULL SCREEN</button></div></div></header>
-<main class="layout">
-<section class="stage">
-<div class="stage-head"><h1 id="room-title">THE FIRST ROOM</h1><span>DAY 01 · 23:47</span></div>
-<div class="screen-wrap"><canvas id="game" class="screen" width="640" height="360" aria-label="Top-down pixel art escape room"></canvas></div>
-<div class="screen-hint"><span>WASD / ARROWS TO MOVE</span><span>SPACE TO INTERACT</span></div>
-<div class="dpad" aria-label="Touch movement"><button class="up" data-dir="up">▲</button><button class="left" data-dir="left">◀</button><button class="down" data-dir="down">▼</button><button class="right" data-dir="right">▶</button></div>
+<div id="app">
+<header><div class="brand">END<b>ROOM</b></div><div class="chapter">AFTER DARK / CHAPTER 01</div><div class="headright"><span class="online">● LOCAL SAVE ACTIVE</span><button class="iconbtn" id="pauseBtn">PAUSE [P]</button></div></header>
+<main>
+<section class="world">
+<div class="scenehead"><h1 id="areaName">THE OUTSKIRTS</h1><span id="clock">18:42 / DUSK</span></div>
+<div class="viewport"><canvas id="game" width="960" height="600" aria-label="ENDROOM survival adventure game"></canvas><div class="touch" id="touch"><div class="stick" id="stick"><div class="nub" id="nub"></div></div><div class="touchright"><button id="sprint">RUN</button><button class="big" id="interact">USE</button></div></div><div class="toast" id="toast"></div></div>
+<div class="hintbar"><span>WASD / ARROWS MOVE · SHIFT SPRINT · E INTERACT</span><span>FIND THE SIGNAL. GET OUT.</span></div>
 </section>
 <aside class="sidebar">
-<section><h2 class="section-title">CURRENT OBJECTIVE</h2><div class="objective" id="objective">Find a way to unlock the door. The room is hiding something.</div></section>
-<section><h2 class="section-title">POCKET / INVENTORY</h2><div class="inventory" id="inventory"><button class="slot" data-slot="0">EMPTY</button><button class="slot" data-slot="1">EMPTY</button><button class="slot" data-slot="2">EMPTY</button><button class="slot" data-slot="3">EMPTY</button><button class="slot" data-slot="4">EMPTY</button><button class="slot" data-slot="5">EMPTY</button></div></section>
-<section><h2 class="section-title">FIELD NOTES</h2><div class="log" id="log"><p>You wake up on a cold floor.</p><p>The door has a keypad. There must be a clue somewhere.</p></div></section>
-<section><h2 class="section-title">SYSTEM</h2><div class="actions"><button class="pixel-btn" id="help">HOW TO PLAY</button><button class="pixel-btn primary" id="reset">RESTART</button></div></section>
+<section class="panel"><h3 class="label">PRIMARY OBJECTIVE</h3><div class="objective" id="objective">Reach the old relay station. Restore the district signal.</div></section>
+<section class="panel"><h3 class="label">CONDITION</h3><div class="stats"><div class="stat"><small>STAMINA</small><b id="staminaText">100%</b><div class="meter"><i id="staminaBar"></i></div></div><div class="stat"><small>THREAT</small><b id="threatText">LOW</b><div class="meter alert"><i id="threatBar"></i></div></div></div></section>
+<section class="panel"><h3 class="label">FIELD KIT</h3><div class="lootgrid"><div class="loot" id="scrap"><b>◇</b>SCRAP ×0</div><div class="loot" id="med"><b>＋</b>MED ×0</div><div class="loot" id="cells"><b>▣</b>CELLS ×0</div><div class="loot" id="relays"><b>⌁</b>RELAYS 0/3</div></div></section>
+<section class="panel"><h3 class="label">FIELD LOG</h3><div class="missionlist" id="missions"><div class="mission"><i>1</i><span>Find the relay station.</span></div><div class="mission"><i>2</i><span>Activate three signal relays.</span></div><div class="mission"><i>3</i><span>Reach the extraction point.</span></div></div><div class="feed" id="feed"><p>18:42 — You arrive at the edge of the dead district.</p><p>18:43 — Radio: “Three relays. Then get to the tower.”</p></div></section>
 </aside>
 </main>
-<footer class="footer"><span>ENDROOM STUDIOS · BUILD 0.1.0</span><span>THERE IS ALWAYS A WAY OUT.</span></footer>
+<footer class="bottom"><span>ENDROOM STUDIOS</span><span>CHAPTER 01 · THE QUIET DISTRICT</span><span id="saveStatus">PROGRESS SAVED LOCALLY</span></footer>
 </div>
-<div class="modal-back" id="modal"><div class="modal"><h2 id="modal-title">INSPECT</h2><div id="modal-body"></div><div class="modal-actions" id="modal-actions"><button class="pixel-btn" id="close">CLOSE</button></div></div></div>
+<div class="overlay show" id="menu"><div class="dialog"><div class="eyebrow">ENDROOM STUDIOS PRESENTS / 001</div><h2>THE CITY<br>WENT QUIET.</h2><p>Three signal relays have gone dark across the district. Find them, avoid what still moves in the streets, and reach the tower before night closes in.</p><div class="actions"><button class="action primary" id="startBtn">NEW GAME ↗</button><button class="action" id="continueBtn">CONTINUE</button></div><div class="menu-meta"><span>CHAPTER 01</span><span>SURVIVAL / EXPLORATION</span><span>NO CONNECTION REQUIRED</span></div></div></div>
+<div class="overlay" id="pause"><div class="dialog"><div class="eyebrow">FIELD PAUSED</div><h2>TAKE A BREATH.</h2><p>The district is still out there. Your progress is saved automatically.</p><div class="actions"><button class="action primary" id="resumeBtn">RESUME</button><button class="action" id="saveQuitBtn">SAVE & MENU</button></div></div></div>
+<div class="overlay" id="event"><div class="dialog"><div class="eyebrow" id="eventEyebrow">FIELD REPORT</div><h2 id="eventTitle">SIGNAL RESTORED</h2><p id="eventText"></p><div class="actions" id="eventActions"><button class="action primary" id="eventOk">CONTINUE</button></div></div></div>
 <script>
-(()=>{
-const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
-const W=640,H=360,T=32;let player={x:315,y:250,dir:0},items=[],selected=-1,hasKey=false,hasNote=false,drawerOpen=false,doorOpen=false,solved=false,move={},level=1,hasFuse=false,hasSecondNote=false,powerOn=false;const inventory=[];
-const colors={wall:'#34392b',wall2:'#424735',floor:'#777052',floor2:'#827a58',dark:'#20251c',wood:'#59432f',wood2:'#795b3b',gold:'#c7a65b',cream:'#e6dfc1',shadow:'#161a13'};
-function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
-function text(s,x,y,size=10,c='#e9e2c8'){ctx.fillStyle=c;ctx.font=size+'px monospace';ctx.fillText(s,x,y)}
-function drawRoom(){
-rect(0,0,W,H,'#151a14');rect(20,15,600,330,colors.wall);rect(32,27,576,306,colors.floor);
-for(let y=30;y<330;y+=32)for(let x=35;x<605;x+=32){rect(x,y,30,30,((x/32+y/32)%2)?'#7b7454':'#817959');rect(x,y,30,1,'#938a65')}
-rect(20,15,600,12,'#565b42');rect(20,333,600,12,'#454a35');rect(20,15,12,330,'#565b42');rect(608,15,12,330,'#565b42');
-for(let x=48;x<600;x+=64){rect(x,27,2,306,'#716a4e')}
-rect(260,42,120,12,'#272c21');rect(268,48,104,4,'#b5a16b');rect(274,53,92,2,'#e2d39a');
-rect(45,55,94,58,'#343b30');rect(50,60,84,48,'#202b2c');rect(52,62,80,44,'#536c70');rect(90,62,3,44,'#26383a');rect(52,82,80,2,'#8ca1a0');rect(45,113,94,5,'#4d4936');
-rect(480,48,90,68,'#4c3928');rect(486,54,78,56,colors.wood2);rect(492,60,66,44,'#332f24');rect(499,66,52,32,'#b4a16d');rect(504,71,42,22,'#d0bc7c');rect(526,78,3,8,'#51452c');
-rect(56,218,124,82,'#44382a');rect(62,224,112,70,'#6c5540');rect(70,230,96,58,'#a69b7b');rect(72,232,92,12,'#d1c7a7');rect(70,246,96,42,'#788b82');rect(65,295,7,8,'#30281f');rect(166,295,7,8,'#30281f');
-rect(220,250,80,52,'#5b402a');rect(225,255,70,42,'#805c39');rect(232,262,56,26,'#382d20');rect(239,268,42,3,'#a58b58');
-rect(450,220,100,80,'#443629');rect(456,226,88,68,'#6b5036');rect(462,232,76,56,'#3e3224');rect(468,238,64,44,'#5a4631');rect(493,253,12,12,'#b99d57');
-rect(295,312,50,5,'#30291e');rect(305,302,30,10,'#786042');
-if(drawerOpen){rect(230,268,60,25,'#30291e');rect(234,273,52,20,'#9b7b4d');rect(255,280,10,3,colors.gold)}
-// exit door
-rect(280,15,80,24,'#24291f');rect(286,15,68,24,doorOpen?'#7e9a72':'#59452d');rect(291,19,58,20,doorOpen?'#a9c28a':'#826444');rect(338,29,4,4,colors.gold);
-rect(20,15,600,3,'#777b59');
-if(level===2){rect(38,42,120,76,'#29342d');rect(44,48,108,64,'#43584b');for(let i=0;i<4;i++){rect(50,55+i*13,96,5,'#8d8a65');rect(55,58+i*13,12,2,'#d2c28b')}rect(430,48,130,62,'#443a2b');rect(438,55,114,48,'#292c23');rect(448,62,94,34,'#8b7850');rect(290,220,60,64,'#3c4537');rect(296,226,48,52,powerOn?'#7d9c72':'#202820');rect(305,238,30,5,powerOn?'#d6dca0':'#9c624e');rect(305,250,30,5,'#777b62');rect(305,262,30,5,'#777b62');rect(150,120,42,30,'#59432f');rect(154,124,34,22,'#8b6944');}
+(function(){
+'use strict';
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),CW=960,CH=600;
+const $=id=>document.getElementById(id);
+const WORLD={w:2200,h:1500,tile:48};
+const colors={grass:'#26372e',grass2:'#2d4035',road:'#4b5147',road2:'#555a4e',concrete:'#686b5b',dark:'#121c19',roof:'#303a35',roof2:'#3d4940',window:'#9aab86',lime:'#c5e478',rust:'#825b43',water:'#253c3c'};
+let state='menu',last=0,elapsed=0,toastTimer=0,saveTimer=0;
+let player={x:270,y:750,r:13,stamina:100,noise:0,invuln:0};
+let camera={x:0,y:0},keys={},touchMove={x:0,y:0},sprinting=false,threat=0;
+let inventory={scrap:0,med:0,cells:0,relays:0};
+let flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};
+let loot=[],enemies=[],buildings=[],trees=[],fences=[],relays=[],exitPoint={x:1990,y:280};
+let worldSeed=41;
+function rnd(n){let x=Math.sin(n*127.1+worldSeed*311.7)*43758.5453;return x-Math.floor(x)}
+function makeWorld(){
+ buildings=[
+ {x:100,y:170,w:310,h:230,name:'OLD CLINIC',type:'clinic'},
+ {x:560,y:95,w:350,h:270,name:'CORNER MARKET',type:'shop'},
+ {x:1120,y:145,w:360,h:250,name:'RELAY STATION',type:'station'},
+ {x:1700,y:120,w:330,h:240,name:'BUS DEPOT',type:'depot'},
+ {x:140,y:1050,w:350,h:260,name:'ROW HOUSES',type:'homes'},
+ {x:720,y:1020,w:330,h:290,name:'MACHINE WORKS',type:'factory'},
+ {x:1270,y:1040,w:300,h:250,name:'PUMP HOUSE',type:'pump'},
+ {x:1770,y:1000,w:300,h:270,name:'SIGNAL TOWER',type:'tower'}
+ ];
+ trees=[];for(let i=0;i<105;i++){let x=80+rnd(i+2)*2040,y=70+rnd(i+9)*1360;if(!buildings.some(b=>x>b.x-30&&x<b.x+b.w+30&&y>b.y-30&&y<b.y+b.h+30)&&!onRoad(x,y))trees.push({x,y,r:13+rnd(i+40)*12})}
+ fences=[];for(let i=0;i<42;i++){let x=100+rnd(i+90)*2000,y=100+rnd(i+150)*1300;if(!buildings.some(b=>x>b.x-60&&x<b.x+b.w+60&&y>b.y-60&&y<b.y+b.h+60)&&!onRoad(x,y))fences.push({x,y})}
+ loot=[
+ {x:245,y:435,type:'scrap',taken:false},{x:700,y:450,type:'med',taken:false},{x:870,y:830,type:'cells',taken:false},
+ {x:1310,y:455,type:'scrap',taken:false},{x:1580,y:760,type:'cells',taken:false},{x:470,y:1190,type:'med',taken:false},
+ {x:890,y:1370,type:'scrap',taken:false},{x:1470,y:1300,type:'cells',taken:false},{x:1850,y:760,type:'med',taken:false},
+ {x:1910,y:420,type:'scrap',taken:false},{x:620,y:740,type:'scrap',taken:false},{x:1080,y:700,type:'med',taken:false}
+ ];
+ relays=[{x:1270,y:450,active:false,name:'NORTH RELAY'},{x:850,y:900,active:false,name:'WEST RELAY'},{x:1570,y:880,active:false,name:'SOUTH RELAY'}];
+ enemies=[{x:990,y:560,homeX:990,homeY:560,phase:0,alert:0,speed:48},{x:1660,y:650,homeX:1660,homeY:650,phase:2,alert:0,speed:43},{x:1160,y:1210,homeX:1160,homeY:1210,phase:4,alert:0,speed:52},{x:430,y:870,homeX:430,homeY:870,phase:1,alert:0,speed:40}];
 }
-function drawPlayer(){const x=player.x,y=player.y;rect(x-8,y+13,18,4,colors.shadow);rect(x-6,y-8,13,19,'#273b47');rect(x-5,y-12,11,8,'#c89b72');rect(x-6,y-15,13,5,'#40352b');rect(x-8,y-2,4,9,'#c89b72');rect(x+6,y-2,4,9,'#c89b72');rect(x-5,y+10,4,6,'#2c2925');rect(x+2,y+10,4,6,'#2c2925');rect(x-2,y-8,2,2,'#211e1a');}
-function drawObjects(){// objects sparkle
-if(level===2){if(!hasFuse){rect(170,130,12,8,'#d4c36e');rect(174,132,4,4,'#fff0a4')}if(!hasSecondNote){rect(486,72,10,12,'#e6d7a7');rect(488,74,6,8,'#fff0bd')}if(!doorOpen){rect(310,26,20,5,'#24251b');rect(315,27,10,3,colors.gold)}return}
-if(!hasNote){rect(102,90,9,9,'#e6d7a7');rect(104,92,5,5,'#fff0bd')}
-if(!hasKey){rect(260,276,10,5,'#d7b85f');rect(269,277,5,3,'#d7b85f')}
-rect(518,82,4,4,colors.gold);
-if(!doorOpen){rect(310,26,20,5,'#24251b');rect(315,27,10,3,'#d0b05b')}
+function onRoad(x,y){return (y>650&&y<790)||(x>1000&&x<1160)||(y>330&&y<500&&x>900&&x<1800)||(x>1850&&x<2010)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function log(s){let p=document.createElement('p');p.textContent=stamp()+' — '+s;$('feed').appendChild(p);$('feed').scrollTop=$('feed').scrollHeight;while($('feed').children.length>18)$('feed').removeChild($('feed').firstChild)}
+function stamp(){let mins=Math.floor(elapsed/60);return '18:'+String((42+mins)%60).padStart(2,'0')}
+function notify(s){$('toast').textContent=s;$('toast').classList.add('show');toastTimer=2.2}
+function showEvent(eyebrow,title,body,button='CONTINUE',callback){$('eventEyebrow').textContent=eyebrow;$('eventTitle').textContent=title;$('eventText').textContent=body;$('eventActions').innerHTML='';let b=document.createElement('button');b.className='action primary';b.textContent=button;b.onclick=()=>{$('event').classList.remove('show');if(callback)callback()};$('eventActions').appendChild(b);$('event').classList.add('show');state='event'}
+function save(){let data={player:{x:player.x,y:player.y,stamina:player.stamina},inventory,flags,loot:loot.map(x=>x.taken),elapsed};try{localStorage.setItem('endroom-ch1-save',JSON.stringify(data));$('saveStatus').textContent='PROGRESS SAVED';}catch(e){$('saveStatus').textContent='SAVE UNAVAILABLE'}}
+function load(){try{let d=JSON.parse(localStorage.getItem('endroom-ch1-save'));if(!d)return false;player.x=d.player.x;player.y=d.player.y;player.stamina=d.player.stamina;Object.assign(inventory,d.inventory);Object.assign(flags,d.flags);elapsed=d.elapsed||0;loot.forEach((l,i)=>l.taken=!!d.loot[i]);relays.forEach((r,i)=>r.active=!!flags[['relayA','relayB','relayC'][i]]);return true}catch(e){return false}}
+function updateHUD(){
+ $('staminaText').textContent=Math.round(player.stamina)+'%';$('staminaBar').style.width=player.stamina+'%';
+ $('threatText').textContent=threat>65?'DANGER':threat>25?'NEARBY':'LOW';$('threatBar').style.width=threat+'%';
+ $('scrap').innerHTML='<b>◇</b>SCRAP ×'+inventory.scrap;$('med').innerHTML='<b>＋</b>MED ×'+inventory.med;$('cells').innerHTML='<b>▣</b>CELLS ×'+inventory.cells;$('relays').innerHTML='<b>⌁</b>RELAYS '+inventory.relays+'/3';
+ $('missions').innerHTML=[['Find the relay station.',flags.station],['Activate three signal relays.',inventory.relays===3],['Reach the extraction point.',flags.extracted]].map((m,i)=>'<div class="mission '+(m[1]?'done':'')+'"><i>'+(m[1]?'✓':i+1)+'</i><span>'+m[0]+'</span></div>').join('');
+ $('objective').innerHTML=flags.extracted?'<strong>Chapter complete.</strong> The district signal is back online.':inventory.relays<3?'<strong>'+inventory.relays+'/3 relays active.</strong> '+(flags.station?'Search the district and activate the remaining relays.':'Reach the relay station and locate the signal map.'):'<strong>All relays online.</strong> Reach the extraction point at the signal tower.';
 }
-function render(){drawRoom();drawObjects();drawPlayer();if(doorOpen){rect(280,15,80,24,'#a5bb87');text('EXIT',300,31,12,'#182217')}requestAnimationFrame(render)}
-function log(msg){const el=document.getElementById('log'),p=document.createElement('p');p.textContent='› '+msg;el.appendChild(p);el.scrollTop=el.scrollHeight}
-function objective(s){document.getElementById('objective').textContent=s}
-function addItem(name,emoji){if(inventory.length>=6)return log('Your pockets are full.');inventory.push({name,emoji});updateInventory();log('Collected: '+name+'.')}
-function updateInventory(){document.getElementById('inventory').innerHTML=Array.from({length:6},(_,i)=>{const it=inventory[i];return '<button class="slot '+(it?'filled':'')+(selected===i?' selected':'')+'" data-slot="'+i+'">'+(it?'<span class="emoji">'+it.emoji+'</span>'+it.name:'EMPTY')+'</button>'}).join('');document.querySelectorAll('[data-slot]').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.slot;if(!inventory[i])return;selected=selected===i?-1:i;updateInventory();log(selected<0?'Item deselected.':'Selected '+inventory[i].name+'.')}))}
-function near(x,y,d=48){return Math.hypot(player.x-x,player.y-y)<d}
-function openModal(title,body,buttons=[]){document.getElementById('modal-title').textContent=title;document.getElementById('modal-body').innerHTML=body;const a=document.getElementById('modal-actions');a.innerHTML='<button class="pixel-btn" id="close">CLOSE</button>'+buttons.map(b=>'<button class="pixel-btn primary" id="'+b.id+'">'+b.label+'</button>').join('');document.getElementById('close').onclick=closeModal;buttons.forEach(b=>document.getElementById(b.id).onclick=()=>{b.fn();closeModal()});document.getElementById('modal').classList.add('open')}
-function closeModal(){document.getElementById('modal').classList.remove('open')}
-function interact(){if(level===1&&near(320,32,55)&&doorOpen){level=2;player={x:315,y:270,dir:0};doorOpen=false;solved=false;hasFuse=false;hasSecondNote=false;powerOn=false;document.getElementById('room-title').textContent='THE ARCHIVE';document.getElementById('case-label').textContent='CASE 002 / THE ARCHIVE';objective('Restore power, find the archive code, and open the sealed exit.');log('You enter the archive. The lights are dead and the exit is sealed.');return}
-if(level===2){if(near(320,32,55)){if(!powerOn){openModal('SEALED EXIT','The electronic lock has no power. Find a replacement fuse in the storage crate.');return}if(!hasSecondNote){openModal('KEYPAD','The panel is powered. You still need the four-digit archive code from the field note.');return}openModal('ARCHIVE LOCK','Enter the four-digit code.<input id="code" maxlength="4" inputmode="numeric" placeholder="••••">',[{id:'submit-code',label:'UNLOCK',fn:()=>{if(document.getElementById('code')?.value==='0421'){doorOpen=true;solved=true;objective('The archive exit is open. Walk to the door.');log('ARCHIVE ACCESS GRANTED. The exit unlocks.')}else log('Wrong code. The keypad resets.')}}]);return}if(near(170,135,48)&&!hasFuse){hasFuse=true;addItem('FUSE','▥');openModal('SPARE FUSE','A ceramic fuse, still intact. It should fit the wall power panel.');objective('Install the fuse in the wall panel, then inspect the archive desk.');return}if(near(320,250,55)){if(!hasFuse){openModal('POWER PANEL','The panel is missing a fuse. The emergency lights are barely glowing.');return}if(!powerOn){powerOn=true;log('Fuse installed. The archive lights flicker on.');objective('Power is restored. Find the field note with the exit code.');openModal('POWER RESTORED','The panel hums back to life. The exit keypad is active.');return}openModal('POWER PANEL','The backup circuit is stable.');return}if(near(495,82,55)&&!hasSecondNote){hasSecondNote=true;addItem('FIELD NOTE','▤');openModal('ARCHIVE FIELD NOTE','A note pinned behind the glass: <p style="color:#d5b76a">“First comes the beginning. Then the answer. 04 / 21.”</p><p>The archive code is <b>0421</b>.</p>');objective('Enter 0421 at the powered exit keypad.');return}if(near(495,82,60)){openModal('ARCHIVE RECORD','A glass-fronted record cabinet. Its label reads: EAST WING / 04.');return}log('Nothing nearby responds. Search the archive carefully.');return}
-if(near(320,32,55)){if(doorOpen){openModal('FREEDOM','The door swings open. Beyond it is another hallway, and a tiny note on the floor: <em>“Room 02 is waiting.”</em><p style="color:#d5b76a">END OF DEMO · CHAPTER 01 COMPLETE</p>');return}if(!hasKey){openModal('LOCKED','A heavy door. Four-digit keypad. The screen flickers: <b>“THE YEAR THE HOUSE WENT QUIET.”</b>');log('The door needs a four-digit code.');return}if(!solved){openModal('KEYPAD','The key fits the small override slot, but the keypad still needs a code. Try the year from the note.<input id="code" maxlength="4" inputmode="numeric" placeholder="••••">',[{id:'submit-code',label:'UNLOCK',fn:()=>{const v=document.getElementById('code')?.value;if(v==='1987'){doorOpen=true;solved=true;objective('The door is open. Step through it.');log('ACCESS GRANTED. The lock clicks open.');}else{log('Incorrect code. The keypad flashes red.')}}}]);return}}
-if(near(105,95,45)&&!hasNote){hasNote=true;addItem('NOTE','▤');openModal('OLD NOTE','A folded note tucked into the window frame.<p style="color:#d5b76a">“The house went quiet in 1987. Remember the year.”</p>');objective('Find the key, then use the year on the note.');return}
-if(near(260,278,45)&&!hasKey){hasKey=true;addItem('KEY','⚿');openModal('SMALL KEY','A brass key hidden beneath the desk. It has a tiny engraving: <b>ROOM 01</b>.');return}
-if(near(510,260,65)){openModal('WARDROBE','The wardrobe is empty, except for a scratch on the inside: <b>“LOOK CLOSER.”</b>');return}
-if(near(520,80,55)){openModal('WALL FRAME','An old family portrait. The faces have been scratched away. On the back: <b>EST. 1987</b>.');return}
-if(near(260,280,70)){openModal('DESK','A battered wooden desk. Something glints underneath.');return}
-log('Nothing nearby responds. Try another spot.')}
-function movePlayer(){let dx=0,dy=0;if(move.left||move.a)dx--;if(move.right||move.d)dx++;if(move.up||move.w)dy--;if(move.down||move.s)dy++;if(dx||dy){const l=Math.hypot(dx,dy);dx/=l;dy/=l;player.x=Math.max(48,Math.min(592,player.x+dx*2.3));player.y=Math.max(60,Math.min(315,player.y+dy*2.3));player.dir=Math.atan2(dy,dx)}}
-function loop(){movePlayer();requestAnimationFrame(loop)}document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();if(k===' '){interact();return}if(k==='e'){interact();return}move[k]=true});document.addEventListener('keyup',e=>move[e.key.toLowerCase()]=false);
-document.querySelectorAll('[data-dir]').forEach(b=>{const d=b.dataset.dir;b.addEventListener('pointerdown',e=>{e.preventDefault();move[d]=true});['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>move[d]=false))});
-canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*W/r.width,y=(e.clientY-r.top)*H/r.height;player.x=x;player.y=y;interact()});
-document.getElementById('help').onclick=()=>openModal('HOW TO PLAY','Move with <b>WASD</b> or the arrow keys. Press <b>E</b> or <b>SPACE</b> near an object to inspect it. On mobile, use the directional pad. Tap inventory items to select them. Find clues, collect objects and escape the room.');
-document.getElementById('fullscreen').onclick=async()=>{try{if(!document.fullscreenElement){await document.documentElement.requestFullscreen();document.getElementById('fullscreen').textContent='EXIT FULL'}else{await document.exitFullscreen();document.getElementById('fullscreen').textContent='FULL SCREEN'}}catch(e){log('Fullscreen is unavailable in this browser.')}};document.addEventListener('fullscreenchange',()=>{document.getElementById('fullscreen').textContent=document.fullscreenElement?'EXIT FULL':'FULL SCREEN'});
-document.getElementById('reset').onclick=()=>{level=1;hasFuse=hasSecondNote=powerOn=false;document.getElementById('room-title').textContent='THE FIRST ROOM';document.getElementById('case-label').textContent='CASE 001 / THE LOCKED ROOM';player={x:315,y:250,dir:0};inventory.length=0;selected=-1;hasKey=hasNote=drawerOpen=doorOpen=solved=false;updateInventory();objective('Find a way to unlock the door. The room is hiding something.');document.getElementById('log').innerHTML='<p>You wake up on a cold floor.</p><p>The door has a keypad. There must be a clue somewhere.</p>';log('A new attempt begins.')};
-document.getElementById('close').onclick=closeModal;updateInventory();render();loop();
+function circle(x,y,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+function box(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
+function drawWorld(){
+ ctx.fillStyle=colors.grass;ctx.fillRect(0,0,CW,CH);
+ let sx=Math.floor(camera.x/48),sy=Math.floor(camera.y/48);
+ for(let y=sy-1;y<(camera.y+CH)/48+1;y++)for(let x=sx-1;x<(camera.x+CW)/48+1;x++){let wx=x*48,wy=y*48;box(wx-camera.x,wy-camera.y,47,47,rnd(x*31+y*71)>.5?colors.grass:colors.grass2);if(rnd(x*13+y*7)>.78)box(wx-camera.x+12,wy-camera.y+15,2,3,'#4b5a3d')}
+ // Roads
+ box(0,650-camera.y,WORLD.w,140,colors.road);box(1000-camera.x,0,150, WORLD.h,colors.road);box(900-camera.x,350-camera.y,900,125,colors.road);box(1850-camera.x,350-camera.y,150,900,colors.road);
+ for(let x=0;x<WORLD.w;x+=90){box(x-camera.x,716-camera.y,38,3,'#8b8c70');}
+ for(let y=0;y<WORLD.h;y+=90){box(1072-camera.x,y-camera.y,3,36,'#8b8c70')}
+ // Patches / puddles
+ for(let i=0;i<30;i++){let x=rnd(i+400)*WORLD.w,y=rnd(i+600)*WORLD.h;if(onRoad(x,y))continue;circle(x-camera.x,y-camera.y,8+rnd(i+700)*16,'#1e302b')}
+ // buildings and interiors hints
+ for(let b of buildings){let x=b.x-camera.x,y=b.y-camera.y;box(x+9,y+13,b.w,b.h,'#18211d');box(x,y,b.w,b.h,colors.roof);box(x+8,y+8,b.w-16,b.h-16,colors.roof2);box(x+13,y+13,b.w-26,b.h-26,'#36443a');box(x+18,y+18,b.w-36,8,'#586453');box(x+20,y+b.h-28,54,13,'#222d28');box(x+b.w/2-24,y+b.h-12,48,12,'#1b2521');for(let wx=25;wx<b.w-25;wx+=75){box(x+wx,y+30,30,23,'#182a29');box(x+wx+3,y+33,24,17,'#758b70')}ctx.fillStyle='#d2d8bb';ctx.font='11px DM Mono';ctx.fillText(b.name,x+16,y-7)}
+ for(let f of fences){let x=f.x-camera.x,y=f.y-camera.y;box(x-9,y-3,18,5,'#765b42');box(x-7,y-9,3,18,'#a07c54');box(x+5,y-9,3,18,'#a07c54')}
+ for(let t of trees){let x=t.x-camera.x,y=t.y-camera.y;circle(x+4,y+7,t.r,'#17251f');circle(x,y,t.r*.8,'#3f5b3e');circle(x-5,y-5,t.r*.45,'#59704a');box(x-3,y+t.r*.5,6,12,'#594b35')}
+ // loot
+ for(let l of loot){if(l.taken)continue;let x=l.x-camera.x,y=l.y-camera.y;circle(x,y,13,'#c5e47822');box(x-7,y-7,14,14,l.type==='med'?'#d7ded0':l.type==='cells'?'#9fc3a1':'#b68a5d');box(x-3,y-3,6,6,'#26342c');}
+ // relay stations
+ for(let r of relays){let x=r.x-camera.x,y=r.y-camera.y;circle(x,y,32,r.active?'#b8dc7140':'#d8a66b22');box(x-18,y-17,36,34,'#26342d');box(x-13,y-12,26,24,r.active?'#829f58':'#6b5942');box(x-3,y-9,6,18,r.active?'#d5ed91':'#d9a86c');if(r.active){circle(x,y,4,'#e1f5b1')} }
+ // extraction marker
+ let ex=exitPoint.x-camera.x,ey=exitPoint.y-camera.y;circle(ex,ey,35,'#c5e47818');box(ex-17,ey-17,34,34,'#24362d');box(ex-10,ey-10,20,20,'#a6c96d');box(ex-3,ey-13,6,26,'#d8edac');
+}
+function drawActor(x,y,kind,angle){let sx=x-camera.x,sy=y-camera.y;if(kind==='player'){circle(sx,sy+7,15,'#111a16aa');circle(sx,sy,12,'#d5c6a1');box(sx-8,sy-7,16,18,'#526b58');box(sx-5,sy-13,10,8,'#d7c19a');box(sx-6,sy-15,12,4,'#2a3029');box(sx-5,sy+8,4,8,'#242b25');box(sx+2,sy+8,4,8,'#242b25');box(sx+3,sy-5,3,3,'#19201b')}else{circle(sx,sy+5,16,'#070c0a99');circle(sx,sy,13,'#a3a38a');box(sx-10,sy-6,20,19,'#59675b');box(sx-8,sy-12,16,9,'#b4b39a');box(sx-6,sy-4,4,3,'#d47b68');box(sx+3,sy-4,4,3,'#d47b68');if(kind.alert>0){circle(sx,sy-25,3,'#e77a6d')}}}
+function drawLighting(){
+ // soft dusk vignette and player light
+ let px=player.x-camera.x,py=player.y-camera.y;let g=ctx.createRadialGradient(px,py,50,px,py,460);g.addColorStop(0,'#0a100d00');g.addColorStop(.55,'#09100d35');g.addColorStop(1,'#050a0bcb');ctx.fillStyle=g;ctx.fillRect(0,0,CW,CH);
+ let a=ctx.createRadialGradient(px,py,5,px,py,175);a.addColorStop(0,'#f0e6bd20');a.addColorStop(1,'#f0e6bd00');ctx.fillStyle=a;ctx.fillRect(0,0,CW,CH);
+}
+function drawMinimap(){let x=CW-155,y=15,w=138,h=92;box(x-5,y-5,w+10,h+10,'#0a1110dd');box(x,y,w,h,'#26342d');for(let b of buildings)box(x+b.x/WORLD.w*w,y+b.y/WORLD.h*h,b.w/WORLD.w*w,b.h/WORLD.h*h,'#566357');box(x+1000/WORLD.w*w,y,150/WORLD.w*w,h,'#717566');box(x,y+650/WORLD.h*h,w,140/WORLD.h*h,'#717566');for(let r of relays)circle(x+r.x/WORLD.w*w,y+r.y/WORLD.h*h,3,r.active?'#d3ef8d':'#d5a36d');circle(x+player.x/WORLD.w*w,y+player.y/WORLD.h*h,4,'#fff2c6');}
+function draw(){
+ ctx.clearRect(0,0,CW,CH);drawWorld();for(let e of enemies)drawActor(e.x,e.y,e,e.phase);drawActor(player.x,player.y,'player');drawLighting();drawMinimap();
+ if(threat>20){box(15,15,105,24,'#111916bb');ctx.fillStyle='#e9a08e';ctx.font='11px DM Mono';ctx.fillText('MOVEMENT HEARD',24,31)}
+}
+function blocked(x,y){if(x<28||y<28||x>WORLD.w-28||y>WORLD.h-28)return true;for(let b of buildings)if(x>b.x-16&&x<b.x+b.w+16&&y>b.y-16&&y<b.y+b.h+16)return true;for(let t of trees)if(Math.hypot(x-t.x,y-t.y)<t.r+12)return true;for(let f of fences)if(Math.abs(x-f.x)<13&&Math.abs(y-f.y)<13)return true;return false}
+function move(dt){
+ let dx=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0)+touchMove.x,dy=(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0)+touchMove.y;let mag=Math.hypot(dx,dy);if(mag>1){dx/=mag;dy/=mag}
+ let moving=mag>.05,run=(keys.Shift||sprinting)&&player.stamina>1&&moving,speed=run?190:118;
+ if(run)player.stamina=Math.max(0,player.stamina-25*dt);else player.stamina=Math.min(100,player.stamina+13*dt);
+ if(moving){let nx=player.x+dx*speed*dt,ny=player.y+dy*speed*dt;if(!blocked(nx,player.y))player.x=nx;if(!blocked(player.x,ny))player.y=ny;player.noise=run?1:.25}else player.noise=0;
+ if(player.invuln>0)player.invuln-=dt;
+}
+function updateEnemies(dt){
+ let maxThreat=0;
+ for(let e of enemies){e.phase+=dt;let d=Math.hypot(player.x-e.x,player.y-e.y);let canSee=d<250&&player.noise>.1;let targetX=e.homeX+Math.cos(e.phase*.65)*65,targetY=e.homeY+Math.sin(e.phase*.8)*55;
+ if(canSee){e.alert=Math.min(1,e.alert+dt*1.2);targetX=player.x;targetY=player.y}else e.alert=Math.max(0,e.alert-dt*.35);
+ let dx=targetX-e.x,dy=targetY-e.y,len=Math.hypot(dx,dy)||1,sp=e.speed*(e.alert>.2?1.45:1);let nx=e.x+dx/len*sp*dt,ny=e.y+dy/len*sp*dt;if(!blocked(nx,e.y))e.x=nx;if(!blocked(e.x,ny))e.y=ny;
+ if(d<34&&player.invuln<=0){player.invuln=2.3;player.stamina=Math.max(15,player.stamina-30);player.x=clamp(player.x+(player.x-e.x)*1.4,40,WORLD.w-40);player.y=clamp(player.y+(player.y-e.y)*1.4,40,WORLD.h-40);log('A shadow catches your movement. You break away and lose your breath.');notify('YOU WERE SPOTTED · KEEP MOVING')}
+ maxThreat=Math.max(maxThreat,clamp(100-(d-50)*.48,0,100)*e.alert,clamp(100-(d-90)*.55,0,25));
+ }threat=maxThreat;
+}
+function interact(){
+ let nearest=null,dist=64;
+ for(let l of loot)if(!l.taken){let d=Math.hypot(player.x-l.x,player.y-l.y);if(d<dist){nearest={kind:'loot',item:l};dist=d}}
+ for(let r of relays)if(!r.active){let d=Math.hypot(player.x-r.x,player.y-r.y);if(d<dist){nearest={kind:'relay',item:r};dist=d}}
+ for(let b of buildings){let cx=b.x+b.w/2,cy=b.y+b.h+24,d=Math.hypot(player.x-cx,player.y-cy);if(d<dist){nearest={kind:'building',item:b};dist=d}}
+ let de=Math.hypot(player.x-exitPoint.x,player.y-exitPoint.y);if(de<dist&&de<75)nearest={kind:'exit'};
+ if(!nearest){notify('NOTHING IN REACH');return}
+ if(nearest.kind==='loot'){let l=nearest.item;l.taken=true;inventory[l.type]++;log('Scavenged '+l.type+'.');notify('FOUND '+l.type.toUpperCase());save();updateHUD();return}
+ if(nearest.kind==='relay'){let r=nearest.item;if(inventory.cells<1){notify('NEED A POWER CELL');log('Relay needs a power cell. Search nearby buildings and streets.');return}inventory.cells--;r.active=true;inventory.relays++;flags[['relayA','relayB','relayC'][relays.indexOf(r)]]=true;log(r.name+' restored. Signal strength increasing.');notify('RELAY ONLINE · '+inventory.relays+'/3');updateHUD();save();if(inventory.relays===1)showEvent('SIGNAL NETWORK / 01','ONE DOWN.','A weak signal returns. The tower answers with a burst of static: “Two more. Keep going.”');return}
+ if(nearest.kind==='building'){let b=nearest.item;if(b.type==='station'){flags.station=true;log('Relay station mapped. Three field relays marked on your map.');showEvent('FIELD DISCOVERY','THE RELAY STATION','The district map marks three relay boxes. They need power cells. Watch the streets.');updateHUD();save()}else if(b.type==='clinic'){if(inventory.med>0){inventory.med--;player.stamina=Math.min(100,player.stamina+45);notify('RESTED · STAMINA RESTORED')}else notify('ABANDONED CLINIC · NOTHING LEFT')}else if(b.type==='shop'){if(inventory.scrap>=2&&inventory.med<3){inventory.scrap-=2;inventory.med++;notify('TRADED 2 SCRAP FOR A MED KIT');log('A sealed supply drawer still works.')}else notify('MARKET SHELVES ARE EMPTY')}else notify(b.name+' · NO SAFE WAY INSIDE');updateHUD();save();return}
+ if(nearest.kind==='exit'){if(inventory.relays<3){notify('TOWER LOCKED · RESTORE ALL 3 RELAYS');return}flags.extracted=true;updateHUD();save();showEvent('CHAPTER 01 COMPLETE','THE SIGNAL RETURNS.','The tower lights up across the district. Somewhere beyond the rooftops, another signal answers. You made it through the Quiet District.','RETURN TO TITLE',()=>{state='menu';$('menu').classList.add('show')});}
+}
+function update(dt){
+ if(state!=='playing')return;elapsed+=dt;move(dt);updateEnemies(dt);camera.x=clamp(player.x-CW/2,0,WORLD.w-CW);camera.y=clamp(player.y-CH/2,0,WORLD.h-CH);
+ let zone=buildings.find(b=>player.x>b.x-25&&player.x<b.x+b.w+25&&player.y>b.y-25&&player.y<b.y+b.h+25);$('areaName').textContent=zone?zone.name:player.y>1000?'SOUTH BLOCK':player.x>1500?'EAST ROAD':player.x<650?'WEST END':'THE OUTSKIRTS';$('clock').textContent=stamp()+' / '+(elapsed>300?'NIGHTFALL':'DUSK');
+ if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('toast').classList.remove('show')}
+ saveTimer+=dt;if(saveTimer>8){save();saveTimer=0}updateHUD();
+}
+function frame(t){let dt=Math.min(.04,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(frame)}
+function start(newGame){if(newGame){player={x:270,y:750,r:13,stamina:100,noise:0,invuln:0};inventory={scrap:0,med:0,cells:0,relays:0};flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};elapsed=0;makeWorld();localStorage.removeItem('endroom-ch1-save');log('You step into the Quiet District. Find the relay station.')}else{makeWorld();if(!load()){start(true);return}log('Save restored. The district is where you left it.')}
+ state='playing';$('menu').classList.remove('show');$('pause').classList.remove('show');$('event').classList.remove('show');updateHUD();save()}
+function pause(){if(state==='playing'){state='paused';$('pause').classList.add('show')}else if(state==='paused'){state='playing';$('pause').classList.remove('show')}}
+$('startBtn').onclick=()=>start(true);$('continueBtn').onclick=()=>{if(localStorage.getItem('endroom-ch1-save'))start(false);else notify('NO SAVE FOUND')};$('pauseBtn').onclick=pause;$('resumeBtn').onclick=pause;$('saveQuitBtn').onclick=()=>{save();state='menu';$('pause').classList.remove('show');$('menu').classList.add('show')};
+$('eventOk').onclick=()=>$('event').classList.remove('show');
+document.addEventListener('keydown',e=>{let k=e.key;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(k))e.preventDefault();keys[k]=true;if(k.toLowerCase()==='e'&&state==='playing')interact();if(k.toLowerCase()==='p'||k==='Escape')pause()});
+document.addEventListener('keyup',e=>keys[e.key]=false);
+$('interact').addEventListener('pointerdown',e=>{e.preventDefault();if(state==='playing')interact()});
+$('sprint').addEventListener('pointerdown',()=>sprinting=true);['pointerup','pointerleave','pointercancel'].forEach(ev=>$('sprint').addEventListener(ev,()=>sprinting=false));
+let stick=$('stick'),nub=$('nub');function stickMove(e){let r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,len=Math.hypot(dx,dy),max=38;if(len>max){dx=dx/len*max;dy=dy/len*max}touchMove={x:dx/max,y:dy/max};nub.style.transform='translate('+dx+'px,'+dy+'px)'}
+stick.addEventListener('pointerdown',e=>{stick.setPointerCapture(e.pointerId);stickMove(e)});stick.addEventListener('pointermove',e=>{if(stick.hasPointerCapture(e.pointerId))stickMove(e)});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>stick.addEventListener(ev,()=>{touchMove={x:0,y:0};nub.style.transform='translate(0,0)'}));
+canvas.addEventListener('pointerdown',e=>{if(state!=='playing')return;let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*CW/r.width+camera.x,y=(e.clientY-r.top)*CH/r.height+camera.y;if(Math.hypot(x-player.x,y-player.y)<90)interact()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing')pause()});
+makeWorld();requestAnimationFrame(frame);
 })();
 </script>
 </body>
