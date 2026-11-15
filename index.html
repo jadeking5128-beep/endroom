@@ -87,7 +87,6 @@ function load(){try{let d=JSON.parse(localStorage.getItem('endroom-ch1-save'));i
 function updateHUD(){
  $('staminaText').textContent=Math.round(player.stamina)+'%';$('staminaBar').style.width=player.stamina+'%';
  $('threatText').textContent=threat>65?'DANGER':threat>25?'NEARBY':'LOW';$('threatBar').style.width=threat+'%';
- $('scrap').innerHTML='<b>◇</b>SCRAP ×'+inventory.scrap;$('med').innerHTML='<b>＋</b>MED ×'+inventory.med;$('cells').innerHTML='<b>▣</b>CELLS ×'+inventory.cells;$('relays').innerHTML='<b>⌁</b>RELAYS '+inventory.relays+'/3';
  $('missions').innerHTML=[['Find the relay station.',flags.station],['Activate three signal relays.',inventory.relays===3],['Reach the extraction point.',flags.extracted]].map((m,i)=>'<div class="mission '+(m[1]?'done':'')+'"><i>'+(m[1]?'✓':i+1)+'</i><span>'+m[0]+'</span></div>').join('');
  $('objective').innerHTML=flags.extracted?'<strong>Chapter complete.</strong> The district signal is back online.':inventory.relays<3?'<strong>'+inventory.relays+'/3 relays active.</strong> '+(flags.station?'Search the district and activate the remaining relays.':'Reach the relay station and locate the signal map.'):'<strong>All relays online.</strong> Reach the extraction point at the signal tower.';
 }
@@ -176,7 +175,7 @@ function update(dt){
 function frame(t){let dt=Math.min(.04,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(frame)}
 function start(newGame){if(newGame){player={x:270,y:750,r:13,stamina:100,noise:0,invuln:0};inventory={scrap:0,med:0,cells:0,relays:0};flags={station:false,relayA:false,relayB:false,relayC:false,extracted:false};elapsed=0;makeWorld();localStorage.removeItem('endroom-ch1-save');log('You enter the Quiet District. The receiver crackles with a voice you know.')}else{makeWorld();if(!load()){start(true);return}log('Save restored. The district is where you left it.')}
  $('menu').classList.remove('show');$('pause').classList.remove('show');updateHUD();save();
- if(newGame){showEvent('PROLOGUE / 18:42','A VOICE IN THE STATIC','“Mara? If this reaches you, I am still at the tower. The north relay is dead. The others too. Three relays, then the evacuation channel opens. Do not follow the lights. They are not ours.”\\n\\nThe transmission cuts. Your receiver points toward the old relay station. Somewhere out there, your brother is waiting. Somewhere closer, something is listening.','ENTER THE DISTRICT',()=>{state='playing';log('Radio: “Three relays. Then get to the tower.”')})}
+ if(newGame){showEvent('PROLOGUE / 18:42','A VOICE IN THE STATIC','“Mara? If this reaches you, I am still at the tower. The north relay is dead. The others too. Three relays, then the evacuation channel opens. Do not follow the lights. They are not ours.”\n\nThe transmission cuts. Your receiver points toward the old relay station. Somewhere out there, your brother is waiting. Somewhere closer, something is listening.','ENTER THE DISTRICT',()=>{state='playing';log('Radio: “Three relays. Then get to the tower.”')})}
  else state='playing';
 }
 function pause(){if(state==='playing'){state='paused';$('pause').classList.add('show')}else if(state==='paused'){state='playing';$('pause').classList.remove('show')}}
