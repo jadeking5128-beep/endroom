@@ -167,6 +167,7 @@ function drawCyberpunkDetails(){
 function drawActor(x,y,kind,angle){
  const sx=Math.round(x-camera.x),sy=Math.round(y-camera.y);if(sx<-48||sy<-56||sx>CW+48||sy>CH+48)return;
  const hero=kind==='player',moving=hero?player.animState!=='idle':(kind.alert>.15),running=hero&&player.animState==='run';
+ ctx.save();if(hero&&(player.facingX||0)<0){ctx.translate(sx*2,0);ctx.scale(-1,1)}
  const phase=hero?elapsed*(running?17:moving?10:2.4):kind.phase*9;
  const swing=moving?Math.sin(phase):Math.sin(elapsed*2.4)*.10;
  const bob=moving?Math.round(Math.abs(Math.cos(phase))*1.5):Math.round(Math.sin(elapsed*2.4)*.8);
@@ -206,6 +207,7 @@ function drawActor(x,y,kind,angle){
   if(kind.alert>.15){box(sx-2,sy-38,4,7,'#ff4b9a');box(sx-14,sy-31,28,2,'#ff4b9a66')}
   if(attack){box(sx-25-lunge,sy-4,7,3,'#ff4b9a');box(sx+18-lunge,sy-4,7,3,'#ff4b9a')}
  }
+ ctx.restore();
 }
 function drawLighting(){
  // soft dusk vignette and player light
