@@ -8,7 +8,7 @@
 <title>ENDROOM: AFTER DARK — Five Chapters</title>
 <style>
 
-:root{color-scheme:dark;--bg:#090d12;--panel:#111923;--panel2:#182331;--line:#52647b;--muted:#91a4b8;--text:#e8f1f5;--lime:#b7f36b;--amber:#f2c14e;--red:#ff647c}
+:root{color-scheme:dark;--bg:#070912;--panel:#101322;--panel2:#171b30;--line:#414b70;--muted:#8995b5;--text:#e8efff;--lime:#48f4df;--amber:#ffb34f;--red:#ff4e91}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#090d12;color:var(--text);font-family:monospace;image-rendering:pixelated}button{font:inherit;color:inherit;cursor:pointer}#app{height:100dvh;display:block;background:#090d12}header,.sidebar,.bottom,.scenehead{display:none!important}main,.world{display:block;width:100%;height:100%;padding:0;border:0}.viewport{position:fixed;inset:0;width:100vw;height:100dvh;border:0;box-shadow:none;background:#17232a}.viewport canvas{width:100%;height:100%;image-rendering:pixelated}
 header{display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--line);background:#0b1011eF;z-index:2}.brand{font-size:15px;font-weight:700;letter-spacing:.2em}.brand b{color:var(--lime)}.chapter{font:11px 'DM Mono';letter-spacing:.16em;color:var(--muted)}.headright{display:flex;align-items:center;gap:18px}.online{font:10px 'DM Mono';color:var(--lime);letter-spacing:.1em}.iconbtn{border:1px solid var(--line);background:#131a1b;padding:8px 11px;font:10px 'DM Mono';letter-spacing:.08em}
 main{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:0}.world{min-width:0;min-height:0;padding:16px;display:flex;flex-direction:column;border-right:1px solid var(--line)}.scenehead{display:flex;justify-content:space-between;align-items:center;padding:0 2px 12px}.scenehead h1{font-size:12px;letter-spacing:.2em;margin:0;font-weight:600}.scenehead span{font:10px 'DM Mono';color:var(--muted)}.viewport{position:relative;flex:1;min-height:0;overflow:hidden;border:1px solid #3b4b43;background:#101715;box-shadow:0 12px 55px #0009,inset 0 0 0 4px #070a0a}.viewport canvas{width:100%;height:100%;display:block;image-rendering:pixelated;touch-action:none}.hintbar{display:flex;justify-content:space-between;padding:10px 2px 0;color:var(--muted);font:10px 'DM Mono';letter-spacing:.04em}.sidebar{padding:16px;display:flex;flex-direction:column;gap:15px;overflow:auto;background:#0c1213}.panel{border:1px solid var(--line);background:linear-gradient(145deg,#141c1d,#0f1516);padding:13px}.label{font:9px 'DM Mono';letter-spacing:.18em;color:var(--muted);margin:0 0 12px;text-transform:uppercase}.objective{font-size:13px;line-height:1.55}.objective strong{color:var(--lime);font-weight:600}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#0a1011;border:1px solid #253231;padding:9px}.stat small{display:block;font:9px 'DM Mono';color:var(--muted);letter-spacing:.1em;margin-bottom:7px}.stat b{font:15px 'DM Mono';font-weight:500}.meter{height:4px;background:#273130;margin-top:7px;overflow:hidden}.meter i{display:block;height:100%;background:var(--lime);width:100%;transition:width .2s}.meter.alert i{background:var(--red)}.lootgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.loot{min-height:52px;border:1px solid #2b3936;background:#0a1011;display:grid;place-items:center;align-content:center;gap:4px;color:var(--muted);font:9px 'DM Mono'}.loot b{font-size:17px;color:var(--text);font-weight:500}.loot.have{border-color:#6d8251;color:var(--lime)}.missionlist{display:grid;gap:8px}.mission{display:flex;gap:9px;align-items:flex-start;font-size:11px;color:var(--muted);line-height:1.45}.mission i{width:14px;height:14px;border:1px solid #58665b;display:grid;place-items:center;flex:none;font:9px 'DM Mono';font-style:normal}.mission.done{color:#b9c99a}.mission.done i{background:#9ab75e;border-color:#9ab75e;color:#10160d}.feed{height:102px;overflow:auto;font:10px/1.6 'DM Mono';color:#9aa8a0}.feed p{margin:0 0 5px}.feed p:last-child{color:var(--lime)}.bottom{border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;color:#62716c;font:9px 'DM Mono';letter-spacing:.12em}.actions{display:flex;gap:7px}.action{border:2px solid #91a4b8;background:#202b22;color:#e8f1f5;padding:9px 12px;font:bold 10px monospace;letter-spacing:.08em;border-radius:0;box-shadow:3px 3px 0 #05080d}.action.primary{background:var(--lime);color:#10160d;border-color:var(--lime);font-weight:500}.action:disabled{opacity:.35;cursor:default}
@@ -97,14 +97,14 @@ function updateHUD(){
 function circle(x,y,r,c){ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
 function box(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
 function drawWorld(){
- ctx.fillStyle=colors.grass;ctx.fillRect(0,0,CW,CH);
+ ctx.fillStyle='#10131d';ctx.fillRect(0,0,CW,CH);
  let sx=Math.floor(camera.x/48),sy=Math.floor(camera.y/48);
  for(let y=sy-1;y<(camera.y+CH)/48+1;y++)for(let x=sx-1;x<(camera.x+CW)/48+1;x++){
   let wx=x*48,wy=y*48,px=wx-camera.x,py=wy-camera.y;
-  box(px,py,47,47,rnd(x*31+y*71)>.5?colors.grass:colors.grass2);
+  box(px,py,47,47,rnd(x*31+y*71)>.5?'#151a28':'#111622');
   let seed=rnd(x*13+y*7);
-  if(seed>.48){box(px+7+seed*20,py+9,2,3,'#71805a');box(px+18,py+27,3,2,'#1a2b22')}
-  if(seed>.82)box(px+34,py+8,5,2,'#405743');
+  if(seed>.48){box(px+7+seed*20,py+9,2,3,'#29364a');box(px+18,py+27,3,2,'#202b3d')}
+  if(seed>.82)box(px+34,py+8,5,2,'#33405c');
  }
  // Asphalt has layered shoulders, broken markings and drain details.
  box(0,650-camera.y,WORLD.w,140,'#333d37');box(0,660-camera.y,WORLD.w,120,colors.road);
@@ -137,10 +137,32 @@ function drawWorld(){
  for(let r of relays){let x=Math.round(r.x-camera.x),y=Math.round(r.y-camera.y);box(x-25,y+20,50,5,'#111a15');box(x-20,y-17,40,35,'#17231e');box(x-16,y-13,32,27,r.active?'#6f8b4d':'#594936');box(x-5,y-22,10,9,'#26372b');box(x-3,y-10,6,21,r.active?'#d7f3a0':'#d2a36c');box(x-13,y+12,26,3,'#9b9b75');if(r.active){box(x-4,y-4,8,8,'#e5f6b6');circle(x,y,23,'#b8dc7122')}}
  let ex=exitPoint.x-camera.x,ey=exitPoint.y-camera.y;box(ex-22,ey+19,44,5,'#101813');box(ex-18,ey-18,36,36,'#17241c');box(ex-13,ey-13,26,26,'#8eaa5c');box(ex-7,ey-7,14,14,'#d9ed9d');box(ex-3,ey-22,6,44,'#e3efb5');
 }
+function drawCyberpunkDetails(){
+ // Dense neon metropolis dressing: signs, traffic wrecks, street lamps and wet-road reflections.
+ const neon=['#39f5df','#ff4b9a','#8b70ff','#ffb34f'];
+ const glow=(x,y,r,c)=>{const g=ctx.createRadialGradient(x,y,1,x,y,r);g.addColorStop(0,c+'66');g.addColorStop(1,c+'00');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2)};
+ // Neon lane seams and reflected light break up the broad asphalt.
+ for(let i=0;i<14;i++){let wx=120+i*158,wy=650+((i*83)%95),x=wx-camera.x,y=wy-camera.y;if(x>-20&&x<CW+20){box(x,y,58,2,i%2?'#ff4b9a88':'#39f5df88');box(x+12,y+5,24,1,'#a9dfff55')}}
+ // Building edge strips, holographic signboards and irregular lit windows.
+ buildings.forEach((b,i)=>{let x=b.x-camera.x,y=b.y-camera.y;if(x+b.w<0||y+b.h<0||x>CW||y>CH)return;let c=neon[i%neon.length];
+  ctx.globalAlpha=.78;box(x+8,y+7,b.w-16,2,c);box(x+8,y+b.h-10,b.w-16,2,i%2?'#39f5df':'#ff4b9a');ctx.globalAlpha=1;
+  for(let wx=26;wx<b.w-25;wx+=68){let lit=(i+wx+Math.floor(elapsed*1.5))%4!==0;if(lit){box(x+wx+2,y+32,22,3,i%2?'#39f5df':'#ffb34f');box(x+wx+2,y+36,22,1,'#d4faff66')}}
+  const sx=x+b.w-78,sy=y+54;box(sx-3,sy-3,66,24,'#090d19');box(sx,sy,60,18,'#151d32');box(sx,sy,60,2,c);ctx.fillStyle=c;ctx.font='bold 9px monospace';ctx.fillText(['NOVA','夜 MARKET','NEON','24H'][i%4],sx+5,sy+13);glow(sx+28,sy+12,46,c);
+ });
+ // Street lamps cast alternating cyan and magenta pools.
+ for(let i=0;i<12;i++){let wx=160+i*180,wy=(i%2?625:805),x=wx-camera.x,y=wy-camera.y;if(x<-40||x>CW+40||y<-80||y>CH+80)continue;let c=i%2?'#ff4b9a':'#39f5df';box(x-2,y-72,4,72,'#28334b');box(x-9,y-75,18,4,'#53617b');box(x-7,y-72,14,3,c);glow(x,y-66,100,c);box(x-1,y-1,2,2,'#9db3c8')}
+ // Abandoned autonomous taxis and delivery vans.
+ const cars=[[470,620,1],[1260,690,-1],[1580,330,1],[760,1160,-1],[1870,760,1]];
+ cars.forEach(([wx,wy,dir],i)=>{let x=wx-camera.x,y=wy-camera.y;if(x<-70||x>CW+70||y<-40||y>CH+40)return;let c=i%2?'#ff4b9a':'#39f5df';box(x-28,y+12,58,5,'#080a12');box(x-25,y-7,50,19,'#202a3d');box(x-14,y-16,28,11,'#35465b');box(x-10,y-14,20,7,'#8cb4c4');box(x-27,y+5,54,5,'#0b101b');box(x-24,y+1,8,4,'#ffb34f');box(x+16,y+1,8,4,'#ff4b9a');box(x+(dir>0?25:-29),y-3,4,3,c);glow(x,y,40,c)});
+ // Atmospheric rain is screen-space so it remains consistent while the camera moves.
+ ctx.save();ctx.globalAlpha=.42;ctx.lineWidth=1;for(let i=0;i<105;i++){let x=(i*97+elapsed*115*(1+(i%3)*.22))%(CW+30)-15,y=(i*53+elapsed*270)%(CH+30)-15;ctx.strokeStyle=i%5===0?'#ff9acb':'#a9d9ed';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y+13);ctx.stroke()}ctx.restore();
+ // Chromatic haze around the edges.
+ let v=ctx.createRadialGradient(CW*.5,CH*.48,110,CW*.5,CH*.48,560);v.addColorStop(0,'#05071300');v.addColorStop(1,'#050713b8');ctx.fillStyle=v;ctx.fillRect(0,0,CW,CH);
+}
 function drawActor(x,y,kind,angle){
  const sx=Math.round(x-camera.x),sy=Math.round(y-camera.y);if(sx<-35||sy<-40||sx>CW+35||sy>CH+35)return;
  box(sx-13,sy+11,26,5,'#080d0bc9');
- const hero=kind==='player',step=Math.floor(elapsed*9)%2,skin='#d7b58e',coat='#486d58',dark='#1c2924',pants='#29352f';
+ const hero=kind==='player',step=Math.floor(elapsed*9)%2,skin='#d7b58e',coat='#273d58',dark='#101827',pants='#20283c';
  const rows=hero?[
  '....HHHH....','...HHHHHH...','...SSSSSS...','...SEESSS...','....SSSS....',
  '..CCCCCCCC..','.CCCCCCCCCC.','.CCCLCCCCCC.','..CCCCCCCC..','...CCDDCC...',
@@ -150,25 +172,25 @@ function drawActor(x,y,kind,angle){
  '.MMMRRRRMMM.','..MMRRRRMM..','...RRRRRR...','..RRRRRRRR..','.RRRR..RRRR.',
  'RRR......RRR','..LL....LL..','..LL....LL..','................'
  ];
- const pal=hero?{H:'#252e29',S:skin,E:'#20291f',C:coat,L:'#91a77a',D:'#26372e',P:pants}:{M:'#727967',R:'#424c40',L:'#262f29'};
+ const pal=hero?{H:'#151b2b',S:skin,E:'#101522',C:coat,L:'#39f5df',D:'#27354e',P:pants}:{M:'#68758d',R:'#29334a',L:'#ff4b9a'};
  const px=3,py=3,ox=sx-rows[0].length*px/2,oy=sy-22;
  rows.forEach((row,ry)=>{for(let rx=0;rx<row.length;rx++){let ch=row[rx];if(ch==='.'||(!hero&&ch===' '))continue;let col=pal[ch]||'#fff';let yy=oy+ry*py;if(hero&&ry>=10&&((rx<6&&step===0)||(rx>5&&step===1)))yy+=2;box(ox+rx*px,yy,px,py,col)}});
  if(hero){box(sx+8,sy-9,4,10,'#b6c38d');box(sx+9,sy-7,2,5,'#e8f2c2');box(sx-15,sy-6,5,13,'#76583f')}
- else{box(sx-5,sy-8,4,3,'#ef766b');box(sx+2,sy-8,4,3,'#ef766b');if(kind.alert>0)box(sx-2,sy-31,4,4,'#f18b75')}
+ else{box(sx-5,sy-8,4,3,'#ff4b9a');box(sx+2,sy-8,4,3,'#ff4b9a');if(kind.alert>0)box(sx-2,sy-31,4,4,'#f18b75')}
 }
 function drawLighting(){
  // soft dusk vignette and player light
  let px=player.x-camera.x,py=player.y-camera.y;let g=ctx.createRadialGradient(px,py,50,px,py,460);g.addColorStop(0,'#0a100d00');g.addColorStop(.55,'#09100d35');g.addColorStop(1,'#050a0bcb');ctx.fillStyle=g;ctx.fillRect(0,0,CW,CH);
- let a=ctx.createRadialGradient(px,py,5,px,py,175);a.addColorStop(0,'#f0e6bd20');a.addColorStop(1,'#f0e6bd00');ctx.fillStyle=a;ctx.fillRect(0,0,CW,CH);
+ let a=ctx.createRadialGradient(px,py,5,px,py,195);a.addColorStop(0,'#39f5df26');a.addColorStop(.55,'#ff4b9a0d');a.addColorStop(1,'#f0e6bd00');ctx.fillStyle=a;ctx.fillRect(0,0,CW,CH);
 }
 function drawMinimap(){let x=CW-155,y=15,w=138,h=92;box(x-5,y-5,w+10,h+10,'#0a1110dd');box(x,y,w,h,'#26342d');for(let b of buildings)box(x+b.x/WORLD.w*w,y+b.y/WORLD.h*h,b.w/WORLD.w*w,b.h/WORLD.h*h,'#566357');box(x+1000/WORLD.w*w,y,150/WORLD.w*w,h,'#717566');box(x,y+650/WORLD.h*h,w,140/WORLD.h*h,'#717566');for(let r of relays)circle(x+r.x/WORLD.w*w,y+r.y/WORLD.h*h,3,r.active?'#d3ef8d':'#d5a36d');circle(x+player.x/WORLD.w*w,y+player.y/WORLD.h*h,4,'#fff2c6');}
 function drawGameUI(){
  // HUD is deliberately kept inside the safe top and side margins.
  const panel=(x,y,w,h)=>{box(x,y,w,h,'#080f18f2');ctx.strokeStyle='#8caa91';ctx.lineWidth=2;ctx.strokeRect(x+1,y+1,w-2,h-2)};
  panel(12,12,284,94);
- ctx.fillStyle='#c5e478';ctx.font='bold 12px monospace';ctx.fillText('ENDROOM // AFTER DARK',23,31);
+ ctx.fillStyle='#39f5df';ctx.font='bold 12px monospace';ctx.fillText('ENDROOM // AFTER DARK',23,31);
  ctx.fillStyle='#e8f1f5';ctx.font='9px monospace';ctx.fillText('CHAPTER '+String(chapterIndex+1).padStart(2,'0')+'  /  '+chapter().name,23,48);
- ctx.fillStyle='#f2c14e';ctx.fillText(stamp()+'  ·  '+(elapsed>300?'NIGHTFALL':'DUSK'),23,64);
+ ctx.fillStyle='#ffb34f';ctx.fillText(stamp()+'  ·  NEON NIGHT',23,64);
  ctx.fillStyle='#9bb1c5';ctx.fillText('WASD MOVE  ·  SHIFT RUN  ·  E USE',23,84);
  // Inventory is now a dedicated, high-contrast panel below the title.
  panel(12,116,284,112);ctx.fillStyle='#c5e478';ctx.font='bold 10px monospace';ctx.fillText('FIELD INVENTORY',23,133);
@@ -274,7 +296,7 @@ function beginCinematic(){cinemaTime=0;state='cinematic';$('cinemaHud').style.di
 function finishCinematic(){ $('cinemaHud').style.display='none';state='playing';log('The receiver crackles. The Quiet District is waiting.');notify('CHAPTER 01 · THE QUIET DISTRICT');}
 function draw(){
  if(state==='cinematic'){ctx.clearRect(0,0,CW,CH);drawCinema();return}
- ctx.clearRect(0,0,CW,CH);drawWorld();for(let e of enemies)drawActor(e.x,e.y,e,e.phase);drawActor(player.x,player.y,'player');drawLighting();drawMinimap();drawGameUI();
+ ctx.clearRect(0,0,CW,CH);drawWorld();drawCyberpunkDetails();for(let e of enemies)drawActor(e.x,e.y,e,e.phase);drawActor(player.x,player.y,'player');drawLighting();drawMinimap();drawGameUI();
 }
 function blocked(x,y){if(x<28||y<28||x>WORLD.w-28||y>WORLD.h-28)return true;for(let b of buildings)if(x>b.x-16&&x<b.x+b.w+16&&y>b.y-16&&y<b.y+b.h+16)return true;for(let t of trees)if(Math.hypot(x-t.x,y-t.y)<t.r+12)return true;for(let f of fences)if(Math.abs(x-f.x)<13&&Math.abs(y-f.y)<13)return true;return false}
 function move(dt){
