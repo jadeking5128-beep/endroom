@@ -62,8 +62,8 @@ class Campaign extends Phaser.Scene {
   prompt(s:string){const e=document.querySelector('#prompt') as HTMLElement;e.style.display=s?'block':'none';e.textContent=s?'[ E ] '+s:''}
   interact(){
     if(this.mode==='side'){
-      if(this.x>400&&this.x<550&&!this.tasks[1].done){this.tasks[1].done=true;this.nodes[0]=true;this.toast('PRESSURE VALVE ISOLATED');this.hud();return}
-      if(this.x>650&&this.x<900){this.mode='top';this.top={x:130,y:440};this.player.setPosition(this.top.x,this.top.y);this.cameras.main.stopFollow();this.cameras.main.setScroll(0,0);this.drawWorld();this.hud();this.toast('STATION INTERIOR // ACCESS GRANTED');return}
+      if(this.x>260&&this.x<360&&!this.tasks[0].done){this.tasks[0].done=true;this.toast('RUPTURED FUEL LINE LOCATED');this.hud();return}\n      if(this.x>400&&this.x<550&&this.tasks[0].done&&!this.tasks[1].done){this.tasks[1].done=true;this.nodes[0]=true;this.toast('PRESSURE VALVE ISOLATED');this.hud();return}
+      if(this.x>650&&this.x<900&&this.tasks[0].done&&this.tasks[1].done){this.stage=1;this.mode='top';this.top={x:130,y:440};this.player.setPosition(this.top.x,this.top.y);this.cameras.main.stopFollow();this.cameras.main.setScroll(0,0);this.drawWorld();this.hud();this.toast('STATION INTERIOR // ACCESS GRANTED');return}
       if(this.x>1040&&this.x<1210&&this.stage>=1){this.tasks[2].done=true;this.stage=2;this.hud();this.toast('FLIGHT RECORDER RECOVERED');return}
     }else{
       const {x,y}=this.top;
@@ -87,14 +87,14 @@ class Campaign extends Phaser.Scene {
     const dt=Math.min(ms/1000,.04),left=this.keys.A.isDown||this.keys.LEFT.isDown,right=this.keys.D.isDown||this.keys.RIGHT.isDown,up=this.keys.W.isDown||this.keys.UP.isDown,down=this.keys.S.isDown||this.keys.DOWN.isDown;
     if(this.mode==='side'){
       const axis=(right?1:0)-(left?1:0);this.vx=Phaser.Math.Linear(this.vx,axis*225,.17);if(!axis)this.vx*=.76;this.x=Phaser.Math.Clamp(this.x+this.vx*dt,20,1770);
-      if(this.keys.SPACE.isDown&&this.grounded){this.vy=-440;this.grounded=false}this.vy+=1100*dt;this.y+=this.vy*dt;if(this.y>0){this.y=0;this.vy=0;this.grounded=true}
+      if((this.keys.SPACE.isDown||this.keys.W.isDown)&&this.grounded){this.vy=-440;this.grounded=false}this.vy+=1100*dt;this.y+=this.vy*dt;if(this.y>0){this.y=0;this.vy=0;this.grounded=true}
       this.player.setPosition(this.x,590+this.y);if(Math.abs(this.vx)>10)this.face=Math.sign(this.vx);this.player.setScale(this.face,1);
       const moving=Math.abs(this.vx)>12;this.phase+=Math.abs(this.vx)*dt*.035;this.torso.y=moving?Math.abs(Math.sin(this.phase*2))*2:Math.sin(this.time.now*.002)*1.1;
       const legs=this.player.list.filter(o=>o instanceof Phaser.GameObjects.Graphics) as Phaser.GameObjects.Graphics[];
       legs.forEach((leg,i)=>{leg.clear();const a=this.phase+i*Math.PI,s=moving?Math.sin(a):0;leg.lineStyle(7,0xbccbc6,1);leg.beginPath();leg.moveTo(i?5:-5,-25);leg.lineTo((i?8:-8)+s*7,-13-Math.max(0,Math.cos(a))*4);leg.lineTo((i?10:-10)+s*12,-3);leg.strokePath();leg.fillStyle(0x263c45,1);leg.fillRoundedRect((i?10:-10)+s*12-6,-5,13,6,2)});
       const arms=this.player.list.filter(o=>o instanceof Phaser.GameObjects.Graphics)[2] as Phaser.GameObjects.Graphics|undefined;if(arms){arms.clear();const swing=moving?Math.sin(this.phase)*8:0;arms.lineStyle(6,0xcbd6d1,1);arms.lineBetween(-10,-56,-13-swing,-30);arms.lineBetween(10,-56,13+swing,-30)}
-      const hint=this.x>650&&this.x<900?'ENTER STATION':this.x>400&&this.x<550?'ISOLATE PRESSURE VALVE':this.x>1040&&this.x<1210&&this.stage>=1?'RECOVER FLIGHT RECORDER':'';this.prompt(hint);
-      if(this.x>650&&this.x<900&&this.stage===0){this.stage=1;this.tasks[0].done=true;this.hud();this.toast('LANDED AT THE STATION ACCESS POINT')}
+      const hint=this.x>650&&this.x<900?(this.tasks[0].done&&this.tasks[1].done?'ENTER STATION':'COMPLETE FUEL-LINE REPAIR'):this.x>260&&this.x<360&&!this.tasks[0].done?'LOCATE RUPTURED LINE':this.x>400&&this.x<550?'ISOLATE PRESSURE VALVE':this.x>1040&&this.x<1210&&this.stage>=1?'RECOVER FLIGHT RECORDER':'';this.prompt(hint);
+      if(this.x>650&&this.x<900&&this.stage===0)this.prompt('COMPLETE FUEL-LINE REPAIR FIRST');
     }else{
       const dx=(right?1:0)-(left?1:0),dy=(down?1:0)-(up?1:0);this.top.x=Phaser.Math.Clamp(this.top.x+dx*210*dt,90,1710);this.top.y=Phaser.Math.Clamp(this.top.y+dy*210*dt,100,800);this.player.setPosition(this.top.x,this.top.y);this.torso.y=Math.sin(this.time.now*.004)*1.2;
       const hint=this.top.x<190&&this.top.y>380?'EXIT TO SURFACE':this.top.x>200&&this.top.x<470&&this.top.y>120&&this.top.y<300&&!this.router?'RESTORE POWER ROUTER':this.top.x>570&&this.top.x<840&&this.top.y>340&&this.top.y<510&&!this.scan?'CALIBRATE GRAVITY SCANNER':this.top.x>1040&&this.top.x<1380&&this.top.y>120&&this.top.y<300&&this.scan&&!this.relay?'ACCESS ORBITAL RELAY':'';this.prompt(hint);
