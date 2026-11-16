@@ -68,12 +68,12 @@ ctx.fillStyle='#315b42';ctx.fillRect(0,H*.42,W,H*.58)}
 function drawTrack(){const base=Math.floor(state.position/SEG),playerSeg=segAt(state.position),cameraX=playerSeg.worldX+state.lateral*ROAD*.5,cameraY=playerSeg.y+1150,cameraZ=state.position-900;let x1=0,x2=0,dx=0;let prevY=H,prevL=0,prevR=W;
 for(let n=1;n<=VIEW;n++){const s=segments[(base+n)%TRACK],z1=s.z+(n>TRACK-base-1?ROADLEN:0),z2=z1+SEG;dx+=s.curve;x1=x2;x2=dx;const p1=project(s.worldX-x1*0.7,s.y,z1,cameraX,cameraY,cameraZ),p2=project(s.worldX-x2*0.7,s.y,z2,cameraX,cameraY,cameraZ);if(p2.y>=prevY)continue;
 const w1=p1.scale*ROAD*W*.00048,w2=p2.scale*ROAD*W*.00048;const center1=p1.x,center2=p2.x;const rumble1=w1*.105,rumble2=w2*.105;
+const grassCol=Math.floor((base+n)/3)%2?'#315f43':'#376a49';poly([[0,prevY],[W,prevY],[W,p2.y],[0,p2.y]],grassCol);
 poly([[center1-w1-rumble1,p1.y],[center1+w1+rumble1,p1.y],[center2+w2+rumble2,p2.y],[center2-w2-rumble2,p2.y]],Math.floor((base+n)/3)%2?'#e6e3d8':'#d84938');
 poly([[center1-w1,p1.y],[center1+w1,p1.y],[center2+w2,p2.y],[center2-w2,p2.y]],roadColor(base+n));
 poly([[center1-w1*.98,p1.y],[center1-w1*.93,p1.y],[center2-w2*.93,p2.y],[center2-w2*.98,p2.y]],'#f0eee7');
 poly([[center1+w1*.93,p1.y],[center1+w1*.98,p1.y],[center2+w2*.98,p2.y],[center2+w2*.93,p2.y]],'#f0eee7');
 if(Math.floor((base+n)/6)%2===0){for(let lane=-1;lane<=1;lane++){if(lane===0)continue;const lw1=Math.max(1,w1*.004),lw2=Math.max(1,w2*.004);poly([[center1+lane*w1/3-lw1,p1.y],[center1+lane*w1/3+lw1,p1.y],[center2+lane*w2/3+lw2,p2.y],[center2+lane*w2/3-lw2,p2.y]],'#d9d9d0aa')}}
-const grassCol=Math.floor((base+n)/3)%2?'#315f43':'#376a49';poly([[0,prevY],[W,prevY],[W,p2.y],[0,p2.y]],grassCol);
 if(n%9===0){const sx=center2-w2*1.34,sw=Math.max(2,w2*.09);poly([[sx-sw,p2.y],[sx+sw,p2.y],[sx+sw*.8,p2.y- Math.max(2,w2*.22)],[sx-sw*.8,p2.y-Math.max(2,w2*.22)]],n%18?'#d8d8d2':'#c63e32');const sx2=center2+w2*1.34;poly([[sx2-sw,p2.y],[sx2+sw,p2.y],[sx2+sw*.8,p2.y-Math.max(2,w2*.22)],[sx2-sw*.8,p2.y-Math.max(2,w2*.22)]],'#d8d8d2')}
 if(n%16===0){ctx.fillStyle='#263b46';ctx.fillRect(center2-w2*1.7,p2.y-Math.max(3,w2*.6),Math.max(2,w2*.045),Math.max(3,w2*.6));ctx.fillStyle='#d8e0dc';ctx.fillRect(center2-w2*1.7-Math.max(1,w2*.05),p2.y-Math.max(3,w2*.6),Math.max(3,w2*.14),Math.max(2,w2*.08))}
 prevY=p2.y;prevL=center2-w2;prevR=center2+w2;
