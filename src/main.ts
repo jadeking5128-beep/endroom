@@ -62,7 +62,8 @@ class Campaign extends Phaser.Scene {
   prompt(s:string){const e=document.querySelector('#prompt') as HTMLElement;e.style.display=s?'block':'none';e.textContent=s?'[ E ] '+s:''}
   interact(){
     if(this.mode==='side'){
-      if(this.x>260&&this.x<360&&!this.tasks[0].done){this.tasks[0].done=true;this.toast('RUPTURED FUEL LINE LOCATED');this.hud();return}\n      if(this.x>400&&this.x<550&&this.tasks[0].done&&!this.tasks[1].done){this.tasks[1].done=true;this.nodes[0]=true;this.toast('PRESSURE VALVE ISOLATED');this.hud();return}
+      if(this.x>260&&this.x<360&&!this.tasks[0].done){this.tasks[0].done=true;this.toast('RUPTURED FUEL LINE LOCATED');this.hud();return}
+      if(this.x>400&&this.x<550&&this.tasks[0].done&&!this.tasks[1].done){this.tasks[1].done=true;this.nodes[0]=true;this.toast('PRESSURE VALVE ISOLATED');this.hud();return}
       if(this.x>650&&this.x<900&&this.tasks[0].done&&this.tasks[1].done){this.stage=1;this.mode='top';this.top={x:130,y:440};this.player.setPosition(this.top.x,this.top.y);this.cameras.main.stopFollow();this.cameras.main.setScroll(0,0);this.drawWorld();this.hud();this.toast('STATION INTERIOR // ACCESS GRANTED');return}
       if(this.x>1040&&this.x<1210&&this.stage>=1){this.tasks[2].done=true;this.stage=2;this.hud();this.toast('FLIGHT RECORDER RECOVERED');return}
     }else{
