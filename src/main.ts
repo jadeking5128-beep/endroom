@@ -91,7 +91,7 @@ class Campaign extends Phaser.Scene {
 
     this.topRig=this.add.container(0,0);
     this.topRig.add(this.add.ellipse(0,15,38,20,0x02070a,.5));
-    this.topRig.add(this.add.roundedRect(0,10,22,25,0x415b64,5).setStrokeStyle(2,0x91a8aa));
+    this.topRig.add(this.add.rectangle(0,10,22,25,0x415b64).setStrokeStyle(2,0x91a8aa));
     const leftLeg=this.add.ellipse(-7,18,9,17,0xabbcba).setStrokeStyle(1,0x647d82);
     const rightLeg=this.add.ellipse(7,18,9,17,0xabbcba).setStrokeStyle(1,0x647d82);
     this.topLegs=[leftLeg,rightLeg];
@@ -535,7 +535,7 @@ class Campaign extends Phaser.Scene {
     if(this.stage===7&&this.relayAccessed&&!this.alignReady&&!this.transmitted){
       const right=this.keys.D.isDown||this.keys.RIGHT.isDown;
       const left=this.keys.A.isDown||this.keys.LEFT.isDown;
-      this.align=Phaser.Math.Clamp(this.align+(right?42:0)-(left?42:0),0,100);
+      this.align=Phaser.Math.Clamp(this.align+((right?42:0)-(left?42:0))*dt,0,100);
       const signal=document.querySelector('#signal') as HTMLElement;
       signal.textContent='CARRIER PHASE  //  '+Math.floor(this.align)+'%';
       if(this.align>=100){
