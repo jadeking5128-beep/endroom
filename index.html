@@ -5,44 +5,24 @@
 <meta name="theme-color" content="#11130f">
 <title>THE HOLLOW KINGDOM — A tiny adventure</title>
 <style>
-:root{color-scheme:dark;--bg:#11130f;--panel:#1b2018;--ink:#e9e5c9;--muted:#a5a58a;--gold:#e5c66d;--line:#48503b}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}body{background-image:radial-gradient(ellipse at 50% 0%,#303923 0%,#11130f 60%);padding:22px}
-main{max-width:1100px;margin:auto}.mast{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:5px 0 16px;gap:12px}.brand{letter-spacing:.18em;font-size:12px;color:var(--gold)}.edition{font-size:10px;color:var(--muted);letter-spacing:.12em}
-.hero{padding:30px 0 22px;display:grid;grid-template-columns:1.3fr .7fr;gap:30px;align-items:end}.eyebrow{font-size:10px;color:var(--gold);letter-spacing:.22em}.hero h1{font-size:clamp(34px,7vw,72px);line-height:.92;letter-spacing:-.08em;margin:14px 0 18px;color:#f0e9c9}.hero p{max-width:650px;color:#c2c2a8;font-size:13px;line-height:1.8;margin:0}.legend{border-left:1px solid var(--line);padding:10px 0 10px 20px;color:var(--muted);font-size:11px;line-height:2}.legend b{color:var(--ink);font-weight:500}
-.story{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);background:#171b14;margin:6px 0 20px}.story article{padding:17px 18px;border-right:1px solid var(--line)}.story article:last-child{border:0}.story h3{font-size:11px;letter-spacing:.15em;color:var(--gold);margin:0 0 10px}.story p{font-size:11px;line-height:1.75;color:#b9bba4;margin:0}
-.game-shell{border:1px solid #596149;background:#090b08;box-shadow:0 20px 70px #0009}.game-head{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;border-bottom:1px solid #343b2d;font-size:10px;letter-spacing:.13em;color:var(--muted);gap:10px}.game-head strong{color:var(--gold);font-weight:500}.stage{position:relative;background:#090c08;overflow:hidden}.stage canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none}.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#080b08d9;padding:18px;text-align:center}.overlay[hidden]{display:none}.modal{max-width:490px;border:1px solid #70784e;background:#171d14;padding:26px 24px;box-shadow:0 0 0 5px #1118}.modal .small{font-size:10px;color:var(--gold);letter-spacing:.2em}.modal h2{font-size:clamp(24px,5vw,40px);letter-spacing:-.06em;margin:12px 0}.modal p{font-size:12px;line-height:1.8;color:#c0c3a8}.btn{border:1px solid var(--gold);background:#d9bb60;color:#17180f;padding:12px 20px;font:700 11px ui-monospace,monospace;letter-spacing:.12em;cursor:pointer;margin-top:8px}.btn:hover{background:#f0d98c}.hud{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:11px 15px;border-top:1px solid #343b2d;font-size:10px;color:#b7b99f;letter-spacing:.08em}.hud strong{color:var(--gold);font-weight:500}.below{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:15px 2px;color:var(--muted);font-size:10px;line-height:1.7}.touch{display:none;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,42px);gap:5px;justify-content:center;padding:10px}.touch button{border:1px solid #596149;background:#1b2118;color:#eee5c2;font:18px monospace;touch-action:none}.touch button:active{background:#6c7141}
-footer{border-top:1px solid var(--line);padding:16px 0;margin-top:18px;color:#777e68;font-size:10px;letter-spacing:.08em;display:flex;justify-content:space-between;gap:12px}
-@media(max-width:700px){body{padding:13px}.hero{grid-template-columns:1fr;gap:14px;padding-top:24px}.legend{border-left:0;border-top:1px solid var(--line);padding:10px 0 0}.story{grid-template-columns:1fr}.story article{border-right:0;border-bottom:1px solid var(--line)}.story article:last-child{border-bottom:0}.touch{display:grid}.below{display:block}.below span{display:block;margin:5px 0}}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080d0b;color:#f1e9c8;font-family:ui-monospace,monospace;overscroll-behavior:none;touch-action:manipulation}body{position:fixed;inset:0}
+#game{position:absolute;inset:0;width:100vw;height:100dvh;display:block;image-rendering:pixelated;touch-action:none}
+#ui{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(10px,2vw,24px);background:linear-gradient(180deg,#050907b8,transparent 20%,transparent 76%,#0509079c)}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.logo{font-size:clamp(10px,1.2vw,14px);letter-spacing:.2em;color:#e8ce83;text-shadow:0 2px 5px #000}.stats{display:flex;gap:clamp(9px,2vw,24px);font-size:clamp(9px,1vw,12px);letter-spacing:.1em;color:#d6d8b7;text-shadow:0 2px 4px #000}.stats b{color:#f3d47e;font-weight:500}
+.actions{display:flex;gap:6px;pointer-events:auto}.glass{background:#111b16d9;border:1px solid #b7b88766;color:#eee7c9;padding:9px 12px;font-size:10px;letter-spacing:.1em;backdrop-filter:blur(8px);cursor:pointer}
+.bottom{display:flex;justify-content:space-between;align-items:end;gap:12px}.quest{font-size:11px;line-height:1.7;color:#e5e1c5;text-shadow:0 2px 5px #000;max-width:55vw}.quest b{display:block;color:#f0d17b;letter-spacing:.17em;font-size:9px}
+#notice{color:#f2d986}.touch{display:none;pointer-events:auto;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,43px);gap:5px}.touch button{border:1px solid #d6d5a477;background:#101a15d9;color:#fff2c9;font:22px monospace;backdrop-filter:blur(5px);touch-action:none}.touch button:active{background:#b49a4c99}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse,#0a120edb,#030705f2);pointer-events:auto;text-align:center}.overlay[hidden]{display:none}.modal{width:min(560px,92vw);padding:clamp(22px,5vw,46px);border:1px solid #c5b77a88;background:linear-gradient(145deg,#1b2a20f2,#0b120ef5);box-shadow:0 0 0 1px #0a0e0b,0 25px 90px #000b,inset 0 0 50px #b5a65a12}.kicker{font-size:10px;letter-spacing:.28em;color:#e5ca78}.modal h1{font-size:clamp(32px,7vw,66px);line-height:.92;letter-spacing:-.07em;margin:18px 0;color:#f4ebc9;text-shadow:0 4px 0 #6b643e}.modal p{font-size:clamp(11px,1.5vw,13px);line-height:1.9;color:#c4cbb1;max-width:450px;margin:0 auto 16px}.btn{background:linear-gradient(#f0d98c,#b89445);border:1px solid #f8e6a5;color:#19190f;padding:14px 22px;font-size:11px;font-weight:bold;letter-spacing:.16em;cursor:pointer;box-shadow:0 4px 0 #67522c}.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #67522c}
+@media(max-width:700px){.touch{display:grid}.stats{flex-wrap:wrap;justify-content:flex-end;max-width:48vw}.bottom{align-items:end}.quest{max-width:48vw;font-size:9px}.actions{gap:3px}.glass{padding:7px;font-size:8px}.logo{max-width:24vw;line-height:1.5}}
 </style>
 </head>
 <body>
-<main>
-<header class="mast"><div class="brand">✦ FIELD NOTES / INTERACTIVE FICTION</div><div class="edition">NO. 001 &nbsp;·&nbsp; A PIXEL ADVENTURE</div></header>
-<section class="hero">
-<div><div class="eyebrow">AN OLD KINGDOM. A LOST RELIC. A VERY SMALL HERO.</div><h1>THE HOLLOW<br>KINGDOM</h1><p>Beyond the moss gates, a quiet kingdom has forgotten its own name. Find the Sun Chalice, outwit the wandering keepers, and bring its light back to the castle. The world is small. The mystery isn't.</p></div>
-<aside class="legend">A GAME ABOUT <b>curiosity</b>, not speed.<br>Explore rooms. Find keys.<br>Watch what follows you.<br>And inspect the walls.</aside>
-</section>
-<section class="story" aria-label="Story">
-<article><h3>01 / THE DISAPPEARANCE</h3><p>Long ago, the Sun Chalice kept the Hollow Kingdom warm. One moonless night it vanished from the royal hall, and the castle lights went dark. The old gates sealed themselves.</p></article>
-<article><h3>02 / THE QUEST</h3><p>You are a little square of a knight, sent through winding halls and forgotten gardens. Three sleepy scale-keepers guard the paths. A curious winged thief has its own plans for anything you carry.</p></article>
-<article><h3>03 / THE SECRET</h3><p>Legends mention a nearly invisible mark hidden where no mark should be. Find the odd pixel, carry its secret to the quiet chamber, and the kingdom may reveal who made it.</p></article>
-</section>
-<section class="game-shell" aria-label="The Hollow Kingdom game">
-<div class="game-head"><span>THE HOLLOW KINGDOM <strong> / BUILD 001</strong></span><span id="stateLabel">STORY MODE</span></div>
-<div class="stage">
-<canvas id="game" width="960" height="640" aria-label="Pixel-art adventure game"></canvas>
-<div class="overlay" id="intro"><div class="modal"><div class="small">THE CHRONICLE BEGINS</div><h2>The Sun Chalice is missing.</h2><p>Find the three keys, avoid the castle keepers, and recover the relic. Return it to the starting hall to restore the kingdom. Arrow keys or WASD to move. On touchscreens, use the pad below.</p><button class="btn" id="start">ENTER THE KINGDOM</button></div></div>
-<div class="overlay" id="message" hidden><div class="modal"><div class="small" id="msgKicker">A NEW CHAPTER</div><h2 id="msgTitle">The kingdom remembers.</h2><p id="msgText"></p><button class="btn" id="msgBtn">CONTINUE</button></div></div>
-</div>
-<div class="touch" aria-label="Touch controls">
-<span></span><button data-dir="up" aria-label="Move up">↑</button><span></span>
-<button data-dir="left" aria-label="Move left">←</button><button data-dir="down" aria-label="Move down">↓</button><button data-dir="right" aria-label="Move right">→</button>
-</div>
-<div class="hud"><span>KEYS <strong id="keys">0 / 3</strong></span><span>INVENTORY <strong id="inventory">EMPTY</strong></span><span>QUEST <strong id="quest">FIND THE KEYS</strong></span><span id="notice">EXPLORE THE KINGDOM</span></div>
-</section>
-<div class="below"><span>CONTROLS: WASD / ARROW KEYS · TOUCH PAD ON MOBILE</span><span>TIP: THE BAT IS NOT YOUR FRIEND. IT IS ALSO NOT YOUR ENEMY.</span></div>
-<footer><span>THE HOLLOW KINGDOM · AN ORIGINAL PIXEL ADVENTURE</span><span>MADE FOR THE CURIOUS</span></footer>
-</main>
+<canvas id="game" width="960" height="640" aria-label="The Hollow Kingdom pixel adventure"></canvas>
+<div id="ui"><div class="top"><div class="logo">✦ THE HOLLOW KINGDOM</div><div class="stats"><span>KEYS <b id="keys">0/3</b></span><span>PACK <b id="inventory">EMPTY</b></span><span id="stateLabel">CHAPTER I</span></div><div class="actions"><button class="glass" id="full">FULLSCREEN</button><button class="glass" id="pause">PAUSE</button></div></div>
+<div class="bottom"><div class="quest"><b id="quest">THE SUN CHALICE IS LOST</b><span id="notice">Explore the forgotten kingdom.</span></div><div class="touch"><span></span><button data-dir="up">↑</button><span></span><button data-dir="left">←</button><button data-dir="down">↓</button><button data-dir="right">→</button></div></div></div>
+<div class="overlay" id="intro"><div class="modal"><div class="kicker">AN ORIGINAL PIXEL ADVENTURE</div><h1>THE HOLLOW<br>KINGDOM</h1><p>The Sun Chalice has vanished. The castle gates have sealed, and strange keepers now roam the gardens. Explore the kingdom, gather three ancient keys, recover the relic, and return it to the royal hall. Somewhere in these walls, a tiny secret is waiting.</p><p><b>MOVE</b> · WASD / ARROW KEYS / TOUCH PAD<br><b>EXPLORE</b> · Find keys, sword, chalice and hidden pixel.</p><button class="btn" id="start">BEGIN THE ADVENTURE</button></div></div>
+<div class="overlay" id="message" hidden><div class="modal"><div class="kicker" id="msgKicker">THE CHRONICLE</div><h1 id="msgTitle">The kingdom remembers.</h1><p id="msgText"></p><button class="btn" id="msgBtn">CONTINUE</button></div></div>
 <script>
 (()=>{
 const c=document.getElementById('game'),ctx=c.getContext('2d'),T=32,W=30,H=20;
@@ -62,7 +42,7 @@ const keySpots=[{x:7.5,y:6.5,c:'#e5c66d'},{x:21.5,y:5.5,c:'#85b7cf'},{x:7.5,y:16
 const items=[{type:'sword',x:15.5,y:3.5},{type:'chalice',x:22.5,y:16.5}];
 const dot={x:27.5,y:18.5};
 function setNotice(s){notice=s;document.getElementById('notice').textContent=s}
-function hud(){document.getElementById('keys').textContent=keys.length+' / 3';document.getElementById('inventory').textContent=chalice?'SUN CHALICE':hasSword?'SWORD':'EMPTY';document.getElementById('quest').textContent=chalice?'RETURN TO THE HALL':keys.length===3?'FIND THE CHALICE':'FIND THE KEYS'}
+function hud(){document.getElementById('keys').textContent=keys.length+'/3';document.getElementById('inventory').textContent=chalice?'CHALICE':hasSword?'SWORD':'EMPTY';document.getElementById('quest').textContent=chalice?'RETURN TO THE ROYAL HALL':keys.length===3?'THE CHALICE AWAITS':'FIND THE THREE KEYS'}
 function tile(x,y){return map[Math.floor(y)]?.[Math.floor(x)]??1}
 function blocked(x,y){return tile(x,y)===1}
 function movePlayer(dx,dy){let nx=player.x+dx*.10,ny=player.y+dy*.10;if(!blocked(nx+.2,player.y)&&!blocked(nx-.2,player.y))player.x=nx;if(!blocked(player.x,ny+.2)&&!blocked(player.x,ny-.2))player.y=ny;step+=Math.abs(dx)+Math.abs(dy)}
@@ -80,28 +60,31 @@ function update(dt){if(!running||paused)return;let dx=move.x,dy=move.y;if(dx||dy
 for(const d of dragons){d.t+=dt;let target=hasSword?{x:24.5,y:2.5}:player;let vx=target.x-d.x,vy=target.y-d.y,l=Math.hypot(vx,vy)||1,s=hasSword?.018:.025;d.x+=vx/l*s;d.y+=vy/l*s;if(dist(player,d)<.55){if(hasSword){d.x=22.5;d.y=3.5+d.t%8}else{player.x=2.5;player.y=2.5;setNotice('A KEEPER SENT YOU BACK TO THE HALL')}}}
 bat.t+=dt;bat.x=14.5+Math.sin(bat.t*.55)*5;bat.y=5.5+Math.cos(bat.t*.8)*2.5;if(dist(player,bat)<.55&&keys.length){keys.pop();setNotice('THE WINGED THIEF STOLE A KEY');hud()}
 }
-function draw(){ctx.fillStyle='#11180f';ctx.fillRect(0,0,960,640);const ox=0,oy=0;
-for(let y=0;y<H;y++)for(let x=0;x<W;x++){let px=x*T,py=y*T;if(map[y][x]){ctx.fillStyle='#39462e';ctx.fillRect(px,py,T,T);ctx.fillStyle='#536344';ctx.fillRect(px+2,py+2,T-4,4);ctx.fillStyle='#263322';ctx.fillRect(px+3,py+9,T-6,T-12)}else{ctx.fillStyle=((x+y)%2)?'#182319':'#1b281c';ctx.fillRect(px,py,T,T);if((x*7+y*3)%17===0){ctx.fillStyle='#34472c';ctx.fillRect(px+8,py+19,3,3)}}}
+function draw(){ctx.fillStyle='#101b16';ctx.fillRect(0,0,960,640);const ox=0,oy=0;
+for(let y=0;y<H;y++)for(let x=0;x<W;x++){let px=x*T,py=y*T;if(map[y][x]){ctx.fillStyle='#39462e';ctx.fillRect(px,py,T,T);ctx.fillStyle='#536344';ctx.fillRect(px+2,py+2,T-4,4);ctx.fillStyle='#263322';ctx.fillRect(px+3,py+9,T-6,T-12)}else{ctx.fillStyle=((x+y)%2)?'#203a29':'#1c3425';ctx.fillRect(px,py,T,T);for(let n=0;n<3;n++){let xx=(x*13+y*7+n*11)%29,yy=(x*5+y*17+n*3)%29;ctx.fillStyle=n%2?'#315036':'#3c5a38';ctx.fillRect(px+xx,py+yy,2,2)}if((x*7+y*3)%19===0){ctx.fillStyle='#78905a';ctx.fillRect(px+12,py+18,2,5);ctx.fillRect(px+9,py+16,5,2)}}}
 ctx.fillStyle='#78845a';ctx.fillRect(2*T,2*T,2*T,2*T);ctx.fillStyle='#c4c99b';ctx.font='10px monospace';ctx.fillText('HALL',2*T+8,2*T+16);
 for(let i=0;i<keySpots.length;i++){let k=keySpots[i];if(!keys.includes(i)){ctx.fillStyle=k.c;ctx.fillRect(k.x*T-7,k.y*T-3,14,6);ctx.fillRect(k.x*T+3,k.y*T-3,3,12);ctx.fillRect(k.x*T+6,k.y*T+4,4,3)}}
 if(!hasSword){ctx.fillStyle='#d9d7c1';ctx.fillRect(items[0].x*T-2,items[0].y*T-12,4,24);ctx.fillRect(items[0].x*T-9,items[0].y*T-3,18,4)}
 if(!chalice&&keys.length===3){ctx.fillStyle='#f0d56c';ctx.fillRect(items[1].x*T-8,items[1].y*T-9,16,15);ctx.fillRect(items[1].x*T-5,items[1].y*T+6,10,4);ctx.fillRect(items[1].x*T-9,items[1].y*T+10,18,3)}
 // Secret pixel: deliberately tiny and easy to miss.
 ctx.fillStyle='#b9b9b9';ctx.fillRect(dot.x*T,dot.y*T,2,2);
-for(const d of dragons){ctx.fillStyle='#b56d50';ctx.fillRect(d.x*T-10,d.y*T-9,20,18);ctx.fillStyle='#e2b08a';ctx.fillRect(d.x*T-6,d.y*T-13,12,7);ctx.fillStyle='#171b12';ctx.fillRect(d.x*T+2,d.y*T-7,3,3);ctx.fillStyle='#d08b65';ctx.fillRect(d.x*T-15,d.y*T-3,5,8);ctx.fillRect(d.x*T+10,d.y*T-3,5,8)}
+for(const d of dragons){let bob=Math.sin(performance.now()/180+d.t)*2,dx=d.x*T,dy=d.y*T;ctx.fillStyle='#101a14';ctx.fillRect(dx-13,dy+10,27,5);ctx.fillStyle='#9e593f';ctx.fillRect(dx-10,dy-8+bob,20,17);ctx.fillStyle='#c47a53';ctx.fillRect(dx-7,dy-14+bob,14,9);ctx.fillStyle='#e0a06b';ctx.fillRect(dx-4,dy-17+bob,9,5);ctx.fillStyle='#f0d88e';ctx.fillRect(dx+3,dy-11+bob,3,3);ctx.fillStyle='#34251c';ctx.fillRect(dx+4,dy-10+bob,2,2);ctx.fillStyle='#783f36';ctx.fillRect(dx-15,dy-4+bob,6,10);ctx.fillRect(dx+9,dy-4+bob,6,10)}
 // Bat
-ctx.fillStyle='#a9a98a';ctx.fillRect(bat.x*T-5,bat.y*T-4,10,8);ctx.fillRect(bat.x*T-14,bat.y*T-8,9,5);ctx.fillRect(bat.x*T+5,bat.y*T-8,9,5);ctx.fillStyle='#e2c66d';ctx.fillRect(bat.x*T-3,bat.y*T-2,2,2);
+let bx=bat.x*T,by=bat.y*T,wing=Math.sin(performance.now()/55)*4;ctx.fillStyle='#101812';ctx.fillRect(bx-5,by+5,12,5);ctx.fillStyle='#8c9a80';ctx.fillRect(bx-5,by-4,11,9);ctx.fillRect(bx-15,by-5-wing,11,7+wing);ctx.fillRect(bx+6,by-5-wing,11,7+wing);ctx.fillStyle='#e5d18b';ctx.fillRect(bx+1,by-2,2,2);
 // Knight square
 ctx.fillStyle='#e5d8a7';ctx.fillRect(player.x*T-10,player.y*T-10,20,20);ctx.fillStyle='#75845a';ctx.fillRect(player.x*T-7,player.y*T-7,14,14);ctx.fillStyle='#d5c78e';ctx.fillRect(player.x*T-4,player.y*T-4,8,8);
 if(secretFound){ctx.fillStyle='#f2e7ae';ctx.font='12px monospace';ctx.fillText('?',dot.x*T-3,dot.y*T-12)}
-ctx.fillStyle='#d4d6b6';ctx.font='12px monospace';ctx.fillText('THE HOLLOW KINGDOM',18,22);ctx.fillStyle='#9aa486';ctx.fillText('FIND THE SUN CHALICE',18,39);
+const vg=ctx.createRadialGradient(480,310,130,480,310,590);vg.addColorStop(0,'#00000000');vg.addColorStop(1,'#020805a8');ctx.fillStyle=vg;ctx.fillRect(0,0,960,640);
 }
 function loop(t){let dt=Math.min(.05,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(loop)}
 const keyMap={ArrowUp:[0,-1],w:[0,-1],ArrowDown:[0,1],s:[0,1],ArrowLeft:[-1,0],a:[-1,0],ArrowRight:[1,0],d:[1,0]};
 addEventListener('keydown',e=>{if(keyMap[e.key]){e.preventDefault();move={x:keyMap[e.key][0],y:keyMap[e.key][1]}}});
 addEventListener('keyup',e=>{if(keyMap[e.key])move={x:0,y:0}});
 document.querySelectorAll('[data-dir]').forEach(b=>{const v={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[b.dataset.dir];const on=e=>{e.preventDefault();move={x:v[0],y:v[1]}};const off=e=>{e.preventDefault();move={x:0,y:0}};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off)});
-document.getElementById('start').onclick=()=>{document.getElementById('intro').hidden=true;running=true;document.getElementById('stateLabel').textContent='EXPLORING';setNotice('THE GATES ARE OPEN')};
+document.getElementById('start').onclick=()=>{document.getElementById('intro').hidden=true;running=true;document.getElementById('stateLabel').textContent='CHAPTER I';setNotice('The gates are open. Find the first key.')};
+document.getElementById('full').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+document.getElementById('pause').onclick=()=>{if(!running)return;paused=!paused;document.getElementById('pause').textContent=paused?'RESUME':'PAUSE';if(paused)show('Adventure paused','The kingdom will wait here.','PAUSE','RESUME',()=>{document.getElementById('pause').textContent='PAUSE'})};
+for(const ev of ['contextmenu','selectstart','dragstart'])document.addEventListener(ev,e=>e.preventDefault());document.addEventListener('gesturestart',e=>e.preventDefault());document.addEventListener('dblclick',e=>e.preventDefault());
 hud();requestAnimationFrame(loop);
 })();
 </script>
