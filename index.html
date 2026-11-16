@@ -307,7 +307,7 @@ function drawWorld(){
 function drawMap(){
  mctx.clearRect(0,0,180,180);
  const sx=180/WORLD_W,sy=180/WORLD_H;
- for(let y=0;y<WORLD_H;y+=2)for(let x=0;x<WORLD_W;x+=2){const t=terrain(x,y);mctx.fillStyle=t==='water'?'#477b82':t==='forest'?'#244c3a':t==='road'?'#a08a63':t==='castle'?'#c0b697':t==='field'?'#75804e':'#3c6345';mctx.fillRect(x*sx,y*sy,2.5,2.5)}
+ for(let y=0;y<WORLD_H;y+=4)for(let x=0;x<WORLD_W;x+=4){const t=terrain(x,y);mctx.fillStyle=t==='water'?'#477b82':t==='forest'?'#244c3a':t==='road'?'#a08a63':t==='castle'?'#c0b697':t==='field'?'#75804e':'#3c6345';mctx.fillRect(x*sx,y*sy,1.8,1.8)}
  mctx.fillStyle='#bca875';mctx.strokeStyle='#e3d4b0';mctx.lineWidth=1;mctx.strokeRect(94*sx,94*sy,312*sx,312*sy);mctx.fillStyle='#d7caa5';mctx.fillRect(235*sx,235*sy,30*sx,30*sy);
  mctx.fillStyle='#c58d64';mctx.fillRect(45*sx,405*sy,55*sx,60*sy);mctx.fillStyle='#d9b66c';mctx.beginPath();mctx.arc(player.x/TILE*sx,player.y/TILE*sy,3,0,Math.PI*2);mctx.fill();
 }
@@ -315,10 +315,10 @@ function drawMap(){
 function drawAtlas(){
  const w=atlasCanvas.width,h=atlasCanvas.height,sx=w/WORLD_W,sy=h/WORLD_H;
  actx.clearRect(0,0,w,h);
- for(let y=0;y<WORLD_H;y+=1)for(let x=0;x<WORLD_W;x+=1){
+ for(let y=0;y<WORLD_H;y+=2)for(let x=0;x<WORLD_W;x+=2){
   const t=terrain(x,y);
   actx.fillStyle=t==='water'?'#477b82':t==='forest'?'#244c3a':t==='road'?'#a08a63':t==='castle'?'#c0b697':t==='field'?'#75804e':t==='village'?'#52734e':t==='orchard'?'#476843':t==='ruins'?'#697765':'#3c6345';
-  actx.fillRect(x*sx,y*sy,Math.ceil(sx),Math.ceil(sy));
+  actx.fillRect(x*sx,y*sy,Math.ceil(sx*2),Math.ceil(sy*2));
  }
  // Royal approach and main paths
  actx.strokeStyle='#c3a879';actx.lineWidth=5;actx.beginPath();actx.moveTo(250*sx,500*sy);actx.lineTo(250*sx,406*sy);actx.stroke();
