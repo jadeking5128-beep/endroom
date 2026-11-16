@@ -21,7 +21,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101b1a;col
 <body>
 <canvas id="world"></canvas>
 <div id="hud">
- <div class="top"><div class="brand">✦ THE HOLLOW KINGDOM<small>THE ROYAL LANDS · REALM I</small></div><div class="topright"><div class="coords">WORLD REGION <b>THE CROWNVALE</b><br>DAY <b id="day">01</b> · <span id="clock">08:20</span></div><button class="iconbtn" id="mapToggle">MAP</button><button class="iconbtn" id="soundToggle">SOUND ON</button></div></div>
+ <div class="top"><div class="brand">✦ THE HOLLOW KINGDOM<small>THE ROYAL LANDS · REALM I</small></div><div class="topright"><div class="coords">WORLD REGION <b>THE CROWNVALE</b><br>DAY <b id="day">01</b> · <span id="clock">08:20</span></div><button class="iconbtn" id="mapToggle">MAP</button></div></div>
  <div class="bottom"><div class="location"><strong id="place">THE ROYAL APPROACH</strong><span id="description">The old road leads towards the castle gates.</span></div><div class="controls"><span></span><button data-dir="up">↑</button><span></span><button data-dir="left">←</button><button data-dir="down">↓</button><button data-dir="right">→</button></div></div>
 </div>
 <div class="panel" id="mapPanel"><h3>THE CROWNVALE</h3><canvas id="map" width="180" height="140"></canvas><div class="maplabel">A living map of the royal lands</div></div>
@@ -163,7 +163,7 @@ function drawCastle(){
  // banners
  for(const bx of [kx-70,kx+70]){ctx.fillStyle='#9c4540';ctx.fillRect(bx,ky-15,9,24);ctx.fillStyle='#e0c477';ctx.fillRect(bx+3,ky-11,3,14);ctx.fillStyle='#9c4540';ctx.fillRect(bx+1,ky+9,4,6)}
  // courtyard shrubs, benches and lanterns
- for(const [x,y] of [[4,5],[6,5],[15,5],[17,5],[4,23],[17,23],[7,19],[16,12]])tree(sx/TILE+x,sy/TILE+y); // decorative anchors rendered below as scaled correction
+ for(const [x,y] of [[4,5],[6,5],[15,5],[17,5],[4,23],[17,23],[7,19],[16,12]])tree(sx+(x+.5)*TILE,sy+(y+.5)*TILE);
 }
 function drawCastleDetails(){
  // courtyard decorative beds, fountains and lamps in world coordinates
@@ -241,7 +241,7 @@ document.querySelectorAll('[data-dir]').forEach(b=>{const v={up:[0,-1],down:[0,1
 document.getElementById('begin').onclick=()=>{document.getElementById('intro').hidden=true;started=true};
 document.getElementById('closeLore').onclick=()=>document.getElementById('lore').hidden=true;
 document.getElementById('mapToggle').onclick=()=>{showMap=!showMap;document.getElementById('mapPanel').style.display=showMap?'block':'none'};
-document.getElementById('soundToggle').onclick=()=>{sound=!sound;document.getElementById('soundToggle').textContent=sound?'SOUND ON':'SOUND OFF'};
+
 for(const ev of ['contextmenu','selectstart','dragstart','dblclick'])document.addEventListener(ev,e=>e.preventDefault());
 document.addEventListener('gesturestart',e=>e.preventDefault());
 document.getElementById('mapPanel').style.display='block';
