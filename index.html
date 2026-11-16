@@ -65,20 +65,19 @@ function roadColor(n){const band=Math.floor(n/3)%2;return band?'#343b43':'#30373
 function drawBackground(){const sky=ctx.createLinearGradient(0,0,0,H*.58);sky.addColorStop(0,'#5f8197');sky.addColorStop(.52,'#b5c1c0');sky.addColorStop(1,'#d8c9ad');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H*.62);const sun=ctx.createRadialGradient(W*.72,H*.18,2,W*.72,H*.18,H*.2);sun.addColorStop(0,'#fff4d7aa');sun.addColorStop(1,'#fff4d700');ctx.fillStyle=sun;ctx.fillRect(W*.48,0,W*.5,H*.45);
 ctx.fillStyle='#435b62';ctx.beginPath();ctx.moveTo(0,H*.4);for(let i=0;i<=20;i++){let px=i*W/20,py=H*(.34+Math.sin(i*1.7)*.035+Math.cos(i*.6)*.025);ctx.lineTo(px,py)}ctx.lineTo(W,H*.55);ctx.lineTo(0,H*.55);ctx.fill();
 ctx.fillStyle='#315b42';ctx.fillRect(0,H*.42,W,H*.58)}
-function drawTrack(){const base=Math.floor(state.position/SEG),playerSeg=segAt(state.position),cameraX=playerSeg.worldX+state.lateral*ROAD*.5,cameraY=playerSeg.y+1150,cameraZ=state.position-900;let x1=0,x2=0,dx=0;let prevY=H,prevL=0,prevR=W;
-for(let n=1;n<=VIEW;n++){const s=segments[(base+n)%TRACK],z1=s.z+(n>TRACK-base-1?ROADLEN:0),z2=z1+SEG;dx+=s.curve;x1=x2;x2=dx;const p1=project(s.worldX-x1*0.7,s.y,z1,cameraX,cameraY,cameraZ),p2=project(s.worldX-x2*0.7,s.y,z2,cameraX,cameraY,cameraZ);if(p2.y>=prevY)continue;
-const w1=p1.scale*ROAD*W*.00048,w2=p2.scale*ROAD*W*.00048;const center1=p1.x,center2=p2.x;const rumble1=w1*.105,rumble2=w2*.105;
-const grassCol=Math.floor((base+n)/3)%2?'#315f43':'#376a49';poly([[0,prevY],[W,prevY],[W,p2.y],[0,p2.y]],grassCol);
-poly([[center1-w1-rumble1,p1.y],[center1+w1+rumble1,p1.y],[center2+w2+rumble2,p2.y],[center2-w2-rumble2,p2.y]],Math.floor((base+n)/3)%2?'#e6e3d8':'#d84938');
-poly([[center1-w1,p1.y],[center1+w1,p1.y],[center2+w2,p2.y],[center2-w2,p2.y]],roadColor(base+n));
-poly([[center1-w1*.98,p1.y],[center1-w1*.93,p1.y],[center2-w2*.93,p2.y],[center2-w2*.98,p2.y]],'#f0eee7');
-poly([[center1+w1*.93,p1.y],[center1+w1*.98,p1.y],[center2+w2*.98,p2.y],[center2+w2*.93,p2.y]],'#f0eee7');
-if(Math.floor((base+n)/6)%2===0){for(let lane=-1;lane<=1;lane++){if(lane===0)continue;const lw1=Math.max(1,w1*.004),lw2=Math.max(1,w2*.004);poly([[center1+lane*w1/3-lw1,p1.y],[center1+lane*w1/3+lw1,p1.y],[center2+lane*w2/3+lw2,p2.y],[center2+lane*w2/3-lw2,p2.y]],'#d9d9d0aa')}}
-if(n%9===0){const sx=center2-w2*1.34,sw=Math.max(2,w2*.09);poly([[sx-sw,p2.y],[sx+sw,p2.y],[sx+sw*.8,p2.y- Math.max(2,w2*.22)],[sx-sw*.8,p2.y-Math.max(2,w2*.22)]],n%18?'#d8d8d2':'#c63e32');const sx2=center2+w2*1.34;poly([[sx2-sw,p2.y],[sx2+sw,p2.y],[sx2+sw*.8,p2.y-Math.max(2,w2*.22)],[sx2-sw*.8,p2.y-Math.max(2,w2*.22)]],'#d8d8d2')}
-if(n%16===0){ctx.fillStyle='#263b46';ctx.fillRect(center2-w2*1.7,p2.y-Math.max(3,w2*.6),Math.max(2,w2*.045),Math.max(3,w2*.6));ctx.fillStyle='#d8e0dc';ctx.fillRect(center2-w2*1.7-Math.max(1,w2*.05),p2.y-Math.max(3,w2*.6),Math.max(3,w2*.14),Math.max(2,w2*.08))}
-prevY=p2.y;prevL=center2-w2;prevR=center2+w2;
-}
-}
+function drawTrack(){const base=Math.floor(state.position/SEG),playerSeg=segAt(state.position),cameraX=playerSeg.worldX+state.lateral*ROAD*.35,cameraY=1150,cameraZ=state.position-900;
+for(let n=VIEW;n>=1;n--){const absolute=base+n,idx=absolute%TRACK,s=segments[idx],next=segments[(idx+1)%TRACK],z1=absolute*SEG,z2=z1+SEG;
+const p1=project(s.worldX,s.y,z1,cameraX,cameraY,cameraZ),p2=project(next.worldX,next.y,z2,cameraX,cameraY,cameraZ);if(p1.scale<=0||p2.scale<=0)continue;
+const w1=p1.scale*ROAD*W*.23,w2=p2.scale*ROAD*W*.23,c1=p1.x,c2=p2.x,r1=w1*.105,r2=w2*.105;
+const grassCol=Math.floor(absolute/3)%2?'#315f43':'#376a49';poly([[0,p1.y],[W,p1.y],[W,p2.y],[0,p2.y]],grassCol);
+poly([[c1-w1-r1,p1.y],[c1+w1+r1,p1.y],[c2+w2+r2,p2.y],[c2-w2-r2,p2.y]],Math.floor(absolute/3)%2?'#e6e3d8':'#d84938');
+poly([[c1-w1,p1.y],[c1+w1,p1.y],[c2+w2,p2.y],[c2-w2,p2.y]],roadColor(absolute));
+poly([[c1-w1*.98,p1.y],[c1-w1*.93,p1.y],[c2-w2*.93,p2.y],[c2-w2*.98,p2.y]],'#f0eee7');
+poly([[c1+w1*.93,p1.y],[c1+w1*.98,p1.y],[c2+w2*.98,p2.y],[c2+w2*.93,p2.y]],'#f0eee7');
+if(Math.floor(absolute/6)%2===0){for(let lane=-1;lane<=1;lane+=2){const x1=c1+lane*w1/3,x2=c2+lane*w2/3,l1=Math.max(.6,w1*.003),l2=Math.max(.6,w2*.003);poly([[x1-l1,p1.y],[x1+l1,p1.y],[x2+l2,p2.y],[x2-l2,p2.y]],'#e5e1d7aa')}}
+if(absolute%9===0){const sw1=Math.max(1,w1*.055),sw2=Math.max(1,w2*.055);poly([[c1-w1*1.34-sw1,p1.y],[c1-w1*1.34+sw1,p1.y],[c2-w2*1.34+sw2,p2.y],[c2-w2*1.34-sw2,p2.y]],'#d9d8d0');poly([[c1+w1*1.34-sw1,p1.y],[c1+w1*1.34+sw1,p1.y],[c2+w2*1.34+sw2,p2.y],[c2+w2*1.34-sw2,p2.y]],'#d9d8d0')}
+if(absolute%16===0){ctx.fillStyle='#263b46';ctx.fillRect(c2-w2*1.7,p2.y-Math.max(2,w2*.45),Math.max(2,w2*.04),Math.max(2,w2*.45));ctx.fillStyle='#d8e0dc';ctx.fillRect(c2-w2*1.76,p2.y-Math.max(2,w2*.45),Math.max(3,w2*.15),Math.max(2,w2*.07))}
+}}
 function rounded(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
 function drawFormulaCar(x,y,w,h,color,num,player=false){ctx.save();ctx.translate(x,y);const s=w/100;ctx.scale(s,s);const hh=h/s;
 ctx.shadowColor='#000a';ctx.shadowBlur=18;ctx.shadowOffsetY=8;
@@ -99,7 +98,7 @@ ctx.fillStyle='#f4eee1';ctx.font='900 '+Math.max(7,hh*.12)+'px Arial';ctx.textAl
 ctx.fillStyle='#ffffff';ctx.fillRect(-5,-hh*.40,10,Math.max(2,hh*.025));
 ctx.fillStyle=player?'#fff2c1':'#ff3d2f';ctx.fillRect(-31,hh*.29,9,3);ctx.fillRect(22,hh*.29,9,3);
 ctx.restore()}
-function drawOpponents(){const list=opponents.map(o=>({o,dist:wrap(o.position-state.position)})).filter(v=>v.dist>0&&v.dist<SEG*VIEW*.9).sort((a,b)=>b.dist-a.dist);for(const item of list){const d=item.dist,s=1/(d+850),screenY=H*.39+(H*.55)*(1-s*850/Math.max(1,d+850));const x=W/2+(item.o.lane-state.lateral)*W*.29/(d/800+1);const width=Math.max(7,Math.min(W*.22,1100/(d/500+1)));const height=width*.68;drawFormulaCar(x,screenY,width,height,item.o.color,item.o.number,false)}}
+function drawOpponents(){const list=opponents.map(o=>({o,dist:wrap(o.position-state.position)})).filter(v=>v.dist>0&&v.dist<SEG*VIEW*.92).sort((a,b)=>b.dist-a.dist);for(const item of list){const d=item.dist,depth=900/(d+900),screenY=H*.39+H*.52*depth,width=Math.max(5,Math.min(W*.2,85000/(d+500))),x=W/2+(item.o.lane-state.lateral)*ROAD*.5*W*.23/(d+900);drawFormulaCar(x,screenY,width,width*.68,item.o.color,item.o.number,false)}}
 function drawPlayer(){const y=H*(H<560?.82:.86),w=Math.min(W*.29,150),h=w*.69;drawFormulaCar(W*.5+state.steer*W*.055,y,w,h,playerColor,16,true)}
 function drawMap(){mctx.clearRect(0,0,284,200);mctx.fillStyle='#071019';mctx.fillRect(0,0,284,200);mctx.strokeStyle='#4b5660';mctx.lineWidth=17;mctx.beginPath();mctx.ellipse(142,100,112,68,0,0,Math.PI*2);mctx.stroke();mctx.strokeStyle='#d6d9d5';mctx.lineWidth=1.5;mctx.beginPath();mctx.ellipse(142,100,112,68,0,0,Math.PI*2);mctx.stroke();for(const o of opponents){const a=o.position/ROADLEN*Math.PI*2-Math.PI/2;mctx.fillStyle=o.color;mctx.beginPath();mctx.arc(142+112*Math.cos(a),100+68*Math.sin(a),3.5,0,Math.PI*2);mctx.fill()}const a=state.position/ROADLEN*Math.PI*2-Math.PI/2;mctx.fillStyle='#fff';mctx.beginPath();mctx.arc(142+112*Math.cos(a),100+68*Math.sin(a),5,0,Math.PI*2);mctx.fill()}
 function draw(){drawBackground();drawTrack();drawOpponents();drawPlayer();drawMap();const shade=ctx.createLinearGradient(0,0,0,H);shade.addColorStop(0,'#07101900');shade.addColorStop(1,'#03070b77');ctx.fillStyle=shade;ctx.fillRect(0,0,W,H)}
