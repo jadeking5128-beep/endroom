@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080d14"><title>ENDROOM — The Last Signal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{--bg:#080d14;--panel:#101a25;--line:#263747;--muted:#8495a4;--ice:#a8e5ef;--amber:#e8b76c;--red:#e47769}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:#e9f1f4;font-family:Manrope,system-ui,sans-serif}button{font:inherit;color:inherit;cursor:pointer}
+#game{position:relative;width:100%;height:100%;min-height:520px;background:#080d14;overflow:hidden}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 38%,#05080dbb 100%);z-index:1}
+.topbar{position:absolute;z-index:3;top:0;left:0;right:0;padding:22px 28px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+.brand{font-size:12px;letter-spacing:.28em;font-weight:800}.brand small{display:block;margin-top:5px;color:var(--muted);font:10px 'DM Mono';letter-spacing:.15em}
+.readout{display:flex;gap:18px}.meter{width:132px}.meter-head{display:flex;justify-content:space-between;font:9px 'DM Mono';letter-spacing:.12em;color:#9db0bc;margin-bottom:7px}.track{height:4px;background:#263440;border-radius:9px;overflow:hidden}.fill{height:100%;width:100%;background:var(--ice);transition:width .2s}.fill.oxygen{background:#83c8d7}.fill.energy{background:var(--amber)}
+.objective{position:absolute;z-index:3;left:28px;top:105px;width:240px;padding:13px 15px;background:#0b141dc9;border:1px solid #2a3b49;backdrop-filter:blur(12px)}.eyebrow{font:9px 'DM Mono';letter-spacing:.2em;color:var(--amber)}.objective h3{font-size:13px;margin:7px 0 4px}.objective p{font-size:11px;line-height:1.55;color:#9eafb9;margin:0}
+.status{position:absolute;z-index:3;right:28px;top:105px;text-align:right;font:9px 'DM Mono';letter-spacing:.14em;color:#91a8b6}.status strong{display:block;color:var(--ice);font-weight:500;margin-top:6px}
+.bottom{position:absolute;z-index:3;left:28px;right:28px;bottom:22px;display:flex;justify-content:space-between;align-items:end;pointer-events:none}.hint{padding:10px 13px;background:#0b141dc9;border:1px solid #2a3b49;font:10px 'DM Mono';color:#b6c6ce;letter-spacing:.06em;min-height:36px}.hint b{color:var(--ice)}.coordinates{font:9px 'DM Mono';color:#8294a2;letter-spacing:.12em;text-align:right}
+.panel{position:absolute;z-index:6;inset:0;display:grid;place-items:center;padding:20px;background:#05090ed9;backdrop-filter:blur(9px);transition:opacity .35s}.panel.hidden{opacity:0;pointer-events:none}.modal{width:min(560px,100%);border:1px solid #334958;background:linear-gradient(145deg,#14222e,#0b121b 70%);padding:clamp(24px,5vw,48px);box-shadow:0 25px 100px #0009;position:relative}.modal:before{content:"";position:absolute;top:-1px;left:30px;width:90px;height:2px;background:var(--ice)}.kicker{font:10px 'DM Mono';letter-spacing:.24em;color:var(--ice)}h1{font-size:clamp(34px,7vw,62px);line-height:.96;letter-spacing:-.065em;margin:18px 0 12px;font-weight:800}h1 span{color:var(--ice)}.subtitle{font-size:13px;color:#a9bac4;line-height:1.75;max-width:420px}.rule{height:1px;background:#2b3d4b;margin:24px 0}.meta{display:flex;gap:24px;flex-wrap:wrap;font:9px 'DM Mono';letter-spacing:.1em;color:#7f929f}.primary{margin-top:27px;border:1px solid #a8e5ef;background:#a8e5ef;color:#071117;padding:13px 22px;font-size:11px;font-weight:800;letter-spacing:.12em;transition:.2s}.primary:hover{background:#d5f7fa;transform:translateY(-2px)}.secondary{border:1px solid #3a4b59;background:transparent;padding:11px 16px;font-size:10px;letter-spacing:.1em;color:#b9c7ce}.modal-actions{display:flex;gap:10px;flex-wrap:wrap}
+#dialogText{font-size:13px;line-height:1.8;color:#c2d0d6;white-space:pre-line;margin:18px 0}
+.mobile-controls{display:none;position:absolute;z-index:4;bottom:78px;left:20px;right:20px;justify-content:space-between;pointer-events:none}.pad{display:flex;gap:9px}.touch{pointer-events:auto;width:52px;height:48px;border:1px solid #7993a0aa;background:#0b1725aa;color:#d5edf0;font:16px 'DM Mono';backdrop-filter:blur(8px);touch-action:none}.touch:active{background:#9ddce5;color:#081117}
+.scanline{position:absolute;z-index:2;inset:0;pointer-events:none;opacity:.07;background:repeating-linear-gradient(0deg,transparent 0 3px,#b5d8df 4px,transparent 5px)}
+@media(max-width:700px){.topbar{padding:14px}.readout{gap:8px}.meter{width:83px}.objective{left:14px;top:86px;width:190px;padding:10px}.status{right:14px;top:86px}.bottom{left:14px;right:14px;bottom:14px}.coordinates{display:none}.mobile-controls{display:flex}.hint{font-size:9px}.brand{font-size:10px}.brand small{font-size:8px}}
+</style></head>
+<body><main id="game"><canvas id="world"></canvas><div class="vignette"></div><div class="scanline"></div>
+<header class="topbar"><div class="brand">ENDROOM <small>FIELD EXPEDITION // 07</small></div><div class="readout"><div class="meter"><div class="meter-head"><span>OXYGEN</span><span id="oxygenNum">100%</span></div><div class="track"><div class="fill oxygen" id="oxygenBar"></div></div></div><div class="meter"><div class="meter-head"><span>SUIT POWER</span><span id="powerNum">100%</span></div><div class="track"><div class="fill energy" id="powerBar"></div></div></div></div></header>
+<section class="objective"><div class="eyebrow">CURRENT DIRECTIVE</div><h3 id="objectiveTitle">Establish bearings</h3><p id="objectiveDesc">Locate the damaged survey relay. Find a way to contact the crew.</p></section>
+<div class="status">LOCAL TIME <strong id="clock">04:17:08</strong><br><span id="anomalyStatus">CHRONO FIELD: DORMANT</span></div>
+<div class="bottom"><div class="hint" id="hint"><b>W A S D</b> MOVE &nbsp; <b>SPACE</b> JUMP &nbsp; <b>E</b> INTERACT &nbsp; <b>Q</b> CHRONO SHIFT</div><div class="coordinates">KEPLER-186F // SECTOR 03<br>ATMOSPHERE: THIN / TOXIC</div></div>
+<div class="mobile-controls"><div class="pad"><button class="touch" data-key="a">◀</button><button class="touch" data-key="d">▶</button></div><div class="pad"><button class="touch" data-key="q">◉</button><button class="touch" data-key=" ">↑</button><button class="touch" data-key="e">E</button></div></div>
+<div class="panel" id="intro"><div class="modal"><div class="kicker">A SCIENCE-FICTION SURVIVAL EXPERIENCE</div><h1>THE LAST<br><span>SIGNAL.</span></h1><p class="subtitle">The evacuation was never supposed to leave anyone behind. On Kepler-186f, one astronaut is about to discover that time is not behaving as it should.</p><div class="rule"></div><div class="meta"><span>CHAPTER 01 — ARRIVAL</span><span>SOLO EXPEDITION</span><span>YEAR 2189</span></div><button class="primary" id="start">BEGIN EXPEDITION&nbsp; ↗</button></div></div>
+<div class="panel hidden" id="dialog"><div class="modal"><div class="kicker" id="dialogKicker">FIELD RECORD</div><h2 id="dialogTitle" style="font-size:27px;letter-spacing:-.04em;margin:14px 0 0">Unknown signal</h2><div id="dialogText"></div><div class="modal-actions"><button class="primary" id="dialogAction">CONTINUE</button><button class="secondary" id="dialogClose">CLOSE</button></div></div></div>
+<div class="panel hidden" id="ending"><div class="modal"><div class="kicker">TRANSMISSION // OUTBOUND</div><h2 style="font-size:34px;letter-spacing:-.05em;margin:15px 0">Someone is<br><span style="color:var(--ice)">answering.</span></h2><p class="subtitle">The relay is online. A signal returns from deep space. Its timestamp is six years ahead of local mission time.</p><div class="rule"></div><p class="subtitle" style="font-family:'DM Mono';font-size:11px;color:var(--amber)">INCOMING MESSAGE: "DON'T LET THEM LAND."</p><button class="primary" id="restart">REPLAY CHAPTER</button></div></div>
+</main>
+<script>
+(()=>{
+const canvas=document.getElementById('world'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id);
+let W=0,H=0,dpr=1,cam=0,last=0,started=false,dialogOpen=false,finished=false,chrono=false,elapsed=0;
+const keys={},worldW=3300,ground=0;
+const player={x:100,y:0,vx:0,vy:0,w:25,h:54,on:false,face:1};
+let oxygen=100,power=100,logs=0,relay=false,scanned=false,particles=[],time=0;
+const platforms=[{x:0,y:0,w:700},{x:770,y:0,w:510},{x:1370,y:0,w:620},{x:2070,y:0,w:530},{x:2680,y:0,w:620},{x:520,y:90,w:120},{x:1000,y:120,w:130},{x:1580,y:100,w:150},{x:2310,y:135,w:140}];
+const objects=[
+{x:370,y:0,type:'wreck',name:'Survey craft',done:false},
+{x:850,y:0,type:'log',name:'Crew recording 01',done:false},
+{x:1170,y:0,type:'cell',name:'Power cell',done:false},
+{x:1680,y:0,type:'log',name:'Research log 02',done:false},
+{x:2170,y:0,type:'relay',name:'Damaged relay',done:false},
+{x:2820,y:0,type:'log',name:'Temporal recording',done:false}
+];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=canvas.clientWidth;H=canvas.clientHeight;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',resize);resize();
+function groundY(){return H*.77}
+function sy(y){return groundY()-y}
+function addDust(x,y,n=10){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*1.3,vy:Math.random()*1.1,life:30+Math.random()*50,r:1+Math.random()*2})}
+function drawSky(){
+const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#101d2b');g.addColorStop(.55,'#243744');g.addColorStop(1,'#111b25');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+let cx=W*.72-cam*.025,cy=H*.23;ctx.save();ctx.shadowBlur=55;ctx.shadowColor='#d2b98d';ctx.fillStyle='#d7c7a7';ctx.beginPath();ctx.arc(cx,cy,Math.min(W,H)*.075,0,Math.PI*2);ctx.fill();ctx.restore();
+ctx.fillStyle='#8294a0';ctx.globalAlpha=.18;ctx.beginPath();ctx.arc(cx-18,cy+12,Math.min(W,H)*.075,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+for(let i=0;i<75;i++){let x=((i*173+33-cam*.08)% (W+30)+W+30)%(W+30),y=(i*71)%Math.floor(H*.55);ctx.fillStyle=i%5?'#b5cbd0':'#e9d7b5';ctx.globalAlpha=.25+(i%4)*.12;ctx.fillRect(x,y,1.3,1.3)}ctx.globalAlpha=1;
+for(let layer=0;layer<3;layer++){let base=H*(.59+layer*.07),shift=cam*(.12+layer*.1);ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W+20;x+=20){let wx=x+shift;let y=base-Math.sin(wx*.004+layer*2)*35-Math.sin(wx*.011+layer)*15;ctx.lineTo(x,y)}ctx.lineTo(W,H);ctx.closePath();ctx.fillStyle=['#344b57','#263b47','#192c37'][layer];ctx.fill()}
+}
+function drawTerrain(){
+let gy=groundY();ctx.fillStyle='#172630';ctx.fillRect(0,gy,W,H-gy);
+ctx.strokeStyle='#3c525d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();
+for(let i=0;i<90;i++){let x=((i*97-cam*.7)%(W+40)+W+40)%(W+40),y=gy+12+(i*37)%(H-gy-16);ctx.fillStyle=i%3?'#344650':'#66747a';ctx.globalAlpha=.25;ctx.fillRect(x,y,2+(i%4),1)}ctx.globalAlpha=1;
+platforms.forEach(p=>{let x=p.x-cam;if(x+p.w<0||x>W)return;let y=gy-p.y;ctx.fillStyle='#2a414c';ctx.fillRect(x,y,p.w,8);ctx.fillStyle='#607985';ctx.fillRect(x,y,p.w,2);ctx.fillStyle='#1c303b';ctx.fillRect(x,y+8,p.w,18);for(let i=0;i<p.w;i+=28){ctx.fillStyle='#536a74';ctx.globalAlpha=.3;ctx.fillRect(x+i,y+10,1,13)}ctx.globalAlpha=1});
+}
+function drawObject(o){
+let x=o.x-cam,y=groundY()-o.y;if(x<-80||x>W+80)return;ctx.save();ctx.translate(x,y);
+if(o.type==='wreck'){ctx.rotate(-.12);ctx.fillStyle='#6c7779';ctx.fillRect(-34,-38,70,38);ctx.fillStyle='#a5b1ad';ctx.fillRect(-29,-34,25,5);ctx.fillStyle='#26343b';ctx.fillRect(8,-29,20,20);ctx.strokeStyle='#b87955';ctx.beginPath();ctx.moveTo(-32,-2);ctx.lineTo(-48,8);ctx.moveTo(28,-2);ctx.lineTo(43,9);ctx.stroke()}
+if(o.type==='log'){ctx.fillStyle='#9bc9cc';ctx.shadowBlur=15;ctx.shadowColor='#8fe4ed';ctx.fillRect(-9,-42,18,27);ctx.shadowBlur=0;ctx.fillStyle='#e0f5ef';ctx.fillRect(-5,-37,10,3);ctx.fillRect(-5,-30,10,2)}
+if(o.type==='cell'){ctx.fillStyle='#d8a95f';ctx.shadowBlur=18;ctx.shadowColor='#e7b766';ctx.fillRect(-10,-34,20,30);ctx.shadowBlur=0;ctx.fillStyle='#fff0c4';ctx.fillRect(-5,-29,10,4)}
+if(o.type==='relay'){ctx.fillStyle='#647b82';ctx.fillRect(-25,-65,50,65);ctx.fillStyle='#1a2b34';ctx.fillRect(-17,-56,34,28);ctx.fillStyle=relay?'#a8e5ef':'#bd765f';ctx.shadowBlur=relay?18:8;ctx.shadowColor=relay?'#a8e5ef':'#bd765f';ctx.fillRect(-9,-49,18,13);ctx.shadowBlur=0;ctx.strokeStyle='#81959b';ctx.beginPath();ctx.moveTo(0,-65);ctx.lineTo(0,-94);ctx.lineTo(14,-105);ctx.stroke()}
+if(!o.done){ctx.fillStyle='#d6e8e8';ctx.font='9px DM Mono';ctx.textAlign='center';ctx.fillText(o.name.toUpperCase(),0,18)}
+ctx.restore();
+}
+function drawPlayer(){
+let x=player.x-cam,y=groundY()-player.y-player.h;ctx.save();ctx.translate(x,y);if(player.face<0)ctx.scale(-1,1);
+ctx.fillStyle='#080d12';ctx.globalAlpha=.35;ctx.beginPath();ctx.ellipse(0,player.h+3,18,4,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+ctx.fillStyle='#b8c9c9';ctx.fillRect(-10,17,20,27);ctx.fillStyle='#dce7e2';ctx.fillRect(-8,3,16,17);ctx.fillStyle='#a9e2e8';ctx.fillRect(-7,7,14,7);ctx.fillStyle='#758c92';ctx.fillRect(-9,42,7,12);ctx.fillRect(2,42,7,12);ctx.fillStyle='#b8c9c9';ctx.fillRect(-14,22,5,19);ctx.fillRect(9,22,5,19);ctx.fillStyle='#d1a76a';ctx.fillRect(7,25,4,7);ctx.restore();
+}
+function drawAnomaly(){if(!chrono)return;let x=player.x-cam,y=groundY()-player.y-25;ctx.save();ctx.strokeStyle='#9de7ef';ctx.lineWidth=1.5;ctx.globalAlpha=.65+Math.sin(time*.009)*.2;for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(x,y,45+i*17,18+i*10,time*.001+i,0,Math.PI*2);ctx.stroke()}ctx.restore()}
+function frame(t){let dt=Math.min((t-last)/16.67||1,2);last=t;if(started&&!dialogOpen&&!finished)update(dt);draw();requestAnimationFrame(frame)}
+function update(dt){
+time+=dt;elapsed+=dt/60;
+if(!chrono){oxygen=Math.max(0,oxygen-.0025*dt);power=Math.max(0,power-.0015*dt)}else{power=Math.max(0,power-.045*dt)}
+let move=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0);player.vx=move*3.1*(chrono?.72:1);if(move)player.face=move;
+player.x=clamp(player.x+player.vx*dt,10,worldW-30);
+if((keys[' ']||keys.w||keys.arrowup)&&player.on){player.vy=8.8;player.on=false}
+player.vy-=.48*dt*(chrono?.45:1);player.y+=player.vy*dt;player.on=false;
+for(const p of platforms){if(player.x+10>p.x&&player.x-10<p.x+p.w&&player.y>=p.y&&player.y+player.vy*dt<=p.y&&player.vy<=0){player.y=p.y;player.vy=0;player.on=true}}
+if(player.y<0){player.y=0;player.vy=0;player.on=true}
+if(player.y>H*2){player.y=0;player.vy=0}
+if(keys.q&&power>0&&!qLatch){chrono=!chrono;qLatch=true}if(!keys.q)qLatch=false;
+if(chrono&&power<=0)chrono=false;
+cam=clamp(player.x-W*.42,0,worldW-W*.65);
+for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt}particles=particles.filter(p=>p.life>0);
+if(Math.random()<.25)addDust(player.x,groundY()-player.y,1);
+let near=objects.find(o=>!o.done&&Math.abs(o.x-player.x)<75);
+$('hint').innerHTML=near?'<b>E</b> INTERACT — '+near.name.toUpperCase():'<b>W A S D</b> MOVE &nbsp; <b>SPACE</b> JUMP &nbsp; <b>E</b> INTERACT &nbsp; <b>Q</b> CHRONO SHIFT';
+$('oxygenNum').textContent=Math.round(oxygen)+'%';$('oxygenBar').style.width=oxygen+'%';$('powerNum').textContent=Math.round(power)+'%';$('powerBar').style.width=power+'%';$('anomalyStatus').textContent='CHRONO FIELD: '+(chrono?'ACTIVE':'DORMANT');
+$('clock').textContent='04:'+String(17+Math.floor(elapsed/60)).padStart(2,'0')+':'+String(Math.floor(elapsed%60)).padStart(2,'0');
+if(oxygen<=0){showDialog('LIFE SUPPORT WARNING','Oxygen reserves depleted','The suit scrubber is failing. The expedition ends here — restart the chapter and move quickly between points of interest.');}
+}
+let qLatch=false;
+function draw(){drawSky();drawTerrain();objects.forEach(drawObject);drawAnomaly();drawPlayer();ctx.save();ctx.translate(-cam,0);for(const p of particles){ctx.globalAlpha=p.life/70;ctx.fillStyle='#d3e5df';ctx.fillRect(p.x,p.y,p.r,p.r)}ctx.restore();ctx.globalAlpha=1;
+if(chrono){ctx.fillStyle='#a8e5ef';ctx.globalAlpha=.05;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1}}
+function showDialog(k,t,txt,action){dialogOpen=true;$('dialogKicker').textContent=k;$('dialogTitle').textContent=t;$('dialogText').textContent=txt;$('dialog').classList.remove('hidden');$('dialogAction').onclick=()=>{ $('dialog').classList.add('hidden');dialogOpen=false;if(action)action()};$('dialogClose').onclick=()=>{$('dialog').classList.add('hidden');dialogOpen=false}}
+function interact(){if(!started||dialogOpen||finished)return;let o=objects.find(o=>!o.done&&Math.abs(o.x-player.x)<78);if(!o)return;
+if(o.type==='wreck'){o.done=true;showDialog('FLIGHT RECORDER // 04:17','Evacuation failure','PILOT: “The shuttle is lifting. Where is Mercer?”\nCOMMAND: “We have a hull breach. We cannot hold position.”\n[STATIC]\nA final line is barely audible: “Tell him we did not mean to leave him.”',()=>setObjective('Recover the crew recordings','Three data fragments may explain what happened during evacuation.'))}
+if(o.type==='log'){o.done=true;logs++;showDialog('RECOVERED DATA // '+String(logs).padStart(2,'0'),'Fragment recovered',logs===1?'DR. SEN: “The gravitational readings are impossible. Our clocks are drifting by eleven minutes every hour. The anomaly is not moving through space. It is moving through time.”':logs===2?'ENGINEER VALE: “I heard my own voice on the comms. The transmission was dated tomorrow. I have not recorded it yet.”':'UNKNOWN VOICE: “If you are hearing this, the loop has already started. The relay must not be activated before the second pulse.”',()=>{setObjective(logs>=3?'Restore the survey relay':'Recover the crew recordings',logs>=3?'The relay can reach the orbital carrier. Find the damaged array.':(3-logs)+' recording fragment(s) remain.');if(logs>=3)scanned=true})}
+if(o.type==='cell'){o.done=true;power=Math.min(100,power+45);showDialog('FIELD EQUIPMENT','Auxiliary cell acquired','A portable fusion cell. Suit power restored. The chrono field draws heavily on this reserve.')}
+if(o.type==='relay'){if(logs<3){showDialog('ACCESS DENIED','Research archive locked','The relay needs all three expedition data fragments to authenticate the crew manifest.')}else if(!relay){relay=true;o.done=true;showDialog('SYSTEM RESTORED','Orbital relay online','The antenna locks onto a carrier signal. A response arrives almost instantly — but its timestamp is six years in the future.',()=>{finished=true;$('ending').classList.remove('hidden')})}}
+}
+function setObjective(t,d){$('objectiveTitle').textContent=t;$('objectiveDesc').textContent=d}
+$('start').onclick=()=>{$('intro').classList.add('hidden');started=true;showDialog('MISSION CONTROL // LAST TRANSMISSION','Dr. Elias Mercer','“Mercer, do you copy? Evacuation is underway. We are diverting to the second planet. Your lander is outside the safe ascent window — hold position. We will return.”\n\n[CONNECTION LOST]\n\nNo return time was provided.',()=>setObjective('Locate the survey craft','Inspect the wreckage and recover its flight recorder.'))};
+$('restart').onclick=()=>location.reload();
+addEventListener('keydown',e=>{let k=e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright'].includes(k))e.preventDefault();keys[k]=true;if(k==='e')interact();if(k==='escape'&&dialogOpen){$('dialog').classList.add('hidden');dialogOpen=false}});
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+document.querySelectorAll('.touch').forEach(b=>{let k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true;if(k==='e')interact()});['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>keys[k]=false))});
+requestAnimationFrame(frame);
+})();
+</script></body></html>
