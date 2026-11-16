@@ -68,11 +68,43 @@ if(!hasSword){ctx.fillStyle='#d9d7c1';ctx.fillRect(items[0].x*T-2,items[0].y*T-1
 if(!chalice&&keys.length===3){ctx.fillStyle='#f0d56c';ctx.fillRect(items[1].x*T-8,items[1].y*T-9,16,15);ctx.fillRect(items[1].x*T-5,items[1].y*T+6,10,4);ctx.fillRect(items[1].x*T-9,items[1].y*T+10,18,3)}
 // Secret pixel: deliberately tiny and easy to miss.
 ctx.fillStyle='#b9b9b9';ctx.fillRect(dot.x*T,dot.y*T,2,2);
-for(const d of dragons){let bob=Math.sin(performance.now()/180+d.t)*2,dx=d.x*T,dy=d.y*T;ctx.fillStyle='#101a14';ctx.fillRect(dx-13,dy+10,27,5);ctx.fillStyle='#a84f49';ctx.fillRect(dx-10,dy-8+bob,20,17);ctx.fillStyle='#d27a62';ctx.fillRect(dx-7,dy-14+bob,14,9);ctx.fillStyle='#f0ad7c';ctx.fillRect(dx-4,dy-17+bob,9,5);ctx.fillStyle='#f0d88e';ctx.fillRect(dx+3,dy-11+bob,3,3);ctx.fillStyle='#34251c';ctx.fillRect(dx+4,dy-10+bob,2,2);ctx.fillStyle='#783f36';ctx.fillRect(dx-15,dy-4+bob,6,10);ctx.fillRect(dx+9,dy-4+bob,6,10)}
+for(const d of dragons){const bob=Math.sin(performance.now()/180+d.t)*2,dx=Math.round(d.x*T),dy=Math.round(d.y*T)+bob;ctx.fillStyle='#07101b99';ctx.fillRect(dx-17,dy+13,34,6);
+ // folded wings, layered membranes and ribs
+ ctx.fillStyle='#542d38';ctx.fillRect(dx-16,dy-7,9,17);ctx.fillRect(dx+8,dy-7,9,17);ctx.fillStyle='#873f49';ctx.fillRect(dx-20,dy-14,10,13);ctx.fillRect(dx+10,dy-14,10,13);ctx.fillStyle='#c06a5d';ctx.fillRect(dx-18,dy-15,5,8);ctx.fillRect(dx+13,dy-15,5,8);
+ // tail and plated body
+ ctx.fillStyle='#733b43';ctx.fillRect(dx+8,dy+3,10,5);ctx.fillRect(dx+15,dy+1,5,4);ctx.fillStyle='#d27a62';ctx.fillRect(dx-10,dy-8,20,17);ctx.fillStyle='#f0a078';ctx.fillRect(dx-5,dy-5,11,10);ctx.fillStyle='#f6c08a';ctx.fillRect(dx-3,dy-2,7,4);
+ // head, brow, horns and muzzle
+ ctx.fillStyle='#a84f49';ctx.fillRect(dx-8,dy-15,16,10);ctx.fillStyle='#e28a6b';ctx.fillRect(dx-6,dy-17,12,6);ctx.fillStyle='#f0d4a0';ctx.fillRect(dx-8,dy-20,3,6);ctx.fillRect(dx+5,dy-20,3,6);ctx.fillStyle='#f4d17a';ctx.fillRect(dx+2,dy-13,4,3);ctx.fillStyle='#241d27';ctx.fillRect(dx+4,dy-12,2,2);ctx.fillStyle='#f5d9ad';ctx.fillRect(dx+8,dy-7,4,2);
+ // feet and tiny claws
+ ctx.fillStyle='#713c43';ctx.fillRect(dx-9,dy+7,6,6);ctx.fillRect(dx+4,dy+7,6,6);ctx.fillStyle='#f0c58b';ctx.fillRect(dx-9,dy+12,3,2);ctx.fillRect(dx+6,dy+12,3,2);
+ // scale highlights
+ ctx.fillStyle='#e99a78';for(let s=0;s<4;s++)ctx.fillRect(dx-6+s*4,dy+3+(s%2)*3,2,2);
+}
 // Bat
-let bx=bat.x*T,by=bat.y*T,wing=Math.sin(performance.now()/55)*4;ctx.fillStyle='#101812';ctx.fillRect(bx-5,by+5,12,5);ctx.fillStyle='#8c9a80';ctx.fillRect(bx-5,by-4,11,9);ctx.fillRect(bx-15,by-5-wing,11,7+wing);ctx.fillRect(bx+6,by-5-wing,11,7+wing);ctx.fillStyle='#e5d18b';ctx.fillRect(bx+1,by-2,2,2);
-// Knight square
-ctx.fillStyle='#07111d';ctx.fillRect(player.x*T-12,player.y*T+8,24,5);ctx.fillStyle='#f1d58b';ctx.fillRect(player.x*T-10,player.y*T-11,20,20);ctx.fillStyle='#e6b95f';ctx.fillRect(player.x*T-8,player.y*T-13,16,5);ctx.fillStyle='#285b67';ctx.fillRect(player.x*T-7,player.y*T-7,14,14);ctx.fillStyle='#e8f0e4';ctx.fillRect(player.x*T-4,player.y*T-4,8,8);ctx.fillStyle='#f4d47d';ctx.fillRect(player.x*T+3,player.y*T-3,3,3);
+const bx=Math.round(bat.x*T),by=Math.round(bat.y*T),wing=Math.sin(performance.now()/55)*5;
+ // bat shadow and scalloped wings
+ ctx.fillStyle='#07101b88';ctx.fillRect(bx-13,by+8,27,4);ctx.fillStyle='#263d4a';ctx.fillRect(bx-19,by-7-wing,13,13+wing);ctx.fillRect(bx+7,by-7-wing,13,13+wing);ctx.fillStyle='#58717a';ctx.fillRect(bx-20,by-8-wing,8,5);ctx.fillRect(bx+12,by-8-wing,8,5);ctx.fillStyle='#172a38';ctx.fillRect(bx-14,by-1,7,9);ctx.fillRect(bx+7,by-1,7,9);
+ // wing bones
+ ctx.fillStyle='#9bb1a5';ctx.fillRect(bx-14,by-3-wing,2,11);ctx.fillRect(bx+12,by-3-wing,2,11);ctx.fillRect(bx-17,by+3,7,2);ctx.fillRect(bx+10,by+3,7,2);
+ // body, ears, face and eyes
+ ctx.fillStyle='#a8b8a0';ctx.fillRect(bx-5,by-5,11,13);ctx.fillStyle='#d2d7b5';ctx.fillRect(bx-4,by-8,9,7);ctx.fillStyle='#80988d';ctx.fillRect(bx-5,by-11,3,5);ctx.fillRect(bx+2,by-11,3,5);ctx.fillStyle='#f1d17a';ctx.fillRect(bx+1,by-5,2,2);ctx.fillStyle='#15232b';ctx.fillRect(bx+2,by-4,1,1);ctx.fillStyle='#d7b7a0';ctx.fillRect(bx-1,by-1,3,2);ctx.fillStyle='#9bb1a5';ctx.fillRect(bx-3,by+8,3,4);ctx.fillRect(bx+2,by+8,3,4);
+// Knight: layered steel helm, royal surcoat, articulated armour and animated details.
+const kx=Math.round(player.x*T),ky=Math.round(player.y*T),stride=Math.sin(step*5)*2;
+ctx.fillStyle='#050b14a8';ctx.fillRect(kx-14,ky+12,28,6);
+ // boots and greaves
+ ctx.fillStyle='#172633';ctx.fillRect(kx-9,ky+6+stride,7,7);ctx.fillRect(kx+3,ky+6-stride,7,7);ctx.fillStyle='#d0a85c';ctx.fillRect(kx-9,ky+11+stride,8,3);ctx.fillRect(kx+2,ky+11-stride,8,3);
+ // blue royal tunic and gold hem
+ ctx.fillStyle='#173e52';ctx.fillRect(kx-10,ky-5,20,15);ctx.fillStyle='#28677a';ctx.fillRect(kx-7,ky-4,14,11);ctx.fillStyle='#d6b45f';ctx.fillRect(kx-10,ky+6,20,3);ctx.fillRect(kx-2,ky-3,4,10);
+ // shoulder plates and armoured arms
+ ctx.fillStyle='#aebdc0';ctx.fillRect(kx-13,ky-6,6,8);ctx.fillRect(kx+7,ky-6,6,8);ctx.fillStyle='#e2d7b2';ctx.fillRect(kx-12,ky-7,4,3);ctx.fillRect(kx+8,ky-7,4,3);ctx.fillStyle='#385464';ctx.fillRect(kx-12,ky+1,4,7);ctx.fillRect(kx+8,ky+1,4,7);
+ // neck and helmet shell
+ ctx.fillStyle='#bd9c68';ctx.fillRect(kx-4,ky-11,8,6);ctx.fillStyle='#879da5';ctx.fillRect(kx-9,ky-18,18,14);ctx.fillStyle='#d9e0d5';ctx.fillRect(kx-7,ky-17,14,3);ctx.fillStyle='#627e8a';ctx.fillRect(kx-7,ky-13,14,8);ctx.fillStyle='#d4b66e';ctx.fillRect(kx-10,ky-10,20,3);
+ // visor slit, eye glint and cheek guards
+ ctx.fillStyle='#101d2a';ctx.fillRect(kx-6,ky-11,12,3);ctx.fillStyle='#f5d27c';ctx.fillRect(kx+2,ky-10,3,1);ctx.fillStyle='#c7d1c9';ctx.fillRect(kx-9,ky-7,4,5);ctx.fillRect(kx+5,ky-7,4,5);
+ // crest and engraved crest mark
+ ctx.fillStyle='#b74f50';ctx.fillRect(kx-2,ky-23,5,6);ctx.fillStyle='#e7bd69';ctx.fillRect(kx-1,ky-25,3,4);ctx.fillStyle='#f2d78c';ctx.fillRect(kx-2,ky-3,4,4);
+ // sword carried at side, with a tiny glint
+ if(hasSword){ctx.fillStyle='#dce8e4';ctx.fillRect(kx+12,ky-9,3,17);ctx.fillStyle='#f4e4b4';ctx.fillRect(kx+10,ky-5,7,2);ctx.fillStyle='#8d633b';ctx.fillRect(kx+12,ky+8,3,4);ctx.fillStyle='#fff5d4';ctx.fillRect(kx+13,ky-8,1,7)}
 if(secretFound){ctx.fillStyle='#f2e7ae';ctx.font='12px monospace';ctx.fillText('?',dot.x*T-3,dot.y*T-12)}
 const vg=ctx.createRadialGradient(480,310,120,480,310,610);vg.addColorStop(0,'#00000000');vg.addColorStop(.72,'#07101b38');vg.addColorStop(1,'#030813c9');ctx.fillStyle=vg;ctx.fillRect(0,0,960,640);
 }
