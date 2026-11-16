@@ -39,9 +39,22 @@ button{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-h
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
 (function(){
-const canvas=document.getElementById('game'),scene=new THREE.Scene();scene.background=new THREE.Color(0x91aab8);scene.fog=new THREE.Fog(0x91aab8,95,260);
-const camera=new THREE.PerspectiveCamera(innerWidth<700?96:58,innerWidth/innerHeight,.1,700);
-const renderer=new THREE.WebGLRenderer({canvas,antialias:innerWidth>700,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.35:1.8));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
+const canvas=document.getElementById('game');
+function fallbackRenderer(){
+  const ctx=canvas.getContext('2d');if(!ctx)return;
+  const colors=['#ff492e','#1f91e0','#f1bd32','#e8e9e9','#48b878','#a96ad8','#f17e28'];
+  let running=false,last=0,playerT=0,speed=0,lap=1;const cars=colors.map((color,i)=>({t:.16+i*.2,color}));
+  function resize(){canvas.width=innerWidth*devicePixelRatio;canvas.height=innerHeight*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}addEventListener('resize',resize);resize();
+  document.getElementById('startBtn').onclick=()=>{running=true;document.getElementById('start').style.display='none';document.getElementById('start').style.opacity=0;document.getElementById('message').textContent='GREEN FLAG · GO GO GO';document.getElementById('message').style.opacity=1};
+  function frame(now){const dt=Math.min((now-last)/1000||0,.04);last=now;if(running){const keys=window.__ovalKeys||{};speed=Math.max(0,Math.min(290,speed+((keys.w||keys.arrowup)?55:0)-((keys.s||keys.arrowdown)?120:8)*dt));playerT+=dt*(speed/3.6/72);if(Math.floor(playerT/(Math.PI*2))+1>lap)lap=Math.min(3,Math.floor(playerT/(Math.PI*2))+1);cars.forEach((c,i)=>c.t+=dt*(.76+i*.035));document.getElementById('speed').textContent=String(Math.round(speed)).padStart(3,'0');document.getElementById('lap').textContent=String(lap).padStart(2,'0')+' / 03'}
+  const w=innerWidth,h=innerHeight;ctx.clearRect(0,0,w,h);ctx.fillStyle='#426d4d';ctx.fillRect(0,0,w,h);const cx=w/2,cy=h*.48,rx=Math.min(w*.39,190),ry=Math.min(h*.28,125);ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.strokeStyle='#252d34';ctx.lineWidth=Math.max(34,Math.min(w,h)*.09);ctx.stroke();ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.strokeStyle='#e8e8df';ctx.lineWidth=2;ctx.stroke();
+  function car(t,color,isPlayer){const x=cx+rx*Math.cos(t),y=cy+ry*Math.sin(t);ctx.save();ctx.translate(x,y);ctx.rotate(t+Math.PI/2);ctx.fillStyle='#080b10';ctx.fillRect(-10,-17,20,34);ctx.fillStyle=color;ctx.fillRect(-8,-15,16,30);ctx.fillStyle='#b8d4e2';ctx.fillRect(-6,-7,12,9);ctx.fillStyle=isPlayer?'#fff1a8':'#111';ctx.fillRect(-7,10,14,3);ctx.restore()}
+  cars.forEach(c=>car(c.t,c.color,false));car(playerT,'#ff4a2b',true);ctx.fillStyle='#fff';ctx.font='700 12px monospace';ctx.fillText('OVAL//RUSH · 2D COMPATIBILITY MODE',18,h-22);requestAnimationFrame(frame)}requestAnimationFrame(frame);
+}
+if(!window.THREE){fallbackRenderer();return;}
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x91aab8);scene.fog=new THREE.Fog(0x91aab8,95,260);
+const camera=new THREE.PerspectiveCamera(innerWidth<700?68:58,innerWidth/innerHeight,.1,700);
+let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:innerWidth>700,powerPreference:'high-performance'});}catch(error){fallbackRenderer();return;}renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.35:1.8));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
 scene.add(new THREE.HemisphereLight(0xe5f3ff,0x394a37,2.0));
 const sun=new THREE.DirectionalLight(0xffedcf,2.8);sun.position.set(-55,85,35);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-100;sun.shadow.camera.right=100;sun.shadow.camera.top=100;sun.shadow.camera.bottom=-100;scene.add(sun);
 const mat=(c,r=.75,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
@@ -98,10 +111,10 @@ for(let i=0;i<cars.length;i++){let c=cars[i];const gap=state.t-c.t;const catchUp
 let target=new THREE.Vector3(p.x,1.2,p.z);let back=tangent.clone().multiplyScalar(-1);let camOffset=state.cam===0?new THREE.Vector3(0,7,0):state.cam===1?new THREE.Vector3(0,3.2,0):new THREE.Vector3(0,2.1,0);let distance=state.cam===0?13:state.cam===1?7:3.5;let desired=target.clone().add(back.multiplyScalar(distance)).add(camOffset);camera.position.lerp(desired,1-Math.exp(-dt*4.5));camera.lookAt(target.clone().add(tangent.clone().multiplyScalar(5)).add(new THREE.Vector3(0,1,0)));
 document.getElementById('speed').textContent=String(Math.round(state.speed)).padStart(3,'0');document.getElementById('speedbar').style.width=(state.speed/310*100)+'%';document.getElementById('lap').textContent=String(state.lap).padStart(2,'0')+' / 03';document.getElementById('gear').textContent=state.speed<1?'N':state.speed<90?'2':state.speed<180?'3':'4';document.getElementById('place').textContent='P '+String(1+cars.filter(c=>c.t>state.t).length).padStart(2,'0');document.getElementById('gap').textContent=boostMul>1?'BOOST ACTIVE':'OVAL POSITION';document.getElementById('raceState').textContent='PRACTICE SESSION / '+Math.floor(60-state.elapsed).toString().padStart(2,'0')+'s';state.elapsed+=dt;drawMap();
 }
-camera.position.set(0,150,215);camera.lookAt(0,0,0);
+camera.position.set(112,48,72);camera.lookAt(65,0,6);
 function animate(){requestAnimationFrame(animate);let dt=Math.min(clock.getDelta(),.04);if(state.started)update(dt);else{for(let i=0;i<cars.length;i++){let c=cars[i];c.t+=dt*c.speed*.12;let q=ovalPoint(c.t,c.lane);c.mesh.position.set(q.x,.08,q.z);let tan=ovalPoint(c.t+.01,c.lane).sub(ovalPoint(c.t-.01,c.lane));c.mesh.rotation.y=Math.atan2(tan.x,tan.z)}let q=ovalPoint(0,0);player.position.set(q.x,.08,q.z);player.rotation.y=Math.PI/2;}renderer.render(scene,camera)}
 animate();
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=innerWidth<700?96:58;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.35:1.8))});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=innerWidth<700?68:58;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.35:1.8))});
 document.addEventListener('contextmenu',e=>e.preventDefault());document.addEventListener('selectstart',e=>e.preventDefault());
 })();
 </script></body></html>
