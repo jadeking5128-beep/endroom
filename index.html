@@ -87,7 +87,7 @@ function endGame(){active=false;document.getElementById('menu').style.display='g
 document.getElementById('start').onclick=()=>{reset();active=true;document.getElementById('menu').style.display='none';notify('OPERATION LIVE')};
 addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space'){e.preventDefault();if(active)dash()}});addEventListener('keyup',e=>keys[e.code]=false);
 canvas.addEventListener('pointermove',e=>{mouse.x=e.clientX;mouse.y=e.clientY});canvas.addEventListener('pointerdown',e=>{mouse.down=true;mouse.x=e.clientX;mouse.y=e.clientY});addEventListener('pointerup',()=>mouse.down=false);
-let fireHeld=false;document.getElementById('fire').addEventListener('pointerdown',e=>{e.preventDefault();fireHeld=true});addEventListener('pointerup',()=>fireHeld=false);
+let fireHeld=false;addEventListener('pointerup',()=>{fireHeld=false;mouse.down=false});
 const stick={active:false,dx:0,dy:0};const base=document.getElementById('stick'),nub=document.getElementById('nub');let stickId=null;
 base.addEventListener('pointerdown',e=>{stickId=e.pointerId;stick.active=true;base.setPointerCapture(stickId);moveStick(e)});base.addEventListener('pointermove',e=>{if(e.pointerId===stickId)moveStick(e)});function moveStick(e){let r=base.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,m=Math.hypot(dx,dy),lim=40;if(m>lim){dx=dx/m*lim;dy=dy/m*lim}stick.dx=dx/lim;stick.dy=dy/lim;nub.style.left=(42+dx)+'px';nub.style.top=(42+dy)+'px'}function releaseStick(){stick.active=false;stick.dx=stick.dy=0;nub.style.left='42px';nub.style.top='42px'}base.addEventListener('pointerup',releaseStick);base.addEventListener('pointercancel',releaseStick);
 requestAnimationFrame(loop);
