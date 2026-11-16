@@ -24,7 +24,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101b1a;col
  <div class="top"><div class="brand">✦ THE HOLLOW KINGDOM<small>THE ROYAL LANDS · REALM I</small></div><div class="topright"><div class="coords">WORLD REGION <b>THE CROWNVALE · 16 KM</b><br>DAY <b id="day">01</b> · <span id="clock">08:20</span></div><button class="iconbtn" id="mapToggle">MAP</button></div></div>
  <div class="bottom"><div class="location"><strong id="place">THE ROYAL APPROACH</strong><span id="description">The royal road leads towards a ten-kilometre fortified capital.</span></div><div class="controls"><span></span><button data-dir="up">↑</button><span></span><button data-dir="left">←</button><button data-dir="down">↓</button><button data-dir="right">→</button></div></div>
 </div>
-<div class="panel" id="mapPanel"><h3>THE CROWNVALE</h3><canvas id="map" width="180" height="140"></canvas><div class="maplabel">16 KM WORLD · Press M for full atlas</div></div>
+<div class="panel" id="mapPanel"><h3>THE CROWNVALE</h3><canvas id="map" width="180" height="180"></canvas><div class="maplabel">16 KM WORLD · Press M for full atlas</div></div>
 <div class="atlas" id="atlas" hidden><div class="atlas-frame"><div class="atlas-head"><div><div class="atlas-title">THE CROWNVALE ATLAS</div><div class="atlas-sub">16 KM REGION · 32 METRE WORLD GRID</div></div><button class="iconbtn" id="closeAtlas">CLOSE ✕</button></div><div class="atlas-canvas-wrap"><canvas class="atlas-canvas" id="atlasMap" width="700" height="700"></canvas></div><div class="atlas-legend"><span><i style="background:#c0b697"></i> CASTLE</span><span><i style="background:#c58d64"></i> VILLAGE</span><span><i style="background:#244c3a"></i> FOREST</span><span><i style="background:#477b82"></i> WATER</span><span><i style="background:#75804e"></i> FIELDS</span><span>✦ YOUR POSITION</span></div><div class="atlas-foot"><span>EXPLORED LANDMARKS AND ROYAL ROADS</span><span id="atlasPosition">POSITION · 75 / 101</span></div></div></div>
 <div class="hint" id="hint">PRESS E TO EXPLORE</div>
 <div class="overlay" id="intro"><div class="intro"><div class="eyebrow">A NEW CHRONICLE BEGINS</div><h1>THE HOLLOW<br>KINGDOM</h1><p>Beyond the old forest stands the royal castle of Crownvale. Its towers watch over quiet villages, ancient gardens and forgotten roads. The kingdom is yours to explore. Begin at the castle gates and discover what remains of the old realm.</p><button class="start" id="begin">ENTER THE KINGDOM</button><div class="keys">MOVE · WASD / ARROW KEYS / TOUCH CONTROLS<br>EXPLORE · WALK TO THE CASTLE GATE OR LANDMARKS AND PRESS E</div></div></div>
@@ -231,8 +231,9 @@ function drawCastle(){
  ctx.fillStyle='#b6ae94';ctx.fillRect(gx-58,gy-35,116,42);ctx.fillStyle='#5b6d61';ctx.fillRect(gx-44,gy-27,88,35);
  ctx.fillStyle='#253a34';ctx.fillRect(gx-17,gy-26,34,34);ctx.fillStyle='#c4ad79';ctx.fillRect(gx-19,gy-29,38,4);
  ctx.fillStyle='#6b4b34';ctx.fillRect(gx-12,gy-5,24,14);ctx.fillStyle='#d4b36e';ctx.fillRect(gx-2,gy,4,4);
- // banners
- for(const bx of [kx-70,kx+70]){ctx.fillStyle='#9c4540';ctx.fillRect(bx,ky-15,9,24);ctx.fillStyle='#e0c477';ctx.fillRect(bx+3,ky-11,3,14);ctx.fillStyle='#9c4540';ctx.fillRect(bx+1,ky+9,4,6)}
+ // Royal banners ripple above the keep in the wind.
+ const flagWave=Math.sin(elapsed*2.4)*4;
+ for(const bx of [kx-70,kx+70]){ctx.fillStyle='#c7b68e';ctx.fillRect(bx-2,ky-22,3,42);ctx.beginPath();ctx.moveTo(bx,ky-20);ctx.quadraticCurveTo(bx+12,ky-16+flagWave,bx+23,ky-9);ctx.lineTo(bx+10,ky+2+flagWave);ctx.lineTo(bx,ky-1);ctx.closePath();ctx.fillStyle='#9c4540';ctx.fill();ctx.fillStyle='#e0c477';ctx.fillRect(bx+7,ky-11+flagWave*.4,4,7)}
  // courtyard shrubs, benches and lanterns
  for(const [x,y] of [[4,5],[6,5],[15,5],[17,5],[4,23],[17,23],[7,19],[16,12]])tree(sx+(x+.5)*TILE,sy+(y+.5)*TILE);
  ctx.restore();
@@ -243,6 +244,26 @@ function drawCastleDetails(){
  const ox=64*TILE,oy=52*TILE;
  for(let row=0;row<2;row++)for(let col=0;col<3;col++){let x=ox+(3+col*6)*TILE,y=oy+(5+row*16)*TILE;ctx.fillStyle='#263e32';ctx.fillRect(x,y,3*TILE,2*TILE);ctx.fillStyle='#628053';ctx.fillRect(x+5,y+5,3*TILE-10,2*TILE-10);flower(x+20,y+13,'#d4b16d');flower(x+53,y+17,'#b97768')}
  const fx=ox+11*TILE,fy=oy+21*TILE;ctx.fillStyle='#c4b18a';ctx.fillRect(fx-22,fy-12,44,24);ctx.fillStyle='#47777a';ctx.fillRect(fx-17,fy-7,34,14);ctx.fillStyle='#a5c2ac';ctx.fillRect(fx-5,fy-5,10,3);ctx.fillStyle='#d6c28f';ctx.fillRect(fx-25,fy-15,50,4);
+ ctx.restore();
+}
+function drawCitadelDistricts(){
+ // Dense royal city districts inside the walls: residences, guard halls, guild houses and plazas.
+ ctx.save();ctx.translate(250*TILE,250*TILE);ctx.scale(14.2,10.8);ctx.translate(-75*TILE,-66.5*TILE);
+ const roofs=['#674d3e','#70503b','#5b493b','#76533e','#665345'];
+ for(let y=54;y<80;y+=2)for(let x=66;x<85;x+=2){
+  const h=hash(x*19,y*23);
+  if(h<.24||(x>=70&&x<=80&&y>=61&&y<=70))continue;
+  const px=(x+.5)*TILE,py=(y+.5)*TILE;
+  building(px,py,22+(h*10|0),17+((1-h)*8|0),roofs[(x+y)%roofs.length]);
+  if(h>.82){ctx.fillStyle='#d4bd83';ctx.fillRect(px-2,py-17,4,8);ctx.fillStyle='#9c4540';ctx.fillRect(px-1,py-22,3,6)}
+ }
+ // Four monumental civic buildings anchor the inner wards.
+ building(69*TILE,57*TILE,58,42,'#624538');building(81*TILE,57*TILE,58,42,'#57483b');
+ building(69*TILE,76*TILE,58,42,'#70503b');building(81*TILE,76*TILE,58,42,'#604638');
+ // Broad paved avenues converge on the throne keep.
+ ctx.fillStyle='#b5a078';ctx.fillRect(74*TILE,53*TILE,2*TILE,28*TILE);ctx.fillRect(65*TILE,64*TILE,20*TILE,2*TILE);
+ // Guard plazas, square fountains and planted courtyards.
+ for(const [x,y] of [[67,62],[81,62],[67,72],[81,72]]){ctx.fillStyle='#c4b18a';ctx.fillRect(x*TILE,y*TILE,2*TILE,2*TILE);ctx.fillStyle='#47777a';ctx.fillRect(x*TILE+9,y*TILE+9,46,46);ctx.fillStyle='#a5c2ac';ctx.fillRect(x*TILE+26,y*TILE+17,12,5)}
  ctx.restore();
 }
 function drawWorld(){
@@ -268,8 +289,8 @@ function drawWorld(){
  ctx.fillStyle='#b7a47c';ctx.fillRect(438*TILE,435*TILE,8*TILE,3);ctx.fillRect(441*TILE,431*TILE,3,8*TILE);
  // Watcher ruin fragments
  for(const [x,y] of [[54,58],[61,55],[68,60],[56,67],[65,70]]){ctx.fillStyle='#a6a18b';ctx.fillRect(x*TILE,y*TILE,25,13);ctx.fillStyle='#58695e';ctx.fillRect(x*TILE+3,y*TILE+3,19,7)}
- // castle geometry and detailing
- drawCastle();drawCastleDetails();
+ // Dense royal wards surround the central throne keep inside the immense citadel.
+ drawCastle();drawCastleDetails();drawCitadelDistricts();
  // player shadow and adventurer
  const px=player.x,py=player.y;ctx.fillStyle='#101a16aa';ctx.beginPath();ctx.ellipse(px,py+10,11,5,0,0,Math.PI*2);ctx.fill();
  const bob=Math.sin(player.walk)*2,face=player.face;
@@ -284,8 +305,8 @@ function drawWorld(){
  ctx.restore();
 }
 function drawMap(){
- mctx.clearRect(0,0,180,140);
- const sx=180/WORLD_W,sy=140/WORLD_H;
+ mctx.clearRect(0,0,180,180);
+ const sx=180/WORLD_W,sy=180/WORLD_H;
  for(let y=0;y<WORLD_H;y+=2)for(let x=0;x<WORLD_W;x+=2){const t=terrain(x,y);mctx.fillStyle=t==='water'?'#477b82':t==='forest'?'#244c3a':t==='road'?'#a08a63':t==='castle'?'#c0b697':t==='field'?'#75804e':'#3c6345';mctx.fillRect(x*sx,y*sy,2.5,2.5)}
  mctx.fillStyle='#bca875';mctx.strokeStyle='#e3d4b0';mctx.lineWidth=1;mctx.strokeRect(94*sx,94*sy,312*sx,312*sy);mctx.fillStyle='#d7caa5';mctx.fillRect(235*sx,235*sy,30*sx,30*sy);
  mctx.fillStyle='#c58d64';mctx.fillRect(45*sx,405*sy,55*sx,60*sy);mctx.fillStyle='#d9b66c';mctx.beginPath();mctx.arc(player.x/TILE*sx,player.y/TILE*sy,3,0,Math.PI*2);mctx.fill();
@@ -329,7 +350,7 @@ function locationUpdate(){
 }
 function interact(){if(insideCastle){const ix=player.x/TILE,iy=player.y/TILE;if(iy>12.2){insideCastle=false;player.x=250*TILE+16;player.y=425*TILE+16;document.getElementById('mapPanel').style.display=showMap?'block':'none';locationUpdate();return}let spot=interiorSpots.find(s=>Math.hypot(ix-s.x,iy-s.y)<s.r);if(spot){document.getElementById('loreTag').textContent='THE ROYAL KEEP · FIELD NOTES';document.getElementById('loreTitle').textContent=spot.name;document.getElementById('loreText').textContent=spot.text;document.getElementById('lore').hidden=false}return}if(Math.hypot(player.x/TILE-250,player.y/TILE-411)<18){insideCastle=true;player.x=11*TILE+16;player.y=12*TILE+16;document.getElementById('mapPanel').style.display='none';locationUpdate();return}let near=null,best=1e9;for(const l of landmarks){const d=Math.hypot(player.x/TILE-l.x,player.y/TILE-l.y);if(d<l.r&&d<best){near=l;best=d}}if(!near)return;document.getElementById('loreTag').textContent='CROWNVALE · FIELD NOTES';document.getElementById('loreTitle').textContent=near.name;document.getElementById('loreText').textContent=near.text;document.getElementById('lore').hidden=false}
 function update(dt){
- if(!started||!document.getElementById('lore').hidden)return;
+ if(!started||!document.getElementById('lore').hidden||atlasOpen)return;
  let dx=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0)+touch.x,dy=(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0)+touch.y;
  const len=Math.hypot(dx,dy);if(len>0){dx/=len;dy/=len;player.x+=dx*player.speed*dt;player.y+=dy*player.speed*dt;player.walk+=dt*12;player.face=Math.atan2(dy,dx)}
  if(insideCastle){player.x=Math.max(1.4*TILE,Math.min(20.5*TILE,player.x));player.y=Math.max(2*TILE,Math.min(13.7*TILE,player.y));}else{player.x=Math.max(TILE*2,Math.min((WORLD_W-2)*TILE,player.x));player.y=Math.max(TILE*2,Math.min((WORLD_H-2)*TILE,player.y));}
@@ -337,7 +358,7 @@ function update(dt){
  if(!insideCastle){camX=Math.max(0,Math.min(WORLD_W*TILE-vw,player.x-vw*.5));camY=Math.max(0,Math.min(WORLD_H*TILE-vh,player.y-vh*.52));}
  elapsed+=dt;const hours=(8+Math.floor(elapsed/45))%24,mins=Math.floor((elapsed%45)/.75);document.getElementById('clock').textContent=String(hours).padStart(2,'0')+':'+String(mins).padStart(2,'0');locationUpdate();
 }
-function render(t){const dt=Math.min(.04,(t-last)/1000||0);last=t;ctx.clearRect(0,0,vw,vh);ctx.fillStyle='#1d3429';ctx.fillRect(0,0,vw,vh);update(dt);if(insideCastle)drawInterior();else drawWorld();if(showMap&&!insideCastle&&!atlasOpen)drawMap();if(atlasOpen)drawAtlas();requestAnimationFrame(render)}
+function render(t){const dt=Math.min(.04,(t-last)/1000||0);last=t;ctx.clearRect(0,0,vw,vh);ctx.fillStyle='#1d3429';ctx.fillRect(0,0,vw,vh);update(dt);if(insideCastle)drawInterior();else drawWorld();if(showMap&&!insideCastle&&!atlasOpen)drawMap();requestAnimationFrame(render)}
 addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys[e.key]=true;if(e.key.toLowerCase()==='e'&&started)interact()});
 addEventListener('keyup',e=>keys[e.key]=false);
 document.querySelectorAll('[data-dir]').forEach(b=>{const v={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[b.dataset.dir];const on=e=>{e.preventDefault();touch.x=v[0];touch.y=v[1]};const off=e=>{e.preventDefault();touch.x=0;touch.y=0};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('pointerleave',off)});
