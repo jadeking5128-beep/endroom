@@ -1,2 +1,56 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#050b12"><title>ENDROOM — The Silence Between</title></head><body><div id="app"><div id="game"></div><div id="hud"><header><div class="brand">ENDROOM <small>ASTERION EXPEDITION // LAST LIGHT</small></div><div id="clock">04:17:09<br><small>KEPLER-186f</small></div></header><section class="objective"><small>MISSION DIRECTIVE</small><h1 id="objective">SECURE THE LANDER</h1><p id="detail">Stabilise the damaged fuel system.</p><div id="tasks"></div></section><div id="mode">SIDE VIEW // SURFACE</div><div id="prompt"></div><div id="subtitle"></div><div id="signal"></div><div id="controls"><button data-key="a">◀</button><button data-key="d">▶</button><button data-key="w">▲</button><button id="action">ACTION</button></div><div id="toast"></div><div id="intro"><div class="intro-card"><small>CHAPTER 01 // OPERATION LAST LIGHT</small><h2>THE SILENCE<br><span>BETWEEN</span></h2><p>Kepler-186f. Day 19. A gravitational event has crippled the Asterion lander. The crew is evacuating. Dr. Elias Mercer is still on the surface.</p><p class="warning">EXTRACTION WINDOW: UNKNOWN</p><button id="deploy">BEGIN OPERATION</button></div></div><div id="fade"></div></div><script type="module" src="/src/main.ts"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#050b12">
+  <title>ENDROOM — The Silence Between</title>
+</head>
+<body>
+  <div id="app">
+    <div id="game"></div>
+    <div id="hud">
+      <header>
+        <div class="brand">ENDROOM<small>ASTERION EXPEDITION // LAST LIGHT</small></div>
+        <div id="clock">04:17:09<br><small>KEPLER-186f</small></div>
+      </header>
+      <section class="objective">
+        <small>MISSION DIRECTIVE</small>
+        <h1 id="objective">TRACE THE DAMAGE</h1>
+        <p id="detail">Find the ruptured fuel line and stabilise the lander.</p>
+        <div id="tasks"></div>
+      </section>
+      <div id="mode">SURFACE // EXTERIOR</div>
+      <div id="prompt"></div>
+      <div id="subtitle"></div>
+      <div id="signal"></div>
+      <div id="controls">
+        <div class="dpad" aria-label="Movement controls">
+          <button class="blank" tabindex="-1" aria-hidden="true"></button>
+          <button data-key="w" aria-label="Move up">▲</button>
+          <button class="blank" tabindex="-1" aria-hidden="true"></button>
+          <button data-key="a" aria-label="Move left">◀</button>
+          <button data-key="s" aria-label="Move down">▼</button>
+          <button data-key="d" aria-label="Move right">▶</button>
+        </div>
+        <div class="action-wrap">
+          <button id="action">HOLD<br>USE</button>
+          <small>HOLD TO INTERACT</small>
+        </div>
+      </div>
+      <div id="toast"></div>
+      <div id="intro">
+        <div class="intro-card">
+          <small>CHAPTER 01 // OPERATION LAST LIGHT</small>
+          <h2>THE SILENCE<br><span>BETWEEN</span></h2>
+          <p>Kepler-186f. Day 19. A gravitational event has crippled the Asterion lander. The crew is evacuating. Dr. Elias Mercer is still on the surface.</p>
+          <p class="warning">EXTRACTION WINDOW: UNKNOWN</p>
+          <p class="keyline">MOVE: WASD / ARROWS &nbsp; JUMP: SPACE &nbsp; INTERACT: HOLD E</p>
+          <button id="deploy">BEGIN OPERATION</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
