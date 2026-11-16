@@ -40,7 +40,7 @@ button{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-h
 <script>
 (function(){
 const canvas=document.getElementById('game'),scene=new THREE.Scene();scene.background=new THREE.Color(0x91aab8);scene.fog=new THREE.Fog(0x91aab8,95,260);
-const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.1,500);
+const camera=new THREE.PerspectiveCamera(innerWidth<700?96:58,innerWidth/innerHeight,.1,700);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:innerWidth>700,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.35:1.8));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
 scene.add(new THREE.HemisphereLight(0xe5f3ff,0x394a37,2.0));
 const sun=new THREE.DirectionalLight(0xffedcf,2.8);sun.position.set(-55,85,35);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-100;sun.shadow.camera.right=100;sun.shadow.camera.top=100;sun.shadow.camera.bottom=-100;scene.add(sun);
@@ -98,10 +98,10 @@ for(let i=0;i<cars.length;i++){let c=cars[i];c.t+=dt*c.speed*(.75+Math.sin(clock
 let target=new THREE.Vector3(p.x,1.2,p.z);let back=tangent.clone().multiplyScalar(-1);let camOffset=state.cam===0?new THREE.Vector3(0,7,0):state.cam===1?new THREE.Vector3(0,3.2,0):new THREE.Vector3(0,2.1,0);let distance=state.cam===0?13:state.cam===1?7:3.5;let desired=target.clone().add(back.multiplyScalar(distance)).add(camOffset);camera.position.lerp(desired,1-Math.exp(-dt*4.5));camera.lookAt(target.clone().add(tangent.clone().multiplyScalar(5)).add(new THREE.Vector3(0,1,0)));
 document.getElementById('speed').textContent=String(Math.round(state.speed)).padStart(3,'0');document.getElementById('speedbar').style.width=(state.speed/310*100)+'%';document.getElementById('lap').textContent=String(state.lap).padStart(2,'0')+' / 03';document.getElementById('gear').textContent=state.speed<1?'N':state.speed<90?'2':state.speed<180?'3':'4';document.getElementById('place').textContent='P '+String(1+cars.filter(c=>c.t>state.t).length).padStart(2,'0');document.getElementById('gap').textContent=boostMul>1?'BOOST ACTIVE':'OVAL POSITION';document.getElementById('raceState').textContent='PRACTICE SESSION / '+Math.floor(60-state.elapsed).toString().padStart(2,'0')+'s';state.elapsed+=dt;drawMap();
 }
-camera.position.set(0,112,138);camera.lookAt(0,0,0);
+camera.position.set(0,150,215);camera.lookAt(0,0,0);
 function animate(){requestAnimationFrame(animate);let dt=Math.min(clock.getDelta(),.04);if(state.started)update(dt);else{for(let i=0;i<cars.length;i++){let c=cars[i];c.t+=dt*c.speed*.18;let q=ovalPoint(c.t,c.lane);c.mesh.position.set(q.x,.08,q.z);let tan=ovalPoint(c.t+.01,c.lane).sub(ovalPoint(c.t-.01,c.lane));c.mesh.rotation.y=Math.atan2(tan.x,tan.z)}let q=ovalPoint(0,0);player.position.set(q.x,.08,q.z);player.rotation.y=Math.PI/2;}renderer.render(scene,camera)}
 animate();
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.35:1.8))});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=innerWidth<700?96:58;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.35:1.8))});
 document.addEventListener('contextmenu',e=>e.preventDefault());document.addEventListener('selectstart',e=>e.preventDefault());
 })();
 </script></body></html>
