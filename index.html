@@ -108,7 +108,7 @@ function drawInterior(){
 }
 
 const landmarks=[
- {x:250,y:250,r:145,name:'THE ROYAL CITADEL',desc:'A vast 10 kilometre royal fortress district surrounds the throne keep.',text:'The Crownvale Citadel is the seat of the kingdom: a vast fortified royal city with monumental walls, gate districts, courtyards, gardens, guard quarters and the central throne keep. Its full grounds span approximately ten kilometres.'},
+ {x:250,y:250,r:145,name:'THE ROYAL CITADEL',desc:'A vast 10 kilometre royal fortress district surrounds the throne keep.',text:'The Crownvale Citadel is a true walled royal capital, with four fortified curtain walls, regularly spaced bastion towers, gatehouses, avenues, residential wards, civic plazas and a monumental inner palace. Its outer walls enclose approximately ten kilometres on each side.'},
  {x:250,y:411,r:18,name:'THE KINGSGATE',desc:'The monumental southern gate opens onto the royal approach.',text:'The Kingsgate is the principal entrance to the Crownvale Citadel. Its gate district controls the great southern road and the outer approach to the royal city.'},
  {x:70,y:435,r:18,name:'MILLHAVEN VILLAGE',desc:'A settlement beside the western stream.',text:'Millhaven is a growing settlement beyond the citadel walls, with timber homes, a market square and a watermill beside the stream.'},
  {x:442,y:440,r:20,name:'THE OLD ORCHARD',desc:'Ancient trees shelter a forgotten royal garden.',text:'The orchard was planted by the first royal gardener. Stone paths wind between old trees, flower beds and a quiet reflecting pool.'},
@@ -189,88 +189,115 @@ function tower(px,py,r=17){
  ctx.fillStyle='#273b33';ctx.fillRect(px-4,py-2,8,12);
  ctx.fillStyle='#b7b39b';ctx.fillRect(px-5,py-4,10,3);
 }
-function drawCastle(){
- // Expand the fortress footprint to approximately 10 km square.
- ctx.save();ctx.translate(250*TILE,250*TILE);ctx.scale(14.2,10.8);ctx.translate(-75*TILE,-66.5*TILE);
- const sx=64*TILE,sy=52*TILE;
- // Outer curtain walls and crenellations.
- ctx.fillStyle='#17251f';ctx.fillRect(sx-8,sy-8,22*TILE+16,29*TILE+16);
- ctx.fillStyle='#a4a28e';ctx.fillRect(sx,sy,22*TILE,29*TILE);
- ctx.fillStyle='#6c7b70';ctx.fillRect(sx+TILE,sy+TILE,20*TILE,27*TILE);
- ctx.fillStyle='#3f5a48';ctx.fillRect(sx+2*TILE,sy+2*TILE,18*TILE,25*TILE);
- ctx.fillStyle='#b3ae95';ctx.fillRect(sx,sy,22*TILE,13);ctx.fillRect(sx,sy+29*TILE-13,22*TILE,13);ctx.fillRect(sx,sy,13,29*TILE);ctx.fillRect(sx+22*TILE-13,sy,13,29*TILE);
- for(let x=0;x<22;x+=2){ctx.fillStyle='#c5b99a';ctx.fillRect(sx+x*TILE+3,sy-7,13,12);ctx.fillRect(sx+x*TILE+3,sy+29*TILE-5,13,12)}
- for(let y=0;y<29;y+=2){ctx.fillStyle='#c5b99a';ctx.fillRect(sx-7,sy+y*TILE+3,12,13);ctx.fillRect(sx+22*TILE-5,sy+y*TILE+3,12,13)}
- // Courtyard paths, lawns, ornamental pools.
- ctx.fillStyle='#9a8966';ctx.fillRect(sx+9*TILE,sy+7*TILE,4*TILE,17*TILE);
- ctx.fillRect(sx+4*TILE,sy+14*TILE,14*TILE,3*TILE);
- ctx.fillStyle='#41694c';ctx.fillRect(sx+3*TILE,sy+4*TILE,5*TILE,7*TILE);ctx.fillRect(sx+14*TILE,sy+4*TILE,5*TILE,7*TILE);
- ctx.fillStyle='#315c60';ctx.fillRect(sx+15*TILE,sy+19*TILE,4*TILE,2*TILE);ctx.fillStyle='#82a8a0';ctx.fillRect(sx+15*TILE+5,sy+19*TILE+5,4*TILE-10,2);
- // Central keep with multiple roof tiers and ornate details.
- const kx=sx+11*TILE,ky=sy+13*TILE;
- ctx.fillStyle='#1b2925';ctx.fillRect(kx-90,ky-90,180,170);
- ctx.fillStyle='#b8b49e';ctx.fillRect(kx-83,ky-86,166,150);
- ctx.fillStyle='#758579';ctx.fillRect(kx-72,ky-76,144,132);
- ctx.fillStyle='#c8bea1';ctx.fillRect(kx-62,ky-67,124,114);
- ctx.fillStyle='#4e6958';ctx.fillRect(kx-54,ky-59,108,98);
- // roof silhouette
- ctx.fillStyle='#493c34';ctx.fillRect(kx-65,ky-88,130,30);ctx.fillRect(kx-50,ky-103,100,22);
- ctx.fillStyle='#765843';ctx.fillRect(kx-58,ky-86,116,13);ctx.fillRect(kx-44,ky-101,88,10);
- ctx.fillStyle='#d4bd83';ctx.fillRect(kx-5,ky-111,10,15);ctx.fillRect(kx-2,ky-123,4,13);
- // front facade, tall windows and doorway
- ctx.fillStyle='#d6c7a2';ctx.fillRect(kx-39,ky-48,78,91);
- ctx.fillStyle='#526b5d';ctx.fillRect(kx-32,ky-42,64,79);
- for(let wx=-24;wx<=24;wx+=16){ctx.fillStyle='#273f3a';ctx.fillRect(kx+wx-4,ky-32,8,22);ctx.fillStyle='#d8c58c';ctx.fillRect(kx+wx-1,ky-30,2,17);ctx.fillStyle='#c7b88f';ctx.fillRect(kx+wx-6,ky-35,12,3)}
- ctx.fillStyle='#392e29';ctx.fillRect(kx-12,ky+15,24,29);ctx.fillStyle='#d5b66f';ctx.fillRect(kx-2,ky+25,3,3);
- ctx.fillStyle='#d5bd80';ctx.fillRect(kx-47,ky-53,94,5);
- // four corner towers and inner turret
- tower(sx+2*TILE,sy+2*TILE,20);tower(sx+20*TILE,sy+2*TILE,20);tower(sx+2*TILE,sy+27*TILE,20);tower(sx+20*TILE,sy+27*TILE,20);
- tower(kx-54,ky-54,13);tower(kx+54,ky-54,13);
- // gatehouse, draw arch over southern wall
- const gx=sx+11*TILE,gy=sy+29*TILE;
- ctx.fillStyle='#b6ae94';ctx.fillRect(gx-58,gy-35,116,42);ctx.fillStyle='#5b6d61';ctx.fillRect(gx-44,gy-27,88,35);
- ctx.fillStyle='#253a34';ctx.fillRect(gx-17,gy-26,34,34);ctx.fillStyle='#c4ad79';ctx.fillRect(gx-19,gy-29,38,4);
- ctx.fillStyle='#6b4b34';ctx.fillRect(gx-12,gy-5,24,14);ctx.fillStyle='#d4b36e';ctx.fillRect(gx-2,gy,4,4);
- // Royal banners ripple above the keep in the wind.
- const flagWave=Math.sin(elapsed*2.4)*4;
- for(const bx of [kx-70,kx+70]){ctx.fillStyle='#c7b68e';ctx.fillRect(bx-2,ky-22,3,42);ctx.beginPath();ctx.moveTo(bx,ky-20);ctx.quadraticCurveTo(bx+12,ky-16+flagWave,bx+23,ky-9);ctx.lineTo(bx+10,ky+2+flagWave);ctx.lineTo(bx,ky-1);ctx.closePath();ctx.fillStyle='#9c4540';ctx.fill();ctx.fillStyle='#e0c477';ctx.fillRect(bx+7,ky-11+flagWave*.4,4,7)}
- // courtyard shrubs, benches and lanterns
- for(const [x,y] of [[4,5],[6,5],[15,5],[17,5],[4,23],[17,23],[7,19],[16,12]])tree(sx+(x+.5)*TILE,sy+(y+.5)*TILE);
- ctx.restore();
+function drawRoyalTower(px,py,size=3){
+ const w=size*TILE,h=size*TILE;
+ ctx.fillStyle='#17231f';ctx.fillRect(px-w/2-9,py-h/2+13,w+18,h+18);
+ ctx.fillStyle='#4b5b53';ctx.fillRect(px-w/2-5,py-h/2+5,w+10,h+10);
+ ctx.fillStyle='#b8b39c';ctx.fillRect(px-w/2,py-h/2,w,h);
+ ctx.fillStyle='#d8cfb4';ctx.fillRect(px-w/2+5,py-h/2+5,w-10,7);
+ ctx.fillStyle='#7d897d';ctx.fillRect(px-w/2+8,py-h/2+14,w-16,h-20);
+ ctx.fillStyle='#514237';ctx.fillRect(px-w/2-4,py-h/2-10,w+8,17);
+ ctx.fillStyle='#9d7650';ctx.fillRect(px-w/2+4,py-h/2-7,w-8,8);
+ ctx.fillStyle='#d8bb79';ctx.fillRect(px-3,py-h/2-20,6,12);
+ ctx.fillStyle='#a13f39';ctx.fillRect(px-2,py-h/2-30,4,12);
 }
-function drawCastleDetails(){
- ctx.save();ctx.translate(250*TILE,250*TILE);ctx.scale(14.2,10.8);ctx.translate(-75*TILE,-66.5*TILE);
- // courtyard decorative beds, fountains and lamps in world coordinates
- const ox=64*TILE,oy=52*TILE;
- for(let row=0;row<2;row++)for(let col=0;col<3;col++){let x=ox+(3+col*6)*TILE,y=oy+(5+row*16)*TILE;ctx.fillStyle='#263e32';ctx.fillRect(x,y,3*TILE,2*TILE);ctx.fillStyle='#628053';ctx.fillRect(x+5,y+5,3*TILE-10,2*TILE-10);flower(x+20,y+13,'#d4b16d');flower(x+53,y+17,'#b97768')}
- const fx=ox+11*TILE,fy=oy+21*TILE;ctx.fillStyle='#c4b18a';ctx.fillRect(fx-22,fy-12,44,24);ctx.fillStyle='#47777a';ctx.fillRect(fx-17,fy-7,34,14);ctx.fillStyle='#a5c2ac';ctx.fillRect(fx-5,fy-5,10,3);ctx.fillStyle='#d6c28f';ctx.fillRect(fx-25,fy-15,50,4);
- ctx.restore();
-}
-function drawCitadelDistricts(){
- // Dense royal city districts inside the walls: residences, guard halls, guild houses and plazas.
- ctx.save();ctx.translate(250*TILE,250*TILE);ctx.scale(14.2,10.8);ctx.translate(-75*TILE,-66.5*TILE);
- const roofs=['#674d3e','#70503b','#5b493b','#76533e','#665345'];
- for(let y=54;y<80;y+=2)for(let x=66;x<85;x+=2){
-  const h=hash(x*19,y*23);
-  if(h<.24||(x>=70&&x<=80&&y>=61&&y<=70))continue;
-  const px=(x+.5)*TILE,py=(y+.5)*TILE;
-  building(px,py,22+(h*10|0),17+((1-h)*8|0),roofs[(x+y)%roofs.length]);
-  if(h>.82){ctx.fillStyle='#d4bd83';ctx.fillRect(px-2,py-17,4,8);ctx.fillStyle='#9c4540';ctx.fillRect(px-1,py-22,3,6)}
+function drawCitadelTile(x,y,px,py){
+ const west=94,east=405,north=94,south=405,gateX=x>=244&&x<=256;
+ const onNorth=y>=north&&y<north+5,onSouth=y>=south-4&&y<=south&&!gateX;
+ const onWest=x>=west&&x<west+5,onEast=x>=east-4&&x<=east;
+ const wall=onNorth||onSouth||onWest||onEast;
+ if(wall){
+  ctx.fillStyle='#26332e';ctx.fillRect(px-2,py+5,TILE+4,TILE+4);
+  ctx.fillStyle='#78857b';ctx.fillRect(px,py,TILE,TILE);
+  ctx.fillStyle='#c1b99f';
+  if(onNorth||onSouth){ctx.fillRect(px,py,TILE,7);ctx.fillRect(px,py+25,TILE,7)}
+  if(onWest||onEast){ctx.fillRect(px,py,7,TILE);ctx.fillRect(px+25,py,7,TILE)}
+  ctx.fillStyle='#9d9c88';
+  if(onNorth||onSouth){for(let k=3;k<32;k+=8)ctx.fillRect(px+k,py-3,4,10)}
+  if(onWest||onEast){for(let k=3;k<32;k+=8)ctx.fillRect(px-3,py+k,10,4)}
+  ctx.fillStyle='#53645b';ctx.fillRect(px+9,py+10,14,12);
+  const corner=(x===west||x===east-4)&&(y===north||y===south-4);
+  const towerLine=((onNorth||onSouth)&&((x-west)%24===0))||((onWest||onEast)&&((y-north)%24===0));
+  if(corner||towerLine)drawRoyalTower(px+16,py+16,4);
+  return;
  }
- // Four monumental civic buildings anchor the inner wards.
- building(69*TILE,57*TILE,58,42,'#624538');building(81*TILE,57*TILE,58,42,'#57483b');
- building(69*TILE,76*TILE,58,42,'#70503b');building(81*TILE,76*TILE,58,42,'#604638');
- // Broad paved avenues converge on the throne keep.
- ctx.fillStyle='#b5a078';ctx.fillRect(74*TILE,53*TILE,2*TILE,28*TILE);ctx.fillRect(65*TILE,64*TILE,20*TILE,2*TILE);
- // Guard plazas, square fountains and planted courtyards.
- for(const [x,y] of [[67,62],[81,62],[67,72],[81,72]]){ctx.fillStyle='#c4b18a';ctx.fillRect(x*TILE,y*TILE,2*TILE,2*TILE);ctx.fillStyle='#47777a';ctx.fillRect(x*TILE+9,y*TILE+9,46,46);ctx.fillStyle='#a5c2ac';ctx.fillRect(x*TILE+26,y*TILE+17,12,5)}
- ctx.restore();
+ // The royal capital is laid out in walkable wards, broad avenues and courtyards.
+ const rx=x-west,ry=y-north;
+ const avenue=(rx%24<4)||(ry%24<4);
+ if(avenue){
+  ctx.fillStyle='#a99a79';ctx.fillRect(px,py,TILE,TILE);
+  ctx.fillStyle='#c8b995';ctx.fillRect(px+3,py+3,TILE-6,TILE-6);
+  ctx.fillStyle='#887b62';ctx.fillRect(px+14,py+14,4,4);
+  return;
+ }
+ const plaza=((rx%48>=8&&rx%48<16)&&(ry%48>=8&&ry%48<16));
+ if(plaza){
+  ctx.fillStyle='#b8aa89';ctx.fillRect(px,py,TILE,TILE);
+  ctx.fillStyle='#47777a';ctx.fillRect(px+9,py+9,14,14);
+  ctx.fillStyle='#d8c89f';ctx.fillRect(px+14,py+5,4,22);
+  return;
+ }
+ // Buildings are placed on a deterministic 7-tile grid, so the whole city is coherent.
+ if(rx%7===2&&ry%7===2){
+  const n=hash(x*17,y*31),w=(3.7+n*.9)*TILE,h=(2.8+(1-n)*.8)*TILE;
+  const roofs=['#514038','#67483a','#5a5146','#76513d','#4c4a43','#795e45'];
+  const roof=roofs[(x*3+y*5)%roofs.length];
+  ctx.fillStyle='#1d2924';ctx.fillRect(px-w/2-7,py-h/2+13,w+14,h+15);
+  ctx.fillStyle='#a8a18b';ctx.fillRect(px-w/2,py-h/2,w,h);
+  ctx.fillStyle='#d2c4a4';ctx.fillRect(px-w/2+4,py-h/2+4,w-8,7);
+  ctx.fillStyle=roof;ctx.fillRect(px-w/2-5,py-h/2-9,w+10,h*.72);
+  ctx.fillStyle='#927451';ctx.fillRect(px-7,py+2,14,h/2-3);
+  ctx.fillStyle='#e0c98d';ctx.fillRect(px-3,py+8,3,4);
+  for(let wx=-1;wx<=1;wx++){ctx.fillStyle='#253b39';ctx.fillRect(px+wx*22-4,py-h/2+13,8,13);ctx.fillStyle='#d7c58e';ctx.fillRect(px+wx*22-1,py-h/2+15,2,9)}
+  ctx.fillStyle='#c8b88e';ctx.fillRect(px-2,py-h/2-16,4,9);
+  if(n>.67){ctx.fillStyle='#9c403a';ctx.fillRect(px+8,py-h/2-25,3,13);ctx.fillStyle='#d9bf7b';ctx.fillRect(px+11,py-h/2-24,12,7)}
+ }
+}
+function drawThronePalace(){
+ const x=250*TILE,y=250*TILE;
+ // A distinct, monumental royal precinct at the heart of the ten-kilometre city.
+ ctx.fillStyle='#18241f';ctx.fillRect(x-22*TILE-18,y-24*TILE+25,44*TILE+36,48*TILE+34);
+ ctx.fillStyle='#9c9b88';ctx.fillRect(x-22*TILE,y-24*TILE,44*TILE,48*TILE);
+ ctx.fillStyle='#c4b99c';ctx.fillRect(x-21*TILE,y-23*TILE,42*TILE,46*TILE);
+ ctx.fillStyle='#45594d';ctx.fillRect(x-19*TILE,y-21*TILE,38*TILE,42*TILE);
+ // Outer palace curtain wall and four great corner towers.
+ ctx.fillStyle='#c3b99c';ctx.fillRect(x-18*TILE,y-20*TILE,36*TILE,3*TILE);ctx.fillRect(x-18*TILE,y+17*TILE,36*TILE,3*TILE);
+ ctx.fillRect(x-18*TILE,y-20*TILE,3*TILE,40*TILE);ctx.fillRect(x+15*TILE,y-20*TILE,3*TILE,40*TILE);
+ for(const [dx,dy] of [[-17,-19],[17,-19],[-17,19],[17,19]])drawRoyalTower(x+dx*TILE,y+dy*TILE,5);
+ // Four paved courtyards, reflecting pools and ceremonial approach.
+ ctx.fillStyle='#b4a27e';ctx.fillRect(x-2*TILE,y-20*TILE,4*TILE,40*TILE);ctx.fillRect(x-18*TILE,y-2*TILE,36*TILE,4*TILE);
+ for(const dx of [-11,11])for(const dy of [-10,10]){
+  ctx.fillStyle='#c8b891';ctx.fillRect(x+(dx-2)*TILE,y+(dy-2)*TILE,4*TILE,4*TILE);
+  ctx.fillStyle='#376a70';ctx.fillRect(x+(dx-1.4)*TILE,y+(dy-1.4)*TILE,2.8*TILE,2.8*TILE);
+  ctx.fillStyle='#a8c2b1';ctx.fillRect(x+(dx-.25)*TILE,y+(dy-.25)*TILE,.5*TILE,.5*TILE);
+ }
+ // Great throne keep, layered stone terraces, roof wings and a high central hall.
+ ctx.fillStyle='#1c2924';ctx.fillRect(x-10*TILE-12,y-10*TILE+20,20*TILE+24,21*TILE+18);
+ ctx.fillStyle='#c6bda2';ctx.fillRect(x-10*TILE,y-10*TILE,20*TILE,21*TILE);
+ ctx.fillStyle='#6f7d70';ctx.fillRect(x-9*TILE,y-9*TILE,18*TILE,19*TILE);
+ ctx.fillStyle='#c9bea0';ctx.fillRect(x-7*TILE,y-8*TILE,14*TILE,17*TILE);
+ ctx.fillStyle='#536b5d';ctx.fillRect(x-6*TILE,y-7*TILE,12*TILE,15*TILE);
+ ctx.fillStyle='#4d3d34';ctx.fillRect(x-8*TILE,y-10*TILE,16*TILE,4*TILE);
+ ctx.fillRect(x-6*TILE,y-12*TILE,12*TILE,3*TILE);
+ ctx.fillStyle='#846247';ctx.fillRect(x-7*TILE,y-10*TILE,14*TILE,2*TILE);
+ ctx.fillStyle='#d8c18a';ctx.fillRect(x-2*TILE,y-13*TILE,4*TILE,2*TILE);
+ // Tall central hall facade and arched entrance.
+ ctx.fillStyle='#d4c8a9';ctx.fillRect(x-4*TILE,y-3*TILE,8*TILE,10*TILE);
+ ctx.fillStyle='#314c46';ctx.fillRect(x-3*TILE,y-2*TILE,6*TILE,8*TILE);
+ for(let wx=-2;wx<=2;wx++){ctx.fillStyle='#1c3433';ctx.fillRect(x+wx*TILE-5,y-2*TILE,10,25);ctx.fillStyle='#e0c98c';ctx.fillRect(x+wx*TILE-1,y-2*TILE,2,21)}
+ ctx.fillStyle='#352c28';ctx.fillRect(x-1.5*TILE,y+3*TILE,3*TILE,4*TILE);
+ ctx.fillStyle='#d7b96f';ctx.fillRect(x-3,y+4*TILE,6,6);
+ // Four roof turrets and animated royal standards.
+ for(const dx of [-6,6])for(const dy of [-8,5])drawRoyalTower(x+dx*TILE,y+dy*TILE,3);
+ const wave=Math.sin(elapsed*2.1)*5;
+ for(const dx of [-8,8]){ctx.fillStyle='#d0bd8e';ctx.fillRect(x+dx*TILE,y-15*TILE,3,5*TILE);ctx.beginPath();ctx.moveTo(x+dx*TILE+2,y-15*TILE);ctx.quadraticCurveTo(x+dx*TILE+18,y-14*TILE+wave,x+dx*TILE+32,y-12*TILE);ctx.lineTo(x+dx*TILE+17,y-10*TILE+wave);ctx.closePath();ctx.fillStyle='#9d3e39';ctx.fill();ctx.fillStyle='#e4c77e';ctx.fillRect(x+dx*TILE+12,y-13*TILE+wave*.3,4,7)}
 }
 function drawWorld(){
  const left=Math.floor(camX/TILE)-2,top=Math.floor(camY/TILE)-2,right=left+Math.ceil(vw/TILE)+4,bottom=top+Math.ceil(vh/TILE)+4;
  ctx.save();ctx.translate(-camX,-camY);
  for(let y=Math.max(0,top);y<Math.min(WORLD_H,bottom);y++)for(let x=Math.max(0,left);x<Math.min(WORLD_W,right);x++){
   const t=terrain(x,y),px=x*TILE,py=y*TILE;drawGround(x,y,px,py,t);
+  if(x>=94&&x<=405&&y>=94&&y<=405)drawCitadelTile(x,y,px,py);
   const n=hash(x*11,y*13);
   if(t==='forest'&&n>.54)tree(px+16,py+18,n>.8?1:0);
   else if(t==='field'&&n>.83)flower(px+13,py+17,n>.92?'#d9b66c':'#c48a78');
@@ -289,8 +316,8 @@ function drawWorld(){
  ctx.fillStyle='#b7a47c';ctx.fillRect(438*TILE,435*TILE,8*TILE,3);ctx.fillRect(441*TILE,431*TILE,3,8*TILE);
  // Watcher ruin fragments
  for(const [x,y] of [[54,58],[61,55],[68,60],[56,67],[65,70]]){ctx.fillStyle='#a6a18b';ctx.fillRect(x*TILE,y*TILE,25,13);ctx.fillStyle='#58695e';ctx.fillRect(x*TILE+3,y*TILE+3,19,7)}
- // Dense royal wards surround the central throne keep inside the immense citadel.
- drawCastle();drawCastleDetails();drawCitadelDistricts();
+ // The palace is rendered at true world scale, with a detailed city surrounding it.
+ drawThronePalace();
  // player shadow and adventurer
  const px=player.x,py=player.y;ctx.fillStyle='#101a16aa';ctx.beginPath();ctx.ellipse(px,py+10,11,5,0,0,Math.PI*2);ctx.fill();
  const bob=Math.sin(player.walk)*2,face=player.face;
@@ -322,10 +349,13 @@ function drawAtlas(){
  }
  // Royal approach and main paths
  actx.strokeStyle='#c3a879';actx.lineWidth=5;actx.beginPath();actx.moveTo(250*sx,500*sy);actx.lineTo(250*sx,406*sy);actx.stroke();
- // Ten-kilometre citadel perimeter and throne keep
- actx.fillStyle='#bca875';actx.fillRect(94*sx,94*sy,312*sx,312*sy);
- actx.strokeStyle='#e3d4b0';actx.lineWidth=3;actx.strokeRect(94*sx,94*sy,312*sx,312*sy);
- actx.fillStyle='#d7caa5';actx.fillRect(235*sx,235*sy,30*sx,30*sy);
+ // Detailed 10 km fortified capital footprint, inner royal precinct and throne keep.
+ actx.fillStyle='#7e8978';actx.fillRect(94*sx,94*sy,312*sx,312*sy);
+ actx.fillStyle='#c0b28e';actx.fillRect(98*sx,98*sy,304*sx,304*sy);
+ actx.strokeStyle='#e7d9b8';actx.lineWidth=3;actx.strokeRect(94*sx,94*sy,312*sx,312*sy);
+ actx.strokeStyle='#8d7655';actx.lineWidth=1.4;for(let q=118;q<400;q+=24){actx.beginPath();actx.moveTo(q*sx,99*sy);actx.lineTo(q*sx,401*sy);actx.moveTo(99*sx,q*sy);actx.lineTo(401*sx,q*sy);actx.stroke()}
+ actx.fillStyle='#6c7a6e';actx.fillRect(232*sx,232*sy,36*sx,36*sy);actx.strokeStyle='#ead9b2';actx.lineWidth=2;actx.strokeRect(232*sx,232*sy,36*sx,36*sy);
+ actx.fillStyle='#b18a59';actx.fillRect(244*sx,244*sy,12*sx,12*sy);
  actx.fillStyle='#c58d64';actx.fillRect(45*sx,405*sy,55*sx,60*sy);
  actx.fillStyle='#d6b66f';actx.fillRect(410*sx,405*sy,65*sx,70*sy);
  // Landmark labels
