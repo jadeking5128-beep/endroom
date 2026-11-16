@@ -3,7 +3,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 :root{--ice:#a9dce5;--amber:#d6a66c;--red:#e16b60;--white:#e8edf0;--muted:#91a0a8}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03070c;color:var(--white);font-family:'IBM Plex Mono',monospace;touch-action:none}#game{position:relative;width:100vw;height:100dvh;overflow:hidden;background:#07101a}canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03070c;color:var(--white);font-family:'IBM Plex Mono',monospace;touch-action:none;overscroll-behavior:none}#game{position:relative;width:100vw;height:100dvh;overflow:hidden;background:#07101a;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}#game button,#game canvas,#game .subtitles{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}button{ -webkit-appearance:none;appearance:none;outline:none; -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 #vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 38%,#02050bd9 100%);z-index:2}
 #hud{position:absolute;inset:0;z-index:4;pointer-events:none}.topline{position:absolute;top:0;left:0;right:0;padding:calc(15px + env(safe-area-inset-top)) 18px 12px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(#03070bd9,transparent)}.logo{font:800 19px 'Barlow Condensed';letter-spacing:.24em}.logo small{display:block;font:9px 'IBM Plex Mono';color:#90a7b1;letter-spacing:.18em;margin-top:3px}.status{text-align:right;font-size:9px;letter-spacing:.13em;color:#b6c5cb}.status strong{color:var(--ice);font-weight:500}.objective{position:absolute;left:18px;top:88px;width:min(300px,58vw);padding:10px 12px;background:#07121bd9;border-left:2px solid var(--amber);box-shadow:0 8px 30px #0008}.eyebrow{font-size:8px;letter-spacing:.2em;color:var(--amber)}.objective h2{font:700 21px 'Barlow Condensed';letter-spacing:.07em;margin:3px 0}.objective p{font-size:9px;line-height:1.5;color:#adbbc1;margin:0}.meters{position:absolute;right:18px;top:88px;width:125px;display:grid;gap:9px}.meter label{display:flex;justify-content:space-between;font-size:8px;color:#c1cbd0;margin-bottom:4px}.track{height:4px;background:#43515a88}.fill{height:100%;width:100%;background:var(--ice);transition:width .25s}.fill.power{background:var(--amber)}.keyhelp{position:absolute;left:50%;bottom:19px;transform:translateX(-50%);font-size:8px;letter-spacing:.14em;color:#9babb2;background:#07121ba8;padding:8px 12px;border:1px solid #73879244;white-space:nowrap}.keyhelp b{color:#e0c08e;font-weight:500}.interact{position:absolute;bottom:88px;left:50%;transform:translateX(-50%);padding:9px 15px;background:#07131ddd;border:1px solid #7e9ba8;color:#e8f1f3;font-size:10px;letter-spacing:.08em;white-space:nowrap;display:none}.interact b{color:var(--amber)}.subtitles{position:absolute;left:50%;bottom:22%;transform:translateX(-50%);width:min(680px,88vw);padding:12px 16px;background:linear-gradient(90deg,#03070be8,#101a23e8,#03070be8);border-top:1px solid #71838c77;text-align:center;display:none}.speaker{font-size:9px;letter-spacing:.2em;color:var(--amber);margin-bottom:5px}.line{font:600 clamp(15px,2.4vw,22px) 'Barlow Condensed';letter-spacing:.03em;line-height:1.35}.dialogHint{font-size:8px;color:#82939c;margin-top:8px;letter-spacing:.15em}
 #missionCard{position:absolute;z-index:8;inset:0;display:flex;align-items:center;justify-content:center;padding:25px;background:radial-gradient(ellipse at 50% 55%,#142431dd,#03070bf5 72%);transition:opacity .7s}.cardInner{width:min(700px,92vw)}.chapter{font-size:9px;letter-spacing:.32em;color:var(--amber);margin-bottom:12px}.cardInner h1{font:800 clamp(48px,10vw,94px)/.85 'Barlow Condensed';letter-spacing:.03em;margin:0;text-transform:uppercase}.cardInner h1 span{color:var(--ice)}.rule{height:1px;background:linear-gradient(90deg,var(--amber),transparent);margin:23px 0 18px}.brief{max-width:570px;color:#bdc8cd;font-size:11px;line-height:1.85}.brief strong{color:#fff}.missionMeta{display:flex;gap:24px;margin:22px 0;color:#7f949e;font-size:8px;letter-spacing:.15em}.missionMeta b{display:block;color:#dce7eb;font-size:10px;font-weight:500;margin-top:5px}.action{pointer-events:auto;border:1px solid #9abac4;background:#d5e9ec;color:#071018;padding:13px 23px;font:700 12px 'IBM Plex Mono';letter-spacing:.12em;text-transform:uppercase}.action:active{transform:scale(.98)}.cardFoot{font-size:8px;color:#667983;margin-top:17px;letter-spacing:.13em}
@@ -86,8 +86,40 @@ function draw(){ctx.setTransform(D,0,0,D,0,0);sky();drawTerrain();let gy=H*.79;f
 for(let p of points){let h=p.type==='lander'?90:p.type==='relay'?120:90;structure(p.x,gy-h,p.w,h,p.type)}
 // dust and wind
 for(let i=0;i<28;i++){let x=((i*83+elapsed*25)% (W+30))-15,y=H*.55+(i*47% (H*.42));ctx.fillStyle='#d5c4a6';ctx.globalAlpha=.08;ctx.fillRect(x,y,12+(i%5)*5,1)}ctx.globalAlpha=1;
-// player
-let px=player.x-cam,py=gy-player.y;ctx.save();ctx.translate(px,py);ctx.scale(player.face,1);ctx.fillStyle='#0c1720';ctx.fillRect(-11,-43,22,37);ctx.fillStyle='#b9c7c8';ctx.fillRect(-9,-48,18,13);ctx.fillStyle='#162d3a';ctx.fillRect(-7,-46,14,8);ctx.fillStyle='#d6e0dc';ctx.fillRect(-7,-12,6,12);ctx.fillRect(2,-12,6,12);ctx.fillStyle='#d4a56f';ctx.fillRect(-11,-34,4,15);ctx.fillRect(8,-34,4,15);ctx.fillStyle='#e6cba0';ctx.fillRect(5,-44,2,3);ctx.restore();
+// animated astronaut: articulated limbs, suit details, and movement-aware poses
+let px=player.x-cam,py=gy-player.y;
+const moving=Math.abs(player.vx)>.15&&!dialog;
+const stride=moving?Math.sin(elapsed*13)*.72:Math.sin(elapsed*2)*.035;
+const bob=player.grounded?(moving?Math.abs(Math.sin(elapsed*13))*1.7:0):0;
+const legSwing=player.grounded?stride:0;
+ctx.save();ctx.translate(px,py+bob);ctx.scale(player.face,1);
+// contact shadow
+ctx.globalAlpha=player.grounded?.34:.13;ctx.fillStyle='#05090c';ctx.beginPath();ctx.ellipse(0,2,17+Math.min(player.y*.025,8),4,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+// rear backpack and oxygen canister
+ctx.fillStyle='#344852';ctx.beginPath();ctx.roundRect(-13,-39,8,22,3);ctx.fill();
+ctx.fillStyle='#a6b8b8';ctx.fillRect(-12,-35,5,3);ctx.fillStyle='#c78f5d';ctx.fillRect(-12,-29,5,5);
+// legs with articulated knee joints
+ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#d5dedb';ctx.lineWidth=6;
+ctx.beginPath();ctx.moveTo(-5,-15);ctx.lineTo(-6+legSwing*7,-8);ctx.lineTo(-7+legSwing*12,-1);ctx.stroke();
+ctx.beginPath();ctx.moveTo(5,-15);ctx.lineTo(6-legSwing*7,-8);ctx.lineTo(7-legSwing*12,-1);ctx.stroke();
+// boots
+ctx.fillStyle='#182b34';ctx.beginPath();ctx.roundRect(-12+legSwing*12,-4,10,5,2);ctx.fill();ctx.beginPath();ctx.roundRect(3-legSwing*12,-4,10,5,2);ctx.fill();
+// torso and chest harness
+ctx.fillStyle='#aebfc0';ctx.beginPath();ctx.roundRect(-10,-43,20,29,5);ctx.fill();
+ctx.fillStyle='#263e49';ctx.fillRect(-7,-39,14,17);ctx.fillStyle='#d6a66c';ctx.fillRect(-3,-36,6,4);
+ctx.fillStyle='#71939a';ctx.fillRect(-7,-29,14,2);
+// arms swing opposite legs; raised slightly while airborne
+ctx.strokeStyle='#c3d0ce';ctx.lineWidth=5;
+const armLift=player.grounded?0:-.45;
+ctx.beginPath();ctx.moveTo(-9,-38);ctx.lineTo(-13+stride*4,-29+armLift*9);ctx.lineTo(-11+stride*7,-23+armLift*8);ctx.stroke();
+ctx.beginPath();ctx.moveTo(9,-38);ctx.lineTo(13-stride*4,-29-armLift*9);ctx.lineTo(11-stride*7,-23-armLift*8);ctx.stroke();
+ctx.fillStyle='#263d47';ctx.beginPath();ctx.arc(-11+stride*7,-22+armLift*8,3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(11-stride*7,-22-armLift*8,3,0,Math.PI*2);ctx.fill();
+// helmet, visor and reflected light
+ctx.fillStyle='#d4dfdc';ctx.beginPath();ctx.arc(0,-49,10,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#17313e';ctx.beginPath();ctx.ellipse(1,-49,7.5,6.5,0,0,Math.PI*2);ctx.fill();
+ctx.fillStyle='#9dd5dc';ctx.globalAlpha=.72;ctx.beginPath();ctx.ellipse(3,-52,3.5,1.5,-.35,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+ctx.fillStyle='#d7a76e';ctx.fillRect(8,-42,3,4);
+ctx.restore();
 // distant lightning flicker
 if(Math.random()<.002){ctx.fillStyle='#c5dce0';ctx.globalAlpha=.16;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1}
 }
@@ -95,8 +127,23 @@ function frame(t){if(!last)last=t;let dt=Math.min((t-last)/16.667,2.5);last=t;if
 $('deploy').addEventListener('click',start);$('restart').addEventListener('click',()=>location.reload());
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright',' ','arrowup'].includes(k))e.preventDefault();if(k==='a'||k==='arrowleft')keys.left=true;if(k==='d'||k==='arrowright')keys.right=true;if(k===' '||k==='w'||k==='arrowup')keys.jump=true;if(k==='e'||k==='enter'){if(dialog)advance();else interact() }});
 addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k==='a'||k==='arrowleft')keys.left=false;if(k==='d'||k==='arrowright')keys.right=false;if(k===' '||k==='w'||k==='arrowup')keys.jump=false});
-document.querySelectorAll('[data-hold]').forEach(b=>{let k=b.dataset.hold;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true;b.setPointerCapture(e.pointerId)});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>keys[k]=false))});
-document.querySelectorAll('[data-tap]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();if(dialog)advance();else interact()}));
+// Android: suppress long-press text selection, magnifier, and copy/context menus on game controls.
+const gameRoot=$('game');
+['contextmenu','selectstart','dragstart'].forEach(type=>gameRoot.addEventListener(type,e=>e.preventDefault()));
+document.querySelectorAll('#touch button').forEach(b=>{
+ b.setAttribute('draggable','false');
+ b.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation()});
+ b.addEventListener('selectstart',e=>e.preventDefault());
+});
+document.querySelectorAll('[data-hold]').forEach(b=>{
+ let k=b.dataset.hold;
+ b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();keys[k]=true;try{b.setPointerCapture(e.pointerId)}catch(_){}});
+ ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,e=>{e.preventDefault();keys[k]=false}));
+});
+document.querySelectorAll('[data-tap]').forEach(b=>{
+ b.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(dialog)advance();else interact()});
+ b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation()});
+});
 $('subtitles').addEventListener('pointerdown',()=>advance());
 canvas.addEventListener('pointerdown',e=>{if(dialog)advance()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){keys.left=keys.right=keys.jump=false}});
