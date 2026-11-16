@@ -1,28 +1,34 @@
 # ENDROOM — The Last Signal
 
-A browser-based 2.5D science-fiction survival adventure. Chapter 01: Arrival.
+A browser-based 2.5D science-fiction survival and exploration game.
 
-## Play
-Open `index.html` in a modern browser, or deploy the repository as a static site (GitHub Pages, Vercel, Netlify).
+## Chapter 01: The Silence Between
 
-## Controls
-- **A / D** or **← / →** — move
-- **Space / W / ↑** — jump
-- **E** — interact with nearby objects
-- **Q** — toggle the chrono field (consumes suit power)
-- Touch controls are available on mobile.
+You play Dr. Elias Mercer, a mission specialist accidentally left behind during an emergency evacuation from Kepler-186f. The expedition's crew diverts to a second planet after a catastrophic ascent-window failure. Mercer is told that a recovery team will return. No recovery time is given.
 
-## Chapter 01
-Dr. Elias Mercer is stranded on Kepler-186f after an emergency evacuation. Explore the landing zone, recover three expedition recordings, acquire a power cell, and restore the orbital relay. The final transmission introduces the temporal mystery.
+### Chapter objectives
+1. Find the damaged survey lander and recover its flight recorder.
+2. Recover three research fragments documenting unexplained clock drift and future-dated transmissions.
+3. Collect an auxiliary suit-power cell.
+4. Calibrate the chrono-field console.
+5. Reach the orbital relay and receive the first impossible transmission.
 
-## Systems in this prototype
-- Side-scrolling 2.5D canvas environment with layered parallax, terrain, platforms, atmospheric effects and a playable astronaut.
-- Oxygen and suit-power resource meters.
-- Exploration objects, mission objectives, data fragments and dialogue.
-- Chrono-field mechanic that changes movement/gravity and consumes power.
-- Mobile touch controls and a chapter-ending story beat.
+### Controls
+- **A / D** or **Left / Right**: Move
+- **Space / W / Up**: Jump
+- **E**: Interact
+- **Q**: Toggle the chrono-field after calibration
+- On touchscreens, use the on-screen controls.
 
-## Notes
-This is an original work of science fiction. Relativity and gravitational time dilation are established physics; closed timelike curves and some temporal mechanisms are speculative mathematical/theoretical ideas. The story treats unexplained phenomena as fictional rather than established science.
+### Systems
+- 2.5D side-scrolling environment with layered parallax scenery.
+- Oxygen and suit-power management.
+- Exploration objects, recovered logs and mission objectives.
+- Chrono-field mechanic that locally alters gravity and movement while draining suit power.
+- Narrative dialogue and a chapter-ending transmission.
 
-No build step or external game engine is required. Google Fonts are optional; the interface falls back to system fonts if unavailable.
+## Run
+Open `index.html` in a modern browser, or enable GitHub Pages for the repository to host the game.
+
+## Project status
+Chapter 01 is an initial playable episode. Chapter 02 and further systems are not yet implemented.
