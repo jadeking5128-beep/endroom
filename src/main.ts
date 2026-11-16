@@ -81,13 +81,13 @@ class Campaign extends Phaser.Scene {
   interact(){
     if(this.mode==='side'){
       if(this.x>260&&this.x<360&&!this.tasks[0].done){this.tasks[0].done=true;this.animateAction();this.toast('RUPTURED FUEL LINE LOCATED');this.hud();return}
-      if(this.x>400&&this.x<550&&this.tasks[0].done&&!this.tasks[1].done){this.tasks[1].done=true;this.nodes[0]=true;this.animateAction();this.cameras.main.flash(180,90,220,225,.18);this.toast('PRESSURE VALVE ISOLATED');this.hud();return}
+      if(this.x>400&&this.x<550&&this.tasks[0].done&&!this.tasks[1].done){this.tasks[1].done=true;this.nodes[0]=true;this.animateAction();this.cameras.main.flash(180,90,220,225);this.toast('PRESSURE VALVE ISOLATED');this.hud();return}
       if(this.x>650&&this.x<900&&this.tasks[0].done&&this.tasks[1].done){this.stage=1;this.transitionMode('top',130,440);this.toast('STATION INTERIOR // ACCESS GRANTED');return}
-      if(this.x>1040&&this.x<1210&&this.stage>=1){this.tasks[2].done=true;this.stage=2;this.animateAction();this.cameras.main.flash(250,90,220,225,.16);this.hud();this.toast('FLIGHT RECORDER RECOVERED');return}
+      if(this.x>1040&&this.x<1210&&this.stage>=1){this.tasks[2].done=true;this.stage=2;this.animateAction();this.cameras.main.flash(250,90,220,225);this.hud();this.toast('FLIGHT RECORDER RECOVERED');return}
     }else{
       const {x,y}=this.top;
       if(x>200&&x<470&&y>120&&y<300&&!this.router){this.router=true;this.animateAction();this.cameras.main.shake(320,.003);this.tasks.push({name:'Reroute station power to the relay',done:true});this.stage=2;this.toast('POWER ROUTER ONLINE');this.hud();return}
-      if(x>570&&x<840&&y>340&&y<510&&!this.scan){this.scan=true;this.stage=3;this.animateAction();this.cameras.main.flash(450,60,210,230,.22);this.tasks.push({name:'Record the gravity time-shift signature',done:true});this.toast('TIME-SHIFT SIGNATURE RECORDED');this.hud();return}
+      if(x>570&&x<840&&y>340&&y<510&&!this.scan){this.scan=true;this.stage=3;this.animateAction();this.cameras.main.flash(450,60,210,230);this.tasks.push({name:'Record the gravity time-shift signature',done:true});this.toast('TIME-SHIFT SIGNATURE RECORDED');this.hud();return}
       if(x>1040&&x<1380&&y>120&&y<300&&this.scan&&!this.relay){this.relay=true;this.stage=4;this.hud();this.startAlignment();return}
       if(x<190&&y>380){this.transitionMode('side',770,590)}
     }
@@ -100,7 +100,7 @@ class Campaign extends Phaser.Scene {
     const rings=this.add.graphics().setDepth(20);let r=10;this.time.addEvent({delay:35,repeat:45,callback:()=>{rings.clear();rings.lineStyle(2,0x78f5ff,.75);rings.strokeCircle(1652,590,r+=8)}});this.tweens.add({targets:this.cameras.main,zoom:1.04,duration:450,yoyo:true,repeat:1});this.cameras.main.shake(700,.008);
     document.querySelector('#signal')!.textContent='DISTRESS BEACON TRANSMITTED';this.toast('UPLINK ESTABLISHED // SIGNAL IN TRANSIT');
     this.time.delayedCall(2700,()=>{const sub=document.querySelector('#subtitle') as HTMLElement;sub.textContent='UNKNOWN TRANSMISSION: MERCER. LISTEN CAREFULLY. YOU HAVE TO STOP THE SECOND LANDING.';sub.style.display='block';this.time.delayedCall(4800,()=>sub.style.display='none')});
-    this.time.delayedCall(7000,()=>{this.cameras.main.flash(900,110,235,240,.2);this.stage=5;this.hud();document.querySelector('#signal')!.textContent='CHAPTER 01 COMPLETE'});
+    this.time.delayedCall(7000,()=>{this.cameras.main.flash(900,110,235,240);this.stage=5;this.hud();document.querySelector('#signal')!.textContent='CHAPTER 01 COMPLETE'});
   }
   updateGame(ms:number){
     const dt=Math.min(ms/1000,.04),left=this.keys.A.isDown||this.keys.LEFT.isDown,right=this.keys.D.isDown||this.keys.RIGHT.isDown,up=this.keys.W.isDown||this.keys.UP.isDown,down=this.keys.S.isDown||this.keys.DOWN.isDown;
@@ -118,7 +118,7 @@ class Campaign extends Phaser.Scene {
       const dx=(right?1:0)-(left?1:0),dy=(down?1:0)-(up?1:0);this.top.x=Phaser.Math.Clamp(this.top.x+dx*210*dt,90,1710);this.top.y=Phaser.Math.Clamp(this.top.y+dy*210*dt,100,800);this.player.setPosition(this.top.x,this.top.y);if(dx)this.player.setScale(Math.sign(dx),1);this.torso.y=Math.sin(this.time.now*.004)*1.2;
       const hint=this.top.x<190&&this.top.y>380?'EXIT TO SURFACE':this.top.x>200&&this.top.x<470&&this.top.y>120&&this.top.y<300&&!this.router?'RESTORE POWER ROUTER':this.top.x>570&&this.top.x<840&&this.top.y>340&&this.top.y<510&&!this.scan?'CALIBRATE GRAVITY SCANNER':this.top.x>1040&&this.top.x<1380&&this.top.y>120&&this.top.y<300&&this.scan&&!this.relay?'ACCESS ORBITAL RELAY':'';this.prompt(hint);
     }
-    if(this.align<100&&this.relay&&!this.transmitted){this.align=Phaser.Math.Clamp(this.align+((right?1:0)-(left?1:0))*45*dt,0,100);if(this.align>=100){this.alignReady=true;this.cameras.main.flash(350,80,230,240,.24);this.tweens.add({targets:this.player,angle:0,duration:250});document.querySelector('#signal')!.textContent='PHASE LOCKED // PRESS ACTION TO TRANSMIT';this.toast('CARRIER PHASE LOCKED')}}
+    if(this.align<100&&this.relay&&!this.transmitted){this.align=Phaser.Math.Clamp(this.align+((right?1:0)-(left?1:0))*45*dt,0,100);if(this.align>=100){this.alignReady=true;this.cameras.main.flash(350,80,230,240);this.tweens.add({targets:this.player,angle:0,duration:250});document.querySelector('#signal')!.textContent='PHASE LOCKED // PRESS ACTION TO TRANSMIT';this.toast('CARRIER PHASE LOCKED')}}
     if(this.beam){this.beam.clear();this.beam.fillStyle(0x78f5ff,.12);this.beam.fillRect(1644,0,16,900);this.beam.fillStyle(0x8dfaff,.9);this.beam.fillRect(1650,0,4,900)}
     const clock=document.querySelector('#clock')!;clock.innerHTML='04:17:'+String(Math.floor(this.time.now/1000)%60).padStart(2,'0')+'<br><small>KEPLER-186f</small>';
   }
