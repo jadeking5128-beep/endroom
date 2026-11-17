@@ -41,11 +41,18 @@ export default async function handler(req,res) {
   try { command=parse(req.body?.command); if(!command.length) return sendError(res,400,"Enter a command."); }
   catch(e) { return sendError(res,400,e.message); }
   try {
-    const sandbox=session.sandboxId
-      ? await Sandbox.connect(session.sandboxId)
-      : await Sandbox.create("base",{timeoutMs:15*60*1000,metadata:{app:"endroom",workspace:session.user}});
+    let sandbox, fresh=false;
+    if (session.sandboxId) {
+      try { sandbox=await Sandbox.connect(session.sandboxId); }
+      catch { sandbox=await Sandbox.create("base",{timeoutMs:15*60*1000,metadata:{app:"endroom",workspace:session.user}}); fresh=true; }
+    } else {
+      sandbox=await Sandbox.create("base",{timeoutMs:15*60*1000,metadata:{app:"endroom",workspace:session.user}});
+      fresh=true;
+    }
     await sandbox.setTimeout(15*60*1000);
-    const cwd=session.cwd || (await sandbox.commands.run("pwd",{timeoutMs:10000})).stdout.trim();
+    const cwd=fresh || !session.cwd
+      ? (await sandbox.commands.run("pwd",{timeoutMs:10000})).stdout.trim()
+      : session.cwd;
     const shellCommand=build(command);
     let nextCwd=cwd;
     setSession(res,{user:session.user,sandboxId:sandbox.sandboxId,cwd});
@@ -61,6 +68,6 @@ export default async function handler(req,res) {
       throw error;
     }
   } catch(error) {
-    return sendError(res,502,"Linux workspace unavailable. Your session may have expired; sign in again to start a fresh workspace.");
+    return sendError(res,502,"Linux workspace unavailable. Try the command again to start a fresh workspace.");
   }
 }
