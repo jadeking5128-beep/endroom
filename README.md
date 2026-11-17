@@ -1,26 +1,40 @@
 # ENDROOM
 
-ENDROOM is a browser-based Linux workspace designed for mobile and desktop. The repository is being rebuilt in four phases.
+ENDROOM is a browser-based Linux development workspace.
 
-## Build phases
+## Phase 2 architecture
 
-1. **Foundation** — responsive terminal interface, project structure, health endpoint and security baseline.
-2. **Linux engine** — isolated cloud Linux sandboxes, streamed terminal I/O and managed sessions.
-3. **Workspace tools** — file browser, editor, multiple terminals, and supported development runtimes.
-4. **Security and launch** — authentication, encryption, resource limits, abuse controls, testing and production deployment.
+- Static frontend served by Vercel.
+- Server-side username/password authentication.
+- Password verification with scrypt; no plaintext password is stored.
+- AES-256-GCM encrypted, HttpOnly, Secure, SameSite=Strict session cookie.
+- Isolated Linux workspaces provisioned through the E2B JavaScript SDK.
+- Short sandbox lifetime and a deliberately restricted command interface.
 
-## Current status
+## Configure deployment
 
-Phase 1 provides the interface and a browser-only command preview. The preview supports a small set of harmless demonstration commands. It is **not** a Linux shell and does not execute commands on a server.
+Set these **server-only** environment variables in Vercel:
 
-## Development
+- `ENDROOM_USERNAME`: the account username.
+- `ENDROOM_PASSWORD_HASH`: generate locally with `node scripts/hash-password.mjs`.
+- `SESSION_SECRET`: a fresh 32-byte random value encoded as base64.
+- `E2B_API_KEY`: your sandbox provider API key.
 
-This is a static-first Vercel project. Open `index.html` locally or deploy the repository to Vercel. The health endpoint is available at `/api/health`.
+Do not put these values in GitHub, the browser, or public-prefixed environment variables. If a password has been shared in chat or committed, rotate it and use a new one.
 
-No secrets are required for Phase 1. Copy `.env.example` to a local environment file only when a later phase introduces server configuration. Never commit real credentials.
+After adding variables, redeploy the project. Without these values, the sign-in screen stays closed to access and no guest session is available.
 
-## Architecture direction
+## Runtime safety
 
-Vercel serves the web interface and lightweight API routes. Actual Linux command execution will run in a separate, isolated sandbox provider in Phase 2. Vercel serverless functions are not persistent Linux machines.
+The current command interface intentionally supports only a limited set of basic workspace commands. It rejects shell chaining, redirection, command substitution, absolute paths, parent-directory traversal, and unrestricted script execution. It is not a root shell and does not provide arbitrary command execution.
 
-See [SECURITY.md](SECURITY.md) for the security baseline and [ROADMAP.md](ROADMAP.md) for implementation scope.
+The sandbox is temporary. Workspace persistence, file browser/editor, package workflows, richer terminal I/O and multi-tab support are future work. Review the provider's isolation and retention terms before storing important data.
+
+## Local development
+
+```sh
+npm install
+node scripts/hash-password.mjs
+```
+
+Use a local environment file for development only; never commit it. Deploy through Vercel with the required server-side variables.
