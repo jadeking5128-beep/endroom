@@ -18,7 +18,7 @@ function safePath(value) {
 }
 function build(tokens) {
   const [cmd,...args]=tokens;
-  const flags = (allowed) => args.filter(x=>x.startsWith("-")).every(x=>allowed.includes(x));
+  const flags = allowed => args.filter(x=>x.startsWith("-")).every(x=>allowed.includes(x));
   const paths = args.filter(x=>!x.startsWith("-"));
   if (["pwd","date","whoami","uname"].includes(cmd) && args.length===0) return cmd;
   if (cmd==="ls" && flags(["-a","-l","-la","-al"]) && paths.length<=1) return ["ls",...args.map(x=>x.startsWith("-")?x:safePath(x))].map(quote).join(" ");
@@ -41,17 +41,25 @@ export default async function handler(req,res) {
   try { command=parse(req.body?.command); if(!command.length) return sendError(res,400,"Enter a command."); }
   catch(e) { return sendError(res,400,e.message); }
   try {
-    let sandbox;
-    if (session.sandboxId) sandbox=await Sandbox.connect(session.sandboxId);
-    else sandbox=await Sandbox.create("base",{timeoutMs:15*60*1000,metadata:{app:"endroom",workspace:session.user}});
+    const sandbox=session.sandboxId
+      ? await Sandbox.connect(session.sandboxId)
+      : await Sandbox.create("base",{timeoutMs:15*60*1000,metadata:{app:"endroom",workspace:session.user}});
     await sandbox.setTimeout(15*60*1000);
     const cwd=session.cwd || (await sandbox.commands.run("pwd",{timeoutMs:10000})).stdout.trim();
     const shellCommand=build(command);
-    const result=await sandbox.commands.run(shellCommand,{cwd,timeoutMs:12000});
     let nextCwd=cwd;
-    if(command[0]==="cd") nextCwd=result.stdout.trim() || cwd;
-    setSession(res,{user:session.user,sandboxId:sandbox.sandboxId,cwd:nextCwd});
-    return res.status(200).json({stdout:result.stdout||"",stderr:result.stderr||"",exitCode:result.exitCode,cwd:nextCwd});
+    setSession(res,{user:session.user,sandboxId:sandbox.sandboxId,cwd});
+    try {
+      const result=await sandbox.commands.run(shellCommand,{cwd,timeoutMs:12000});
+      if(command[0]==="cd") nextCwd=result.stdout.trim() || cwd;
+      setSession(res,{user:session.user,sandboxId:sandbox.sandboxId,cwd:nextCwd});
+      return res.status(200).json({stdout:result.stdout||"",stderr:result.stderr||"",exitCode:result.exitCode,cwd:nextCwd});
+    } catch(error) {
+      if (Number.isInteger(error?.exitCode)) {
+        return res.status(200).json({stdout:error.stdout||"",stderr:error.stderr||error.message||"",exitCode:error.exitCode,cwd});
+      }
+      throw error;
+    }
   } catch(error) {
     return sendError(res,502,"Linux workspace unavailable. Your session may have expired; sign in again to start a fresh workspace.");
   }
