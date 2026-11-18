@@ -83,7 +83,7 @@ async function patchNuvioSource() {
     '  LocalStore.set("hasEverSelectedProfile", true);',
     '  LocalStore.set("activeProfileId", "1");',
     '  LocalStore.set("hasSeenAuthQrOnFirstLaunch", true);',
-    '  await ExperienceModeStore.setForProfile("1", { mode: "ADVANCED", addonSetupSkipped: true });',
+    '  await ExperienceModeStore.setForProfile("1", { mode: "ADVANCED" });',
     "  await AuthManager.bootstrap();"
   ].join("\n");
   app = replaceOnce(app, bootstrapMarker, guestBootstrap, "auth bootstrap");
@@ -106,6 +106,9 @@ async function patchNuvioSource() {
     "    },",
     "    renderContentDiscoverySection() {",
     "      if (this.mediaServersView) return renderMediaServersSection.call(this);",
+    '      this.actionMap.set("contentDiscovery:addons", async () => {',
+    '        await Router.navigate("plugin");',
+    "      });",
     '      this.actionMap.set("contentDiscovery:servers", () => {',
     '        this.mediaServersView = "list";',
     '        this.contentFocusKey = "mediaServers:back";',
@@ -114,6 +117,12 @@ async function patchNuvioSource() {
     '        this.renderSectionHeader(SECTION_META.find((item) => item.id === "contentDiscovery")) +',
     '        \'<div class="settings-group-card"><div class="settings-stack">\' +',
     "        this.renderActionRow({",
+
+    '          focusKey: "contentDiscovery:addons",',
+    '          title: t("addon_title", {}, "Add-ons"),',
+    '          subtitle: t("settings.contentDiscovery.addonsSubtitle", {}, "Manage catalogues and collections"),',
+    '          leadingIcon: "grid_view"',
+    "        }) +",
     '          focusKey: "contentDiscovery:servers",',
     '          title: t("settings_media_servers"),',
     '          subtitle: t("settings_media_servers_subtitle"),',
