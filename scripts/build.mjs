@@ -232,12 +232,16 @@ async function main() {
   await cp(path.join(sourceDir, "dist"), distDir, { recursive: true });
   const authScriptPath = path.join(rootDir, "public/ryan-watch-auth.js");
   const authStylePath = path.join(rootDir, "public/ryan-watch-auth.css");
+  const adminScriptPath = path.join(rootDir, "public/ryan-watch-admin.js");
+  const adminStylePath = path.join(rootDir, "public/ryan-watch-admin.css");
   await cp(authScriptPath, path.join(distDir, "ryan-watch-auth.js"));
   await cp(authStylePath, path.join(distDir, "ryan-watch-auth.css"));
+  await cp(adminScriptPath, path.join(distDir, "ryan-watch-admin.js"));
+  await cp(adminStylePath, path.join(distDir, "ryan-watch-admin.css"));
   const builtIndexPath = path.join(distDir, "index.html");
   let builtIndex = await readFile(builtIndexPath, "utf8");
   if (!builtIndex.includes("/ryan-watch-auth.js")) {
-    builtIndex = builtIndex.replace("</body>", '  <script type="module" src="/ryan-watch-auth.js"></script>\n</body>');
+    builtIndex = builtIndex.replace("</body>", '  <script type="module" src="/ryan-watch-auth.js"></script>\n  <script type="module" src="/ryan-watch-admin.js"></script>\n</body>');
     await writeFile(builtIndexPath, builtIndex);
   }
 
