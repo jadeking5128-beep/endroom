@@ -1,0 +1,184 @@
+name: Endroom Phase 1 - Import Nuvio
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/endroom-import.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-nuvio:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Endroom
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+
+      - name: Checkout official Nuvio source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: NuvioMedia/NuvioTVSmart
+          ref: 2a7ac34d155bba570881c953763d6a6425932918
+          path: upstream
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: upstream/package-lock.json
+
+      - name: Replace the old Endroom app with Nuvio
+        shell: bash
+        run: |
+          rsync -a --delete --exclude='.git/' --exclude='.github/workflows/endroom-import.yml' upstream/ ./
+          rm -rf upstream
+
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from "node:fs/promises";
+
+          const appPath = "js/app.js";
+          let app = await readFile(appPath, "utf8");
+
+          const profileImport = 'import { ProfileManager } from "./core/profile/profileManager.js";';
+          if (!app.includes(profileImport)) {
+            throw new Error("Nuvio startup import marker changed; refusing an unsafe patch.");
+          }
+          app = app.replace(
+            profileImport,
+            profileImport + '\nimport { ExperienceModeStore } from "./data/local/experienceModeStore.js";'
+          );
+
+          app = app.replace(
+            'import { DeviceSessionRegistration } from "./core/auth/deviceSessionRegistration.js";\n',
+            ""
+          );
+          app = app.replace("  DeviceSessionRegistration.start();\n", "");
+
+          const bootstrapMarker = "  await AuthManager.bootstrap();";
+          if (!app.includes(bootstrapMarker)) {
+            throw new Error("Nuvio auth bootstrap marker changed; refusing an unsafe patch.");
+          }
+          const guestBootstrap = [
+            "  // Endroom local-only launch: skip account and QR sign-in.",
+            "  LocalStore.set(GUEST_QR_BYPASS_KEY, true);",
+            '  LocalStore.set("rememberLastProfile", true);',
+            '  LocalStore.set("hasEverSelectedProfile", true);',
+            '  LocalStore.set("activeProfileId", "1");',
+            '  LocalStore.set("hasSeenAuthQrOnFirstLaunch", true);',
+            '  await ExperienceModeStore.setForProfile("1", { mode: "ADVANCED", addonSetupSkipped: true });',
+            "  await AuthManager.bootstrap();"
+          ].join("\n");
+          app = app.replace(bootstrapMarker, guestBootstrap);
+          await writeFile(appPath, app);
+
+          const settingsPath = "js/ui/screens/settings/settingsScreenMethods-07-render-plugins-section.js";
+          let settings = await readFile(settingsPath, "utf8");
+          const start = settings.indexOf("    renderPluginsSection(model = {}) {");
+          const integration = settings.indexOf("    renderIntegrationHub() {", start);
+          if (start < 0 || integration < 0) {
+            throw new Error("Nuvio settings section markers changed; refusing an unsafe patch.");
+          }
+
+          const publicDiscoveryOnly = `    renderPluginsSection() {
+      return "";
+    },
+    renderContentDiscoverySection() {
+      if (this.mediaServersView) return renderMediaServersSection.call(this);
+      this.actionMap.set("contentDiscovery:servers", () => {
+        this.mediaServersView = "list";
+        this.contentFocusKey = "mediaServers:back";
+      });
+      return \`
+          ${this.renderSectionHeader(SECTION_META.find((item) => item.id === "contentDiscovery"))}
+          <div class="settings-group-card">
+            <div class="settings-stack">
+              ${this.renderActionRow({
+                focusKey: "contentDiscovery:servers",
+                title: t("settings_media_servers"),
+                subtitle: t("settings_media_servers_subtitle"),
+                leadingIcon: "dns"
+              })}
+            </div>
+          </div>
+        \`;
+    },
+  `;
+          settings = settings.slice(0, start) + publicDiscoveryOnly + settings.slice(integration);
+          await writeFile(settingsPath, settings);
+
+          const metadataPath = "js/ui/screens/settings/settingsScreenHelpers-03-clamp-subtitle-text-opacity.js";
+          let metadata = await readFile(metadataPath, "utf8");
+          metadata = metadata.replace(
+            'subtitle: "Add-ons, plugins, catalogs, and discovery sources"',
+            'subtitle: "Connect and manage media servers"'
+          );
+          await writeFile(metadataPath, metadata);
+
+          const vercelConfig = {
+            buildCommand: "npm run build",
+            outputDirectory: "dist",
+            installCommand: "npm ci"
+          };
+          await writeFile("vercel.json", JSON.stringify(vercelConfig, null, 2) + "\n");
+
+          const readme = `# Endroom
+
+          Endroom Phase 1 is built from the official [Nuvio TV Smart](https://github.com/NuvioMedia/NuvioTVSmart) source.
+
+          The application interface, artwork, navigation, loading experience, media browsing, detail views, and player are kept from the upstream Nuvio implementation. This is not a visual remake.
+
+          ## Endroom changes
+
+          - Local guest-first startup; public account and QR sign-in are bypassed.
+          - The first-launch add-on setup is skipped.
+          - Public add-on and plugin management surfaces are hidden. Add-on administration is reserved for Phase 2.
+          - The app is built as a static web deployment for Vercel.
+
+          ## Upstream source
+
+          - Repository: https://github.com/NuvioMedia/NuvioTVSmart
+          - Imported commit: `2a7ac34d155bba570881c953763d6a6425932918`
+          - License: GNU GPL v3.0. See [LICENSE](./LICENSE) and upstream attribution notices.
+
+          ## Build
+
+          \`\`\`bash
+          npm ci
+          npm run build
+          \`\`\`
+
+          The build output is generated in `dist/`.
+
+          ## Phase 2
+
+          A separately protected administrator area will be added for managing supported add-ons and app configuration. It is not part of this Phase 1 import.
+          `;
+          await writeFile("README.md", readme);
+          NODE
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify the Nuvio production build
+        run: npm run build
+
+      - name: Commit the Phase 1 import
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No import changes to commit."
+            exit 0
+          fi
+          git commit -m "Import Nuvio TV as Endroom Phase 1"
+          git push origin HEAD:main
