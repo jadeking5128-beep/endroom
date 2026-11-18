@@ -26,6 +26,28 @@ function replaceOnce(source, marker, replacement, label) {
 }
 
 async function patchNuvioSource() {
+  const addonRepositoryPath = path.join(
+    sourceDir,
+    "js/data/repository/addonRepository.js"
+  );
+  let addonRepository = await readFile(addonRepositoryPath, "utf8");
+  const defaultAddonMarker =
+    'const DEFAULT_ADDON_URLS = ["https://v3-cinemeta.strem.io", "https://opensubtitles-v3.strem.io"];';
+  const endroomDefaultAddons =
+    'const DEFAULT_ADDON_URLS = [\n' +
+    '  "https://v3-cinemeta.strem.io",\n' +
+    '  "https://opensubtitles-v3.strem.io",\n' +
+    '  "https://torrentio.strem.fun",\n' +
+    '  "https://btttr.cc/TYxBDoMwDAT_4nP6gXyg96q3qgcLrBQpxNR2VCHE36sEAtzGs-tdoEPDyEHBvyCikdptBNdQwYFxj3OVG50OwUHH45BCjXfUE0vBhFLfKsdRShNPOaLUoPE2PsHbwUiG4Je1hGok4JcaecBsXH6Eg5AqeJNM-_gTwyG-GeNg81Xph393SkJX8UAbUmgGA13Fuv4B"\n' +
+    '];';
+  addonRepository = replaceOnce(
+    addonRepository,
+    defaultAddonMarker,
+    endroomDefaultAddons,
+    "default addon manifest list"
+  );
+  await writeFile(addonRepositoryPath, addonRepository);
+
   const appPath = path.join(sourceDir, "js/app.js");
   let app = await readFile(appPath, "utf8");
 
