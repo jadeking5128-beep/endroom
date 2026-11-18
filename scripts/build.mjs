@@ -37,7 +37,7 @@ async function patchNuvioSource() {
     'const DEFAULT_ADDON_URLS = [\n' +
     '  "https://v3-cinemeta.strem.io",\n' +
     '  "https://opensubtitles-v3.strem.io",\n' +
-    '  "https://btttr.cc/TYxBDoMwDAT_4nP6gXyg96q3qgcLrBQpxNR2VCHE36sEAtzGs-tdoEPDyEHBvyCikdptBNdQwYFxj3OVG50OwUHH45BCjXfUE0vBhFLfKsdRShNPOaLUoPE2PsHbwUiG4Je1hGok4JcaecBsXH6Eg5AqeJNM-_gTwyG-GeNg81Xph393SkJX8UAbUmgGA13Fuv4B"\n' +
+    '  "https://btttr.cc/TYxBDoMwDAT_4nP6gXyg96q3qgcLrBQpxNR2VCHE36sEAtzGs-tdoEPDyEHBvyCikdptBNdQwYFxj3OVG50OwUHH45BCjXfUE0vBhFLfKsdRShNPOaLUoPE2PsHbwUiG4Je1hGok4JcaecBsXH6Eg5AqeJNM-_gTwyG-GeNg81Xph393SkJX8UAbUmgGA13Fuv4B",\n' +\n    '  "https://voteit.co.uk/VOTEIT"\n' +
     '];';
   addonRepository = replaceOnce(
     addonRepository,
