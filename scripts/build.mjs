@@ -326,16 +326,21 @@ async function main() {
   const authStylePath = path.join(rootDir, "public/ryan-watch-auth.css");
   const adminScriptPath = path.join(rootDir, "public/ryan-watch-admin.js");
   const adminStylePath = path.join(rootDir, "public/ryan-watch-admin.css");
+  const webStylePath = path.join(rootDir, "public/ryan-watch-web.css");
   await cp(authScriptPath, path.join(distDir, "ryan-watch-auth.js"));
   await cp(authStylePath, path.join(distDir, "ryan-watch-auth.css"));
   await cp(adminScriptPath, path.join(distDir, "ryan-watch-admin.js"));
   await cp(adminStylePath, path.join(distDir, "ryan-watch-admin.css"));
+  await cp(webStylePath, path.join(distDir, "ryan-watch-web.css"));
   const builtIndexPath = path.join(distDir, "index.html");
   let builtIndex = await readFile(builtIndexPath, "utf8");
-  if (!builtIndex.includes("/ryan-watch-auth.js")) {
-    builtIndex = builtIndex.replace("</body>", '  <script type="module" src="/ryan-watch-auth.js"></script>\n  <script type="module" src="/ryan-watch-admin.js"></script>\n</body>');
-    await writeFile(builtIndexPath, builtIndex);
+  if (!builtIndex.includes("/ryan-watch-web.css")) {
+    builtIndex = builtIndex.replace("</head>", '  <link rel="stylesheet" href="/ryan-watch-web.css" />\\n</head>');
   }
+  if (!builtIndex.includes("/ryan-watch-auth.js")) {
+    builtIndex = builtIndex.replace("</body>", '  <script type="module" src="/ryan-watch-auth.js"></script>\\n  <script type="module" src="/ryan-watch-admin.js"></script>\\n</body>');
+  }
+  await writeFile(builtIndexPath, builtIndex);
 
   console.log("Endroom built from NuvioTVSmart " + upstreamCommit);
 }
