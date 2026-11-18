@@ -197,6 +197,105 @@ async function patchNuvioSource() {
     await writeFile(responsiveCssPath, currentResponsiveCss + responsiveCss);
   }
 
+
+  const wordmarkPath = path.join(sourceDir, "js/ui/components/brandWordmark.js");
+  let wordmark = await readFile(wordmarkPath, "utf8");
+  wordmark = replaceOnce(wordmark,
+    'export function renderBrandWordmarkImage({ className = "", alt = "Nuvio" } = {}) {',
+    'export function renderBrandWordmarkImage({ className = "", alt = "Ryan Watch" } = {}) {',
+    "Ryan Watch wordmark label");
+  wordmark = replaceOnce(wordmark,
+    '  return `<img src="${getBrandWordmarkAsset()}" class="theme-brand-wordmark${safeClassName}" data-theme-brand-wordmark alt="${escapeHtml(alt)}" />`;',
+    '  return `<span class="theme-brand-wordmark${safeClassName}" data-theme-brand-wordmark aria-label="${escapeHtml(alt)}">RYAN WATCH</span>`;',
+    "replace upstream wordmark");
+  wordmark = replaceOnce(wordmark, '  const src = getBrandWordmarkAsset(themeName);', '  const src = "";', "disable upstream logo asset");
+  wordmark = wordmark.replace(
+    '    if (image.getAttribute("src") !== src) {\\n      image.setAttribute("src", src);\\n    }',
+    '    image.textContent = "RYAN WATCH";');
+  await writeFile(wordmarkPath, wordmark);
+
+  const indexPath = path.join(sourceDir, "index.html");
+  let indexHtml = await readFile(indexPath, "utf8");
+  indexHtml = indexHtml.replace("<title>Nuvio TV</title>", "<title>Ryan Watch</title>");
+  indexHtml = indexHtml.replace("maximum-scale=1.0, user-scalable=no", "maximum-scale=1.0, viewport-fit=cover");
+  if (!indexHtml.includes("css/ryan-watch-responsive.css")) {
+    indexHtml = indexHtml.replace("</head>", '    <link rel="stylesheet" href="css/ryan-watch-responsive.css" />\\n  </head>');
+  }
+  await writeFile(indexPath, indexHtml);
+
+  const bootGuardPath = path.join(sourceDir, "boot-guard.js");
+  let bootGuard = await readFile(bootGuardPath, "utf8");
+  bootGuard = bootGuard.replaceAll("Nuvio TV", "Ryan Watch").replaceAll("Nuvio", "Ryan Watch");
+  await writeFile(bootGuardPath, bootGuard);
+
+  const updatePromptPath = path.join(sourceDir, "js/ui/components/appUpdatePrompt.js");
+  let updatePrompt = await readFile(updatePromptPath, "utf8");
+  updatePrompt = updatePrompt.replaceAll(
+    "Use Nuvio TV Installer to update the app on your TV.",
+    "Check Ryan Watch for the latest version.");
+  await writeFile(updatePromptPath, updatePrompt);
+
+  const responsivePath = path.join(sourceDir, "css/ryan-watch-responsive.css");
+  await writeFile(responsivePath, `
+:root { --rw-bg:#090a0c; --rw-gutter:clamp(14px,3vw,48px); }
+html,body { width:100%; min-width:320px; min-height:100%; margin:0; overflow-x:hidden!important; background:var(--rw-bg); }
+body { padding-bottom:env(safe-area-inset-bottom); }
+#app { width:100%; max-width:100%; min-height:100dvh; overflow-x:clip; }
+.screen,.home-screen-shell,.home-shell,.settings-shell,.search-screen-shell,.library-shell,.discover-shell,.addons-shell,.trakt-route-shell,.detail-screen-shell,.stream-route-shell { box-sizing:border-box; max-width:100%; min-width:0; }
+.home-screen-shell { width:100%; min-height:100dvh; height:auto; overflow-x:clip; }
+.home-screen-shell.home-layout-modern {
+ --home-modern-portrait-poster-width:clamp(112px,12vw,188px);
+ --home-modern-portrait-poster-height:calc(var(--home-modern-portrait-poster-width)*1.5);
+ --home-landscape-poster-width:clamp(200px,21vw,360px);
+ --home-landscape-poster-height:calc(var(--home-landscape-poster-width)*.5625);
+ --home-track-gap:clamp(10px,1.4vw,20px);
+}
+.home-screen-shell .home-track,.home-screen-shell .home-row-head { padding-inline:var(--rw-gutter)!important; }
+.home-screen-shell .home-row-title { font-size:clamp(17px,1.5vw,24px)!important; }
+.home-screen-shell .home-hero-title-text { font-size:clamp(27px,3.2vw,52px)!important; }
+.home-screen-shell .home-hero-description { max-width:min(60ch,90%); line-height:1.5; }
+.discover-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(142px,1fr)); gap:clamp(12px,1.6vw,22px); }
+.discover-card,.discover-action-card { min-width:0; max-width:100%; }
+.discover-card-poster { width:100%; height:auto; aspect-ratio:2/3; object-fit:cover; }
+.theme-brand-wordmark { display:inline-flex; color:#f2eee5!important; font-size:16px; font-weight:800; letter-spacing:.13em; white-space:nowrap; }
+#player { width:100vw; height:100vh; height:100dvh; }
+#videoPlayer { width:100%; height:100%; object-fit:contain!important; }
+@media(min-width:1200px) { .discover-grid { grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); } }
+@media(max-width:699px) {
+ :root { --rw-gutter:14px; }
+ html,body { font-size:15px; }
+ .home-screen-shell { padding-bottom:calc(88px + env(safe-area-inset-bottom)); }
+ .home-screen-shell.home-layout-modern {
+  --home-modern-portrait-poster-width:clamp(98px,29vw,132px);
+  --home-modern-portrait-poster-height:calc(var(--home-modern-portrait-poster-width)*1.5);
+  --home-landscape-poster-width:clamp(170px,49vw,224px);
+  --home-landscape-poster-height:calc(var(--home-landscape-poster-width)*.5625);
+  --home-track-gap:9px;
+ }
+ .home-screen-shell .home-track,.home-screen-shell .home-row-head { padding-inline:14px!important; }
+ .home-screen-shell .home-row-title { font-size:17px!important; }
+ .home-screen-shell .home-hero-title-text { font-size:clamp(24px,7vw,36px)!important; }
+ .home-screen-shell .home-hero-description { font-size:13px!important; }
+ .home-sidebar { position:fixed!important; inset:auto 10px calc(8px + env(safe-area-inset-bottom)) 10px!important; width:auto!important; height:64px!important; min-height:64px!important; z-index:999!important; display:flex!important; flex-direction:row!important; justify-content:center!important; padding:6px 8px!important; border:1px solid rgba(255,255,255,.12)!important; border-radius:19px!important; background:rgba(17,19,22,.96)!important; box-shadow:0 12px 36px rgba(0,0,0,.45); }
+ .home-sidebar .home-nav-list { display:flex!important; flex-direction:row!important; width:100%; justify-content:space-around!important; gap:4px!important; }
+ .home-sidebar .home-nav-item { flex:1 1 0; min-width:0!important; width:auto!important; max-width:62px; height:48px!important; min-height:48px!important; margin:0!important; border-radius:14px!important; justify-content:center!important; }
+ .home-sidebar .home-nav-label { display:none!important; }
+ .home-sidebar .home-nav-icon,.home-sidebar .home-nav-icon-wrap { width:22px!important; height:22px!important; font-size:22px!important; }
+ .home-main { margin:0!important; width:100%!important; padding-bottom:24px!important; }
+ .settings-workspace { display:flex!important; flex-direction:column!important; width:100%!important; height:auto!important; min-height:100dvh!important; margin:0!important; padding:14px!important; border:0!important; border-radius:0!important; gap:14px!important; }
+ .settings-sidebar { display:flex!important; flex-direction:row!important; width:100%!important; height:auto!important; max-height:none!important; overflow-x:auto!important; overflow-y:hidden!important; gap:7px!important; padding:2px 0 8px!important; }
+ .settings-nav-item { flex:0 0 auto; min-height:42px!important; padding:0 12px!important; white-space:nowrap; }
+ .settings-content,.settings-content-frame { height:auto!important; max-height:none!important; overflow:visible!important; }
+ .trakt-route-shell,.discover-shell,.search-screen-shell,.library-shell,.addons-shell { width:100%!important; margin:0!important; padding:18px 14px 100px!important; }
+ .discover-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px 9px; }
+ .discover-card-title { font-size:12px!important; }
+ .discover-card-meta { font-size:10px!important; }
+ .nuvio-dialog-panel { width:calc(100vw - 24px)!important; max-width:520px!important; max-height:calc(100dvh - 24px)!important; overflow:auto!important; }
+}
+@media(max-width:360px) { .discover-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+`);
+
   const streamRenderPath = path.join(sourceDir, "js/ui/screens/stream/streamScreenMethods-09-render.js");
   let streamRender = await readFile(streamRenderPath, "utf8");
   streamRender = replaceOnce(
