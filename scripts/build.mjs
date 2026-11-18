@@ -167,6 +167,16 @@ async function patchNuvioSource() {
   metadata = metadata.replace(oldSubtitle, 'subtitle: "Connect and manage media servers"');
   await writeFile(metadataPath, metadata);
 
+  const modernLayoutPath = path.join(sourceDir, "js/ui/screens/home/modernHomeLayout.js");
+  let modernLayout = await readFile(modernLayoutPath, "utf8");
+  modernLayout = replaceOnce(
+    modernLayout,
+    '<div class="home-track" data-track-row-key="${escapeHtml(rowKey)}">',
+    '<div class="home-track home-web-grid" data-track-row-key="${escapeHtml(rowKey)}">',
+    "convert TV carousel rows into responsive web grids"
+  );
+  await writeFile(modernLayoutPath, modernLayout);
+
   const layoutPreferencesPath = path.join(sourceDir, "js/data/local/layoutPreferences.js");
   let layoutPreferences = await readFile(layoutPreferencesPath, "utf8");
   layoutPreferences = replaceOnce(
