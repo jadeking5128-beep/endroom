@@ -33,12 +33,14 @@ async function patchNuvioSource() {
   let addonRepository = await readFile(addonRepositoryPath, "utf8");
   const defaultAddonMarker =
     'const DEFAULT_ADDON_URLS = ["https://v3-cinemeta.strem.io", "https://opensubtitles-v3.strem.io"];';
-  const endroomDefaultAddons =
-    'const DEFAULT_ADDON_URLS = [\n' +
-    '  "https://v3-cinemeta.strem.io",\n' +
-    '  "https://opensubtitles-v3.strem.io",\n' +
-    '  "https://btttr.cc/TYxBDoMwDAT_4nP6gXyg96q3qgcLrBQpxNR2VCHE36sEAtzGs-tdoEPDyEHBvyCikdptBNdQwYFxj3OVG50OwUHH45BCjXfUE0vBhFLfKsdRShNPOaLUoPE2PsHbwUiG4Je1hGok4JcaecBsXH6Eg5AqeJNM-_gTwyG-GeNg81Xph393SkJX8UAbUmgGA13Fuv4B",\n' +\n    '  "https://voteit.co.uk/VOTEIT"\n' +
-    '];';
+  const endroomDefaultAddons = [
+    "const DEFAULT_ADDON_URLS = [",
+    '  "https://v3-cinemeta.strem.io",',
+    '  "https://opensubtitles-v3.strem.io",',
+    '  "https://btttr.cc/TYxBDoMwDAT_4nP6gXyg96q3qgcLrBQpxNR2VCHE36sEAtzGs-tdoEPDyEHBvyCikdptBNdQwYFxj3OVG50OwUHH45BCjXfUE0vBhFLfKsdRShNPOaLUoPE2PsHbwUiG4Je1hGok4JcaecBsXH6Eg5AqeJNM-_gTwyG-GeNg81Xph393SkJX8UAbUmgGA13Fuv4B",',
+    '  "https://voteit.co.uk/VOTEIT"',
+    "];"
+  ].join("\n");
   addonRepository = replaceOnce(
     addonRepository,
     defaultAddonMarker,
