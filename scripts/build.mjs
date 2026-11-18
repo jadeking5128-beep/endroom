@@ -123,6 +123,7 @@ async function patchNuvioSource() {
     '          subtitle: t("settings.contentDiscovery.addonsSubtitle", {}, "Manage catalogues and collections"),',
     '          leadingIcon: "grid_view"',
     "        }) +",
+    "        this.renderActionRow({",
     '          focusKey: "contentDiscovery:servers",',
     '          title: t("settings_media_servers"),',
     '          subtitle: t("settings_media_servers_subtitle"),',
