@@ -1,0 +1,122 @@
+/* Ryan Watch web-first interface layer. Keeps the browser runtime and playback routes. */
+:root {
+  color-scheme: dark;
+  --rw-ink: #f3f0e8;
+  --rw-muted: #a7a39a;
+  --rw-line: rgba(255,255,255,.105);
+  --rw-panel: #121311;
+  --rw-gold: #c7a66a;
+  --rw-gutter: clamp(20px, 4.2vw, 72px);
+}
+html, body { background:#090a09 !important; color:var(--rw-ink); }
+body { font-family: Inter, "Helvetica Neue", Arial, sans-serif !important; }
+#app { min-height:100dvh; background:radial-gradient(ellipse at 76% 0%,rgba(154,122,65,.09),transparent 34%),#090a09 !important; }
+button, input { font-family:inherit; }
+
+/* Replace the television-style vertical rail with a real desktop site header. */
+@media (min-width: 900px) {
+  .home-sidebar {
+    position:fixed !important; inset:0 0 auto 0 !important; z-index:1200 !important;
+    width:100% !important; height:82px !important; min-height:82px !important;
+    display:flex !important; flex-direction:row !important; align-items:center !important;
+    justify-content:flex-start !important; gap:clamp(28px,5vw,90px) !important;
+    padding:0 var(--rw-gutter) !important; margin:0 !important;
+    border:0 !important; border-bottom:1px solid var(--rw-line) !important;
+    border-radius:0 !important; background:rgba(9,10,9,.91) !important;
+    backdrop-filter:blur(22px) saturate(130%) !important;
+    box-shadow:0 12px 40px rgba(0,0,0,.16) !important;
+  }
+  .home-sidebar::before {
+    content:"RYAN WATCH"; display:block; flex:none; color:#f3f0e8;
+    font-size:15px; font-weight:850; letter-spacing:.19em; white-space:nowrap;
+  }
+  .home-sidebar .home-nav-list {
+    display:flex !important; flex-direction:row !important; align-items:center !important;
+    justify-content:flex-start !important; gap:8px !important; width:auto !important;
+    height:100% !important; margin:0 !important; padding:0 !important;
+  }
+  .home-sidebar .home-nav-item {
+    width:auto !important; min-width:0 !important; height:42px !important;
+    min-height:42px !important; padding:0 15px !important; margin:0 !important;
+    border:1px solid transparent !important; border-radius:999px !important;
+    display:flex !important; flex-direction:row !important; align-items:center !important;
+    justify-content:center !important; gap:9px !important; background:transparent !important;
+    color:#aaa79e !important; transition:background .2s ease,color .2s ease,border-color .2s ease !important;
+  }
+  .home-sidebar .home-nav-item:hover,
+  .home-sidebar .home-nav-item.active,
+  .home-sidebar .home-nav-item[aria-current="page"] {
+    color:#fff !important; background:rgba(255,255,255,.07) !important;
+    border-color:var(--rw-line) !important;
+  }
+  .home-sidebar .home-nav-label { display:block !important; font-size:12px !important; font-weight:600 !important; letter-spacing:.01em !important; }
+  .home-sidebar .home-nav-icon,.home-sidebar .home-nav-icon-wrap { width:17px !important; height:17px !important; font-size:17px !important; }
+  .home-main { margin:0 !important; width:100% !important; padding-top:82px !important; }
+  .home-screen-shell { padding-bottom:70px !important; }
+  .home-screen-shell .home-track,.home-screen-shell .home-row-head { padding-inline:var(--rw-gutter) !important; }
+  .home-screen-shell .home-row-title { font-size:20px !important; font-weight:650 !important; letter-spacing:-.025em !important; }
+  .home-screen-shell .home-hero-title-text { font-size:clamp(38px,4.2vw,68px) !important; line-height:.98 !important; letter-spacing:-.055em !important; max-width:12ch !important; }
+  .home-screen-shell .home-hero-description { color:#c2beb5 !important; font-size:15px !important; max-width:52ch !important; }
+}
+
+/* Give content pages a consistent editorial canvas instead of TV overscan spacing. */
+.home-screen-shell,.search-screen-shell,.library-shell,.discover-shell,.trakt-route-shell,.settings-shell,.stream-route-shell {
+  color:var(--rw-ink) !important; background:transparent !important;
+}
+.home-screen-shell .home-row-head { display:flex; align-items:baseline; gap:18px; }
+.home-screen-shell .home-row-title { letter-spacing:-.035em !important; }
+.home-screen-shell .home-track { gap:clamp(12px,1.4vw,22px) !important; }
+.home-screen-shell .home-hero-description { line-height:1.65 !important; }
+.discover-grid { gap:clamp(14px,1.7vw,24px) !important; }
+.discover-card { transition:transform .24s ease,filter .24s ease !important; }
+.discover-card:hover { transform:translateY(-5px) !important; filter:brightness(1.08); }
+.discover-card-title { color:#eeeae1 !important; font-weight:600 !important; }
+input,textarea,select {
+  border-color:var(--rw-line) !important; border-radius:10px !important;
+  background:#111310 !important; color:#f3f0e8 !important;
+}
+button:focus-visible,a:focus-visible,input:focus-visible {
+  outline:2px solid var(--rw-gold) !important; outline-offset:3px !important;
+}
+
+/* Mobile web navigation: compact bottom dock, with real labels removed only where space is tight. */
+@media (max-width:899px) {
+  .home-sidebar {
+    position:fixed !important; inset:auto 12px calc(10px + env(safe-area-inset-bottom)) 12px !important;
+    width:auto !important; height:68px !important; min-height:68px !important;
+    z-index:1400 !important; display:flex !important; flex-direction:row !important;
+    align-items:center !important; padding:7px 9px !important; margin:0 !important;
+    border:1px solid rgba(255,255,255,.13) !important; border-radius:19px !important;
+    background:rgba(19,20,18,.94) !important; backdrop-filter:blur(22px) !important;
+    box-shadow:0 16px 48px rgba(0,0,0,.48) !important;
+  }
+  .home-sidebar::before { content:none !important; }
+  .home-sidebar .home-nav-list {
+    display:flex !important; flex-direction:row !important; align-items:center !important;
+    justify-content:space-around !important; width:100% !important; gap:2px !important;
+  }
+  .home-sidebar .home-nav-item {
+    flex:1 1 0 !important; width:auto !important; min-width:0 !important;
+    max-width:90px !important; height:50px !important; min-height:50px !important;
+    margin:0 !important; padding:5px 2px !important; border-radius:13px !important;
+    display:flex !important; flex-direction:column !important; align-items:center !important;
+    justify-content:center !important; gap:4px !important; color:#aaa79e !important;
+    background:transparent !important;
+  }
+  .home-sidebar .home-nav-item.active,
+  .home-sidebar .home-nav-item[aria-current="page"] { color:#e8d3a8 !important; background:rgba(199,166,106,.12) !important; }
+  .home-sidebar .home-nav-label { display:block !important; font-size:9px !important; line-height:1 !important; font-weight:600 !important; }
+  .home-sidebar .home-nav-icon,.home-sidebar .home-nav-icon-wrap { width:19px !important; height:19px !important; font-size:19px !important; }
+  .home-main { margin:0 !important; width:100% !important; padding-bottom:90px !important; }
+  .home-screen-shell { padding-bottom:calc(96px + env(safe-area-inset-bottom)) !important; }
+  .home-screen-shell .home-track,.home-screen-shell .home-row-head { padding-inline:18px !important; }
+  .home-screen-shell .home-row-title { font-size:18px !important; letter-spacing:-.025em !important; }
+  .home-screen-shell .home-hero-title-text { font-size:clamp(30px,9vw,44px) !important; letter-spacing:-.055em !important; }
+  .home-screen-shell .home-hero-description { font-size:13px !important; line-height:1.55 !important; }
+  .search-screen-shell,.library-shell,.discover-shell,.trakt-route-shell,.settings-shell { padding-inline:18px !important; padding-bottom:110px !important; }
+  #rw-account { top:calc(10px + env(safe-area-inset-top)) !important; right:14px !important; }
+  #rw-admin-launcher { top:auto !important; bottom:calc(90px + env(safe-area-inset-bottom)) !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; transition-duration:.01ms !important; }
+}
