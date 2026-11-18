@@ -171,6 +171,69 @@ async function patchNuvioSource() {
   );
   metadata = metadata.replace(oldSubtitle, 'subtitle: "Connect and manage media servers"');
   await writeFile(metadataPath, metadata);
+
+  const layoutPreferencesPath = path.join(sourceDir, "js/data/local/layoutPreferences.js");
+  let layoutPreferences = await readFile(layoutPreferencesPath, "utf8");
+  layoutPreferences = replaceOnce(
+    layoutPreferences,
+    "  const modernSidebar = Boolean(merged.modernSidebar);",
+    "  const modernSidebar = true;",
+    "enable Endroom floating navigation by default"
+  );
+  layoutPreferences = replaceOnce(
+    layoutPreferences,
+    "    modernSidebarBlur: modernSidebar\n      ? Boolean(merged.modernSidebarBlur)\n      : Boolean(merged.modernSidebarBlur)",
+    "    modernSidebarBlur: true",
+    "enable liquid-glass sidebar blur"
+  );
+  await writeFile(layoutPreferencesPath, layoutPreferences);
+
+  const sidebarMarkupPath = path.join(sourceDir, "js/ui/components/sidebarNavigationHelpers-02-get-sidebar-avatar-catalog.js");
+  let sidebarMarkup = await readFile(sidebarMarkupPath, "utf8");
+  sidebarMarkup = replaceOnce(
+    sidebarMarkup,
+    '<div class="modern-sidebar-shell\${expanded ? " expanded panel-visible" : ""}\${blurEnabled ? " blur-enabled" : ""}\${keepPillExpanded ? " keep-pill-expanded" : ""}\${performanceConstrained ? " performance-constrained" : ""}" data-selected-route="\${selectedRoute}">',
+    '<div class="modern-sidebar-shell ios-floating-nav expanded panel-visible blur-enabled" data-selected-route="\${selectedRoute}">',
+    "floating navigation shell"
+  );
+  sidebarMarkup = replaceOnce(
+    sidebarMarkup,
+    '<aside class="modern-sidebar-panel" aria-hidden="\${expanded ? "false" : "true"}">',
+    '<aside class="modern-sidebar-panel" aria-hidden="false">',
+    "always-visible floating navigation"
+  );
+  await writeFile(sidebarMarkupPath, sidebarMarkup);
+
+  const sidebarEventsPath = path.join(sourceDir, "js/ui/components/sidebarNavigationHelpers-03-render-root-sidebar.js");
+  let sidebarEvents = await readFile(sidebarEventsPath, "utf8");
+  sidebarEvents = replaceOnce(
+    sidebarEvents,
+    "      if (keyCode === 38) {",
+    [
+      "      if (keyCode === 37 || keyCode === 39) {",
+      "        event?.preventDefault?.();",
+      "        event?.stopPropagation?.();",
+      "        moveSidebarFocus(node, keyCode === 37 ? -1 : 1);",
+      '        container?.querySelector(".modern-sidebar-panel .focusable.focused")?.scrollIntoView?.({',
+      '          block: "nearest",',
+      '          inline: "center",',
+      '          behavior: "smooth"',
+      "        });",
+      "        return;",
+      "      }",
+      "      if (keyCode === 38) {"
+    ].join("\n"),
+    "horizontal floating navigation focus"
+  );
+  await writeFile(sidebarEventsPath, sidebarEvents);
+
+  const glassCssPath = path.join(sourceDir, "css/components-64.css");
+  const glassCss = "\n/* Endroom: iOS-inspired liquid-glass floating navigation. */\n.modern-sidebar-shell.ios-floating-nav {\n  position: fixed !important; z-index: 1000 !important; top: auto !important;\n  right: auto !important; bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;\n  left: 50% !important; width: max-content !important; max-width: calc(100vw - 20px) !important;\n  height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important;\n  transform: translateX(-50%) !important; pointer-events: none !important;\n}\n.ios-floating-nav .modern-sidebar-pill,\n.ios-floating-nav .modern-sidebar-profile { display: none !important; }\n.ios-floating-nav .modern-sidebar-panel {\n  position: relative !important; inset: auto !important; display: block !important;\n  visibility: visible !important; opacity: 1 !important; width: max-content !important;\n  min-width: 0 !important; max-width: calc(100vw - 20px) !important; height: auto !important;\n  max-height: none !important; margin: 0 !important; padding: 7px !important; overflow: hidden !important;\n  border: 1px solid rgba(255,255,255,.24) !important; border-radius: 28px !important;\n  background: linear-gradient(145deg,rgba(255,255,255,.19),rgba(255,255,255,.075) 34%,rgba(18,19,24,.76) 100%) !important;\n  box-shadow: 0 18px 58px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.055) !important;\n  -webkit-backdrop-filter: blur(34px) saturate(1.85) !important;\n  backdrop-filter: blur(34px) saturate(1.85) !important; transform: none !important; pointer-events: auto !important;\n}\n.ios-floating-nav .modern-sidebar-nav-list {\n  display: flex !important; flex-direction: row !important; align-items: center !important;\n  justify-content: flex-start !important; gap: 4px !important; width: max-content !important;\n  max-width: calc(100vw - 36px) !important; height: auto !important; max-height: none !important;\n  margin: 0 !important; padding: 0 !important; overflow-x: auto !important; overflow-y: hidden !important;\n  overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; touch-action: pan-x;\n  scroll-snap-type: x proximity; scrollbar-width: none !important;\n}\n.ios-floating-nav .modern-sidebar-nav-list::-webkit-scrollbar { display: none !important; }\n.ios-floating-nav .modern-sidebar-nav-item {\n  display: inline-flex !important; flex: 0 0 auto !important; flex-direction: column !important;\n  align-items: center !important; justify-content: center !important; gap: 3px !important;\n  width: auto !important; min-width: 58px !important; min-height: 54px !important; height: 54px !important;\n  margin: 0 !important; padding: 5px 12px !important; border: 1px solid transparent !important;\n  border-radius: 20px !important; background: transparent !important; color: rgba(255,255,255,.78) !important;\n  scroll-snap-align: center;\n  transition: background .28s cubic-bezier(.2,.8,.2,1),border-color .28s ease,transform .28s cubic-bezier(.2,.8,.2,1),color .2s ease !important;\n}\n.ios-floating-nav .modern-sidebar-nav-item.selected {\n  border-color: rgba(255,255,255,.22) !important;\n  background: linear-gradient(180deg,rgba(255,255,255,.23),rgba(255,255,255,.105)) !important;\n  color: #fff !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.24),0 4px 16px rgba(0,0,0,.18) !important;\n}\n.ios-floating-nav .modern-sidebar-nav-item.focused {\n  outline: 1px solid rgba(255,255,255,.72) !important; outline-offset: 1px !important;\n  transform: translateY(-2px) scale(1.035);\n}\n.ios-floating-nav .modern-sidebar-nav-icon-circle {\n  display: flex !important; align-items: center !important; justify-content: center !important;\n  width: 23px !important; height: 23px !important; margin: 0 !important; border-radius: 50% !important;\n  background: transparent !important;\n}\n.ios-floating-nav .modern-sidebar-nav-icon { width: 21px !important; height: 21px !important; font-size: 21px !important; }\n.ios-floating-nav .modern-sidebar-nav-label {\n  display: block !important; max-width: 76px !important; overflow: hidden !important;\n  color: inherit !important; font-size: 10px !important; font-weight: 550 !important;\n  line-height: 12px !important; letter-spacing: .01em; text-align: center !important;\n  text-overflow: ellipsis !important; white-space: nowrap !important;\n}\n.home-screen-shell { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }\n@media (min-width: 760px) {\n  .modern-sidebar-shell.ios-floating-nav { bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important; }\n  .ios-floating-nav .modern-sidebar-nav-item { min-width: 72px !important; min-height: 58px !important; height: 58px !important; padding-inline: 16px !important; }\n  .ios-floating-nav .modern-sidebar-nav-label { font-size: 11px !important; }\n}\n@media (prefers-reduced-motion: reduce) { .ios-floating-nav .modern-sidebar-nav-item { transition: none !important; } }\n";
+  const existingGlassCss = await readFile(glassCssPath, "utf8");
+  if (!existingGlassCss.includes("Endroom: iOS-inspired liquid-glass floating navigation")) {
+    await writeFile(glassCssPath, existingGlassCss + "\n" + glassCss);
+  }
+
 }
 
 async function main() {
