@@ -111,6 +111,22 @@ async function patchNuvioSource() {
   settings = settings.slice(0, start) + publicDiscoveryOnly + settings.slice(integration);
   await writeFile(settingsPath, settings);
 
+  const accountSettingsPath = path.join(
+    sourceDir,
+    "js/ui/screens/settings/settingsScreenMethods-04-render-collapsible-row.js"
+  );
+  let accountSettings = await readFile(accountSettingsPath, "utf8");
+  const accountStart = accountSettings.indexOf("    renderAccountSection(model) {");
+  const accountEnd = accountSettings.indexOf("    renderAccountStatusCard(value) {", accountStart);
+  if (accountStart < 0 || accountEnd < 0) {
+    throw new Error("Upstream account settings section changed; refusing an unsafe patch.");
+  }
+  accountSettings =
+    accountSettings.slice(0, accountStart) +
+    '    renderAccountSection() {\n      return "";\n    },\n    ' +
+    accountSettings.slice(accountEnd);
+  await writeFile(accountSettingsPath, accountSettings);
+
   const metadataPath = path.join(
     sourceDir,
     "js/ui/screens/settings/settingsScreenHelpers-03-clamp-subtitle-text-opacity.js"
@@ -120,6 +136,18 @@ async function patchNuvioSource() {
   if (!metadata.includes(oldSubtitle)) {
     throw new Error("Upstream content-discovery metadata changed; refusing an unsafe patch.");
   }
+  const accountMeta = [
+    '    id: "account",',
+    '    labelKey: "settings.sections.account.label",',
+    '    subtitleKey: "settings.sections.account.subtitle"'
+  ].join("\n");
+  if (!metadata.includes(accountMeta)) {
+    throw new Error("Upstream account navigation metadata changed; refusing an unsafe patch.");
+  }
+  metadata = metadata.replace(
+    accountMeta,
+    accountMeta + ',\n    hideFromNav: true'
+  );
   metadata = metadata.replace(oldSubtitle, 'subtitle: "Connect and manage media servers"');
   await writeFile(metadataPath, metadata);
 }
