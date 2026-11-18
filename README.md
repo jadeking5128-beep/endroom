@@ -1,34 +1,38 @@
-# Endroom
+# Ryan Watch
 
-Endroom Phase 1 deploys the official Nuvio TV Smart web application, preserving the upstream Nuvio interface rather than recreating it.
+Ryan Watch is a browser-first media-library interface designed for phones, tablets, laptops, and desktop browsers. It is deployed as a static web application on Vercel.
 
-The Vercel build checks out the pinned upstream source commit, applies only the Endroom guest-first and public add-on visibility changes, then runs the original Nuvio build pipeline. The original logo, loading experience, artwork, navigation, media browsing, detail pages, and player are retained.
+## Web compatibility
 
-## Phase 1 changes
+The selected NuvioMobile project is a Kotlin Multiplatform application whose current build includes Android and iOS targets, not a browser target. Its native project cannot be deployed directly to Vercel as a website.
 
-- Public account and QR sign-in are bypassed.
-- First-launch add-on setup is skipped.
-- Public add-on and plugin management screens are hidden.
-- The public settings area retains media-server settings, but no add-on management.
-- The original Nuvio application and loading visuals are preserved.
+To keep Ryan Watch usable on the web, this repository uses the browser-compatible NuvioTVSmart web runtime, with responsive layout adaptations informed by the NuvioMobile experience. This keeps the existing browser playback, routing, and responsive web build instead of pretending a native Android package is a website.
 
-## Upstream source and license
+## Ryan Watch adaptations
 
-- Upstream: https://github.com/NuvioMedia/NuvioTVSmart
-- Pinned commit: `2a7ac34d155bba570881c953763d6a6425932918`
-- License: GNU GPL v3.0. See [LICENSE](./LICENSE).
-
-This repository contains the Endroom deployment wrapper and build-time patches. The complete upstream source is fetched from the pinned public commit during each Vercel build; it is not copied into this repository's Git tree.
+- Ryan Watch branding is applied to the browser title, wordmark, and startup messaging.
+- The layout is adapted for narrow phones, tablets, laptops, and wide desktop displays.
+- Mobile navigation, media grids, settings, dialogs, and the player receive viewport-aware sizing.
+- Reduced-motion preferences and safe-area insets are respected.
+- The public build does not inject additional third-party source URLs. Users should connect media services and sources they are authorized to use.
+- The existing Supabase authentication and protected admin scripts remain part of the web build.
 
 ## Build
 
+Requirements: Node.js 22 and Git.
+
 ```bash
-npm install
+npm ci
 npm run build
 ```
 
-The generated static application is written to `dist/`.
+The build checks out the pinned browser-compatible upstream source, applies Ryan Watch patches, runs its production build, and writes the static site to `dist/`.
 
-## Phase 2
+## Upstream and licensing
 
-The private administrator area for supported add-on and application configuration is planned for Phase 2. It is not exposed in the public application in Phase 1.
+- Browser runtime: https://github.com/NuvioMedia/NuvioTVSmart
+- Pinned upstream commit: `2a7ac34d155bba570881c953763d6a6425932918`
+- Native UI reference: https://github.com/NuvioMedia/NuvioMobile
+- License: GNU General Public License v3.0. See [LICENSE](./LICENSE).
+
+The upstream license and required notices are retained. Ryan Watch branding does not remove the original project attribution or license obligations.
