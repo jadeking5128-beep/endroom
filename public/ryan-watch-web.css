@@ -230,3 +230,49 @@ button:focus-visible,a:focus-visible,input:focus-visible {
 @media(max-width:380px) {
   .home-screen-shell .home-web-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
 }
+
+
+/* Android touch navigation: reserve a clean four-item dock and avoid profile-pill overflow. */
+@media (max-width:899px) {
+  .home-sidebar {
+    box-sizing:border-box !important; display:flex !important; flex-direction:row !important;
+    align-items:stretch !important; justify-content:stretch !important; gap:0 !important;
+    padding:6px 8px !important; min-width:0 !important; overflow:visible !important;
+  }
+  .home-sidebar > .home-profile-pill { display:none !important; }
+  .home-sidebar > .home-nav-list {
+    box-sizing:border-box !important; display:grid !important;
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    align-items:stretch !important; justify-content:stretch !important;
+    flex:1 1 100% !important; width:100% !important; min-width:0 !important;
+    height:100% !important; gap:3px !important;
+  }
+  .home-sidebar .home-nav-item {
+    box-sizing:border-box !important; display:flex !important; flex:initial !important;
+    width:100% !important; max-width:none !important; min-width:0 !important;
+    height:100% !important; min-height:0 !important; padding:5px 2px !important;
+    gap:4px !important; border:1px solid transparent !important; border-radius:13px !important;
+    touch-action:manipulation !important; -webkit-tap-highlight-color:transparent !important;
+  }
+  .home-sidebar .home-nav-item.selected {
+    color:#f0d8aa !important; background:rgba(199,166,106,.14) !important;
+    border-color:rgba(199,166,106,.2) !important;
+  }
+  .home-sidebar .home-nav-icon-wrap {
+    display:flex !important; align-items:center !important; justify-content:center !important;
+    width:22px !important; height:22px !important; flex:0 0 22px !important;
+  }
+  .home-sidebar .home-nav-icon { width:20px !important; height:20px !important; display:block !important; }
+  .home-sidebar .home-nav-label {
+    display:block !important; max-width:100% !important; overflow:hidden !important;
+    text-overflow:ellipsis !important; white-space:nowrap !important;
+    font-size:10px !important; line-height:1.1 !important; letter-spacing:0 !important;
+  }
+  .home-main { padding-bottom:0 !important; }
+  .home-screen-shell { padding-bottom:calc(96px + env(safe-area-inset-bottom)) !important; }
+}
+@media (max-width:380px) {
+  .home-sidebar { inset-inline:8px !important; }
+  .home-sidebar .home-nav-label { font-size:9px !important; }
+  .home-sidebar .home-nav-icon-wrap { width:20px !important; height:20px !important; flex-basis:20px !important; }
+}
