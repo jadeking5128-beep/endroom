@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";\nimport type { FormEvent } from "react";
 import { ArrowLeft, Film, LoaderCircle, LogOut, Play, RefreshCw, Server, X } from "lucide-react";
 import type { MediaItem } from "@/lib/catalog";
 
@@ -73,7 +73,7 @@ export default function JellyfinPanel({ onClose, onPlay }: Props) {
     } finally { setBusy(false); }
   }
 
-  async function connect(event: React.FormEvent<HTMLFormElement>) {
+  async function connect(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setError("");
     try {
       const normalized = server.trim().replace(/\/+$/, "");
@@ -107,7 +107,7 @@ export default function JellyfinPanel({ onClose, onPlay }: Props) {
       const source = data.MediaSources?.[0];
       let url = source?.DirectStreamUrl || source?.TranscodingUrl;
       if (url && url.startsWith("/")) url = session.server + url;
-      if (!url) url = `${session.server}/Videos/${encodeURIComponent(row.Id)}/stream?static=true&api_key=${encodeURIComponent(session.token)}`;
+      if (!url) url = `${session.server}/Videos/${encodeURIComponent(row.Id)}/master.m3u8?api_key=${encodeURIComponent(session.token)}`;
       else {
         const parsed = new URL(url, session.server);
         if (!parsed.searchParams.has("api_key")) parsed.searchParams.set("api_key", session.token);
