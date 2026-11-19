@@ -30,7 +30,7 @@ export default function HomePage() {
   const [genre,setGenre]=useState("all");
   const [sort,setSort]=useState("popular");
   const [catalog,setCatalog]=useState<MediaItem[]>([]);
-  const [catalogSources,setCatalogSources]=useState<{id:string;type:"movie"|"series"|"anime";name?:string;extraSupported?:string[];extra?:{name?:string}[]}[]>([]);
+  const [catalogSources,setCatalogSources]=useState<{id:string;type:"movie"|"series"|"anime";name?:string;extraSupported?:string[];extra?:(string|{name?:string})[]}[]>([]);
   const [remoteSearchResults,setRemoteSearchResults]=useState<MediaItem[]|null>(null);
   const [remoteSearchBusy,setRemoteSearchBusy]=useState(false);
   const [catalogBusy,setCatalogBusy]=useState(true);
@@ -83,7 +83,7 @@ export default function HomePage() {
   useEffect(()=>{
     const q=query.trim();
     if(active!=="Search"||q.length<2){setRemoteSearchResults(null);setRemoteSearchBusy(false);return;}
-    const supported=catalogSources.filter(source=>source.extraSupported?.includes("search")||source.extra?.some(item=>item.name==="search"));
+    const supported=catalogSources.filter(source=>source.extraSupported?.includes("search")||source.extra?.some(item=>typeof item==="string"?item==="search":item.name==="search"));
     if(!supported.length){setRemoteSearchResults(null);return;}
     let cancelled=false;
     const timer=setTimeout(async()=>{setRemoteSearchBusy(true);try{
@@ -116,6 +116,7 @@ export default function HomePage() {
   const featured = catalog[0] || null;
   const movieItems = catalog.filter(item=>item.type==="movie");
   const seriesItems = catalog.filter(item=>item.type==="series");
+  const animeItems = catalog.filter(item=>item.type==="anime");
   const shelf = (title:string, items:MediaItem[]) => <section className="nuvio-shelf" key={title}><div className="nuvio-shelf-heading"><h2>{title}</h2><span>{items.length} titles</span></div><div className="nuvio-shelf-track">{items.slice(0,18).map(item=><PosterCard key={item.id} item={item} onSelect={setSelected}/>)}</div></section>;
   const catalogueGrid = <div className="nuvio-grid">{filtered.map(item=><PosterCard key={item.id} item={item} onSelect={setSelected}/>) }{!catalogBusy&&filtered.length===0&&<div className="empty-state"><Search size={24}/><strong>No titles found</strong><span>Try another search or clear a filter.</span><button className="text-button" onClick={()=>{setQuery("");setType("all");setGenre("all");}}>Clear filters</button></div>}</div>;
 
@@ -146,12 +147,13 @@ export default function HomePage() {
           {catalogBusy&&<div className="nuvio-loading"><span/> Loading your library</div>}
           {movieItems.length>0&&shelf("Popular movies",movieItems)}
           {seriesItems.length>0&&shelf("Popular series",seriesItems)}
+          {animeItems.length>0&&shelf("Anime",animeItems)}
           {catalog.length>0&&shelf("Recently added",catalog.slice().reverse())}
           {!catalogBusy&&!catalog.length&&<div className="nuvio-empty-library"><Film size={25}/><strong>Your catalogue is empty</strong><span>{notice||"Titles from your configured manifest will appear here."}</span></div>}
         </div>
       </>}
 
-      {active==="Search"&&<section className="nuvio-browse-screen"><div className="nuvio-page-title"><span>DISCOVER</span><h1>Search</h1><p>Find something worth watching.</p></div><div className="nuvio-search-box"><Search size={19}/><input autoFocus placeholder="Movies, series, genres…" value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<button onClick={()=>setQuery("")} aria-label="Clear search"><X size={17}/></button>}</div><div className="nuvio-filter-row"><div className="filter-pills">{["all","movie","series"].map(v=><button key={v} className={type===v?"category-chip selected":"category-chip"} onClick={()=>setType(v)}>{v==="all"?"All":v==="movie"?"Movies":"Series"}</button>)}</div><label className="nuvio-genre-select"><ListFilter size={14}/><select aria-label="Filter by genre" value={genre} onChange={e=>setGenre(e.target.value)}><option value="all">All genres</option>{genres.map(g=><option key={g} value={g}>{g}</option>)}</select></label></div>{catalogBusy||remoteSearchBusy?<div className="nuvio-loading"><span/> {remoteSearchBusy?"Searching your catalogues":"Loading catalogue"}</div>:catalogueGrid}</section>}
+      {active==="Search"&&<section className="nuvio-browse-screen"><div className="nuvio-page-title"><span>DISCOVER</span><h1>Search</h1><p>Find something worth watching.</p></div><div className="nuvio-search-box"><Search size={19}/><input autoFocus placeholder="Movies, series, genres…" value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<button onClick={()=>setQuery("")} aria-label="Clear search"><X size={17}/></button>}</div><div className="nuvio-filter-row"><div className="filter-pills">{["all","movie","series","anime"].map(v=><button key={v} className={type===v?"category-chip selected":"category-chip"} onClick={()=>setType(v)}>{v==="all"?"All":v==="movie"?"Movies":v==="series"?"Series":"Anime"}</button>)}</div><label className="nuvio-genre-select"><ListFilter size={14}/><select aria-label="Filter by genre" value={genre} onChange={e=>setGenre(e.target.value)}><option value="all">All genres</option>{genres.map(g=><option key={g} value={g}>{g}</option>)}</select></label></div>{catalogBusy||remoteSearchBusy?<div className="nuvio-loading"><span/> {remoteSearchBusy?"Searching your catalogues":"Loading catalogue"}</div>:catalogueGrid}</section>}
 
       {active==="Library"&&<section className="nuvio-browse-screen"><div className="nuvio-page-title"><span>YOUR SPACE</span><h1>Library</h1><p>Saved titles, ready when you are.</p></div><div className="nuvio-library-tabs"><button className="selected">My List <b>{savedIds.length}</b></button><button onClick={()=>setProfileOpen(true)}>{currentProfile.name}</button></div>{catalogBusy?<div className="nuvio-loading"><span/> Loading library</div>:<div className="nuvio-grid">{visibleCatalog.filter(item=>savedIds.includes(item.id)).map(item=><PosterCard key={item.id} item={item} onSelect={setSelected}/>) }{!savedIds.length&&<div className="nuvio-empty-library"><Bookmark size={25}/><strong>Your list is waiting</strong><span>Save titles from their detail page and they will show up here.</span></div>}</div>}</section>}
 
