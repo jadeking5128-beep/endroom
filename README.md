@@ -70,15 +70,17 @@ Add `streamUrl`, optional `subtitles`, and (only when your provider requires it)
 Supported DRM key systems in the current configuration are `com.widevine.alpha` and `com.microsoft.playready`. A working DRM stream still requires a compatible browser/device, a valid provider-issued license server, correct CORS and response headers, and any required account entitlement. This does not provide DRM keys, bypass licensing, or make protected content accessible without the provider's authorisation. FairPlay and certificate-based configurations are not included in this baseline.
 
 HLS and DASH support depends on browser Media Source Extensions and codec support. Some providers require signed URLs, request headers, cookies, or custom license challenges; those provider-specific authentication flows are not guessed or bypassed here. External subtitle files should be WebVTT (`.vtt`) and allow cross-origin requests where hosted separately. Playback progress remains local to this browser and device.
-## Nuvio add-on integration and local playback
+## Add-on catalogues and local playback
 
-- Configure `NUVIO_ADDON_MANIFEST_URL` in Vercel as an encrypted server-side environment variable. It must point to an HTTPS `/manifest.json` endpoint.
-- The server-side `/api/addon` route reads the secret and requests the add-on manifest, catalogues, and stream results. The manifest URL is never sent to the browser.
-- The Add-on library UI lists movie and series catalogues, loads metadata, and requests stream sources for a selected title.
+- The BetterPosters manifest supplied for this project is configured as a server-side poster/catalogue source; it does not require a Vercel secret.
+- A separate authorised streaming add-on can be configured through `NUVIO_ADDON_MANIFEST_URL` in Vercel as an encrypted server-side environment variable.
+- The server-side `/api/addon` route requests BetterPosters catalogue metadata for poster browsing and can separately read a configured streaming add-on manifest.
+- Poster library browses BetterPosters movie/series catalogues and artwork without requesting playback.
+- Add-on library handles a separately configured authorised streaming source.
 - Returned direct HTTPS browser-playable streams are handed to the local Shaka/native player. WebVTT subtitle URLs are supported.
 - Add-ons must permit requests from the deployed site's server and provide streams the user is authorised to access. HLS/DASH playback still depends on browser codec/MSE support and the provider's CORS configuration.
-- Torrent/info-hash-only results, non-web-ready streams, HTTP stream URLs, and provider-specific authentication flows are not handled by this integration. DRM is not bypassed; protected playback requires a supported browser and provider-issued license configuration.
-- The manifest secret is not exposed through a `NEXT_PUBLIC_` variable. Set it in Vercel Project Settings → Environment Variables, then redeploy.
+- Torrent-based playback, non-web-ready streams, HTTP stream URLs, and provider-specific authentication flows are not supported. DRM is not bypassed; protected playback requires a supported browser and provider-issued license configuration.
+- Any optional streaming manifest secret stays server-side and must not use a `NEXT_PUBLIC_` variable.
 
 ## Phase 4 · Profiles, watchlist and personalisation\n\n- Create, switch between, and delete local browser profiles.\n- Each profile has an independent My List watchlist.\n- Add or remove titles from My List in the media details view.\n- Profile selection and watchlists persist in browser local storage.\n- These are local profiles, not authenticated accounts: there are no passwords, cloud backups, or cross-device sync in this phase. The UI states this limitation explicitly.\n- \n\n## Development
 ```bash
