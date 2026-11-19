@@ -144,11 +144,12 @@ export default function HomePage() {
         return (Array.isArray(payload.data?.metas)?payload.data.metas:[]).flatMap((meta:{id?:string;name?:string;description?:string;year?:number;releaseInfo?:string;genres?:string[];imdbRating?:string;poster?:string;background?:string})=>typeof meta.id==="string"&&meta.id?[{id:(source.sourceId||"poster")+"-"+source.type+"-"+meta.id,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres:[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.background||meta.poster||"",source:source.addonName||source.name||"Configured catalogue",sourceId:source.sourceId||"poster"} as MediaItem]:[]);
       }));
       const incoming=pages.flatMap(page=>page.status==="fulfilled"?page.value:[]);
-      let added=0;
-      setCatalog(current=>{const merged=new Map(current.map(item=>[item.id,item]));for(const item of incoming)if(!merged.has(item.id)){merged.set(item.id,item);added++;}return Array.from(merged.values());});
+      const known=new Set(catalog.map(item=>item.id));
+      const added=incoming.filter(item=>!known.has(item.id));
+      setCatalog(current=>Array.from(new Map([...current,...incoming].map(item=>[item.id,item])).values()));
       setCatalogSkip(nextSkip);
-      if(!added)setCatalogHasMore(false);
-      else setNotice(`Loaded ${added} more titles.`);
+      if(!added.length)setCatalogHasMore(false);
+      else setNotice(`Loaded ${added.length} more titles.`);
     }catch{setNotice("Could not load the next catalogue page. Try again later.");}
     finally{setCatalogMoreBusy(false);}
   };
