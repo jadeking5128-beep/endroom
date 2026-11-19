@@ -32,6 +32,19 @@ export default function MediaPlayer({ item, onClose }: Props) {
   const imdbId = item.imdbId || item.metaId || "";
   const activeSegment = useMemo(() => segments.find(segment => position >= segment.start && position < segment.end && segment.confidence >= 0.5), [segments, position]);
 
+  const syncProgress = useCallback((action: "start" | "pause" | "stop") => {
+    const video = videoRef.current;
+    if (!video) return;
+    const duration = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 0;
+    const progress = action === "stop" && video.ended ? 100 : duration ? Math.max(0, Math.min(100, video.currentTime / duration * 100)) : 0;
+    const resolvedImdb = item.imdbId || (/^tt[0-9]{7,8}$/.test(item.metaId || "") ? item.metaId : "");
+    void fetch("/api/sync/scrobble", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, type: item.type === "movie" ? "movie" : "series", title: item.title, year: item.year, imdbId: resolvedImdb, season: item.season, episode: item.episode, progress })
+    }).catch(() => undefined);
+  }, [item.id, item.imdbId, item.metaId, item.type, item.title, item.year, item.season, item.episode]);
+
   const saveProgress = useCallback((force = false) => {
     const video = videoRef.current;
     if (!video || !Number.isFinite(video.currentTime) || video.currentTime <= 0) return;
@@ -174,9 +187,11 @@ export default function MediaPlayer({ item, onClose }: Props) {
       </header>
       <div className="video-stage">
         <video ref={videoRef} controls playsInline preload="metadata"
+          onPlay={() => syncProgress("start")}
+          onPause={() => { if (!videoRef.current?.ended) syncProgress("pause"); }}
           onTimeUpdate={() => { setPosition(videoRef.current?.currentTime || 0); saveProgress(); }}
           onLoadedMetadata={() => setLoading(false)}
-          onEnded={() => { try { localStorage.removeItem(progressKey); } catch { /* Ignore unavailable storage. */ } }}
+          onEnded={() => { syncProgress("stop"); try { localStorage.removeItem(progressKey); } catch { /* Ignore unavailable storage. */ } }}
           onError={() => { if (!error) setError("The media server rejected playback. Check that the URL is a direct media manifest/file and permits browser CORS access."); }}>
           {subtitleTracks.map((track, index) => <track key={`${track.src}-${index}`} kind="subtitles" src={track.src} srcLang={track.lang} label={track.label} onLoad={() => { if (selectedSubtitle === index + 1 && videoRef.current?.textTracks[index]) videoRef.current.textTracks[index].mode = "showing"; }} />)}
         </video>
