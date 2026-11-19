@@ -35,7 +35,7 @@ export async function POST(requestObject: NextRequest) {
     const body = await requestObject.json() as Record<string, unknown>;
     if (body.action !== "catalog" && body.action !== "meta") throw new Error("Only catalogue metadata requests are supported.");
     const type = segment(body.type, "media type", 12);
-    if (body.type !== "movie" && body.type !== "series") throw new Error("Only movie and series catalogues are supported.");
+    if (body.type !== "movie" && body.type !== "series" && body.type !== "anime") throw new Error("Only movie and series catalogues are supported.");
     const id = segment(body.action === "catalog" ? body.catalogId : body.id, body.action === "catalog" ? "catalogue ID" : "media ID");
     let path = body.action === "catalog" ? `catalog/${type}/${id}.json` : `meta/${type}/${id}.json`;
     if (body.action === "catalog" && body.extra && typeof body.extra === "object") {
