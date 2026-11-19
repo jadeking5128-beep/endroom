@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";\nimport type { FormEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { ArrowLeft, Film, LoaderCircle, LogOut, Play, RefreshCw, Server, X } from "lucide-react";
 import type { MediaItem } from "@/lib/catalog";
 
