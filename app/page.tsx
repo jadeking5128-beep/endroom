@@ -30,7 +30,7 @@ export default function HomePage() {
   const [genre,setGenre]=useState("all");
   const [sort,setSort]=useState("popular");
   const [catalog,setCatalog]=useState<MediaItem[]>([]);
-  const [catalogSources,setCatalogSources]=useState<{id:string;type:"movie"|"series"|"anime";name?:string;extraSupported?:string[];extra?:(string|{name?:string})[]}[]>([]);
+  const [catalogSources,setCatalogSources]=useState<{id:string;type:"movie"|"series"|"anime";name?:string;sourceId?:string;extraSupported?:string[];extra?:(string|{name?:string})[]}[]>([]);
   const [remoteSearchResults,setRemoteSearchResults]=useState<MediaItem[]|null>(null);
   const [remoteSearchBusy,setRemoteSearchBusy]=useState(false);
   const [catalogBusy,setCatalogBusy]=useState(true);
@@ -63,22 +63,22 @@ export default function HomePage() {
     const sources=manifest.catalogs.filter((entry:{type?:string;id?:string})=>(entry.type==="movie"||entry.type==="series"||entry.type==="anime")&&typeof entry.id==="string") as {id:string;type:"movie"|"series"|"anime";name?:string;extraSupported?:string[];extra?:{name?:string}[]}[];
     if(!cancelled)setCatalogSources(sources);
     if(!sources.length)throw new Error("Manifest loaded, but it contains no supported movie or series catalogs.");
-    const outcomes=await Promise.allSettled(sources.map(async(source:{id:string;type:"movie"|"series"|"anime";name?:string})=>{
-      const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"catalog",type:source.type,catalogId:source.id})});
+    const outcomes=await Promise.allSettled(sources.map(async(source:{id:string;type:"movie"|"series"|"anime";name?:string;sourceId?:string;addonName?:string})=>{
+      const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"catalog",sourceId:source.sourceId||"poster",type:source.type,catalogId:source.id})});
       const payload=await response.json();
       if(!response.ok||!payload.ok)throw new Error(payload.error||`Could not load ${source.name||source.id}.`);
       const metas=Array.isArray(payload.data?.metas)?payload.data.metas:[];
       return metas.flatMap((meta:{id?:string;name?:string;description?:string;year?:number;releaseInfo?:string;genres?:string[];imdbRating?:string;poster?:string})=>{
         if(typeof meta.id!=="string"||!meta.id)return [];
-        return [{id:`${source.type}-${meta.id}`,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres.filter((g):g is string=>typeof g==="string"):[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.poster||"",source:manifest.name||"Configured catalogue"} as MediaItem];
+        return [{id:`${source.type}-${meta.id}`,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres.filter((g):g is string=>typeof g==="string"):[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.poster||"",source:source.addonName||"Configured catalogue",sourceId:source.sourceId||"poster"} as MediaItem];
       });
     }));
     const loaded=outcomes.flatMap(result=>result.status==="fulfilled"?result.value:[]);
-    const failed=outcomes.filter(result=>result.status==="rejected").length;
+    const failed=outcomes.filter(result=>result.status==="rejected").length+(Number(manifestPayload.failedSources)||0);
     if(!cancelled){setCatalog(Array.from(new Map(loaded.map(item=>[item.id,item])).values()));if(!loaded.length)setNotice(failed?`Manifest loaded, but all ${failed} catalog request(s) failed.`:"Manifest loaded, but its catalogs returned no titles.");else if(failed)setNotice(`Loaded ${loaded.length} titles. ${failed} catalog request(s) failed and were skipped.`);}
   }catch(error){if(!cancelled)setNotice(error instanceof Error?error.message:"Could not load the configured catalogue.");}finally{if(!cancelled)setCatalogBusy(false);}})();return()=>{cancelled=true;}},[]);
 
-  useEffect(()=>{if(!selected?.metaId)return;let cancelled=false;(async()=>{setDetailBusy(true);try{const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"meta",type:selected.type==="anime"?"series":selected.type,id:selected.metaId})});const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.error||"Could not load title details.");const meta=payload.data?.meta;if(!meta||cancelled)return;setSelected(current=>current?.id===selected.id?({...current,title:meta.name||current.title,overview:meta.description||current.overview,year:Number(meta.year||meta.releaseInfo?.slice(0,4))||current.year,genres:Array.isArray(meta.genres)?meta.genres:current.genres,rating:Number(meta.imdbRating)||current.rating,poster:meta.poster||current.poster,backdrop:meta.background||meta.poster||current.backdrop,runtime:meta.runtime||current.runtime,seasons:Array.isArray(meta.videos)?new Set(meta.videos.map((v:{season?:number})=>v.season).filter((v:number|undefined)=>typeof v==="number")).size||current.seasons:current.seasons}):current);}catch(error){if(!cancelled)setNotice(error instanceof Error?error.message:"Could not load title details.");}finally{if(!cancelled)setDetailBusy(false);}})();return()=>{cancelled=true;}},[selected?.id]);
+  useEffect(()=>{if(!selected?.metaId)return;let cancelled=false;(async()=>{setDetailBusy(true);try{const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"meta",sourceId:selected.sourceId||"poster",type:selected.type==="anime"?"series":selected.type,id:selected.metaId})});const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.error||"Could not load title details.");const meta=payload.data?.meta;if(!meta||cancelled)return;setSelected(current=>current?.id===selected.id?({...current,title:meta.name||current.title,overview:meta.description||current.overview,year:Number(meta.year||meta.releaseInfo?.slice(0,4))||current.year,genres:Array.isArray(meta.genres)?meta.genres:current.genres,rating:Number(meta.imdbRating)||current.rating,poster:meta.poster||current.poster,backdrop:meta.background||meta.poster||current.backdrop,runtime:meta.runtime||current.runtime,seasons:Array.isArray(meta.videos)?new Set(meta.videos.map((v:{season?:number})=>v.season).filter((v:number|undefined)=>typeof v==="number")).size||current.seasons:current.seasons}):current);}catch(error){if(!cancelled)setNotice(error instanceof Error?error.message:"Could not load title details.");}finally{if(!cancelled)setDetailBusy(false);}})();return()=>{cancelled=true;}},[selected?.id]);
 
   useEffect(()=>{
     const q=query.trim();
@@ -88,9 +88,9 @@ export default function HomePage() {
     let cancelled=false;
     const timer=setTimeout(async()=>{setRemoteSearchBusy(true);try{
       const results=await Promise.allSettled(supported.map(async source=>{
-        const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"catalog",type:source.type,catalogId:source.id,extra:{search:q}})});
+        const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"catalog",sourceId:source.sourceId||"poster",type:source.type,catalogId:source.id,extra:{search:q}})});
         const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.error||"Search request failed.");
-        return (Array.isArray(payload.data?.metas)?payload.data.metas:[]).flatMap((meta:{id?:string;name?:string;description?:string;year?:number;releaseInfo?:string;genres?:string[];imdbRating?:string;poster?:string;background?:string})=>typeof meta.id==="string"&&meta.id?[{id:source.type+"-"+meta.id,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres:[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.background||meta.poster||"",source:source.name||"Configured catalogue"} as MediaItem]:[]);
+        return (Array.isArray(payload.data?.metas)?payload.data.metas:[]).flatMap((meta:{id?:string;name?:string;description?:string;year?:number;releaseInfo?:string;genres?:string[];imdbRating?:string;poster?:string;background?:string})=>typeof meta.id==="string"&&meta.id?[{id:source.type+"-"+meta.id,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres:[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.background||meta.poster||"",source:source.addonName||source.name||"Configured catalogue",sourceId:source.sourceId||"poster"} as MediaItem]:[]);
       }));
       if(!cancelled)setRemoteSearchResults(Array.from(new Map(results.flatMap(result=>result.status==="fulfilled"?result.value:[]).map(item=>[item.id,item])).values()));
     }catch{if(!cancelled)setRemoteSearchResults([]);}finally{if(!cancelled)setRemoteSearchBusy(false);}},350);
