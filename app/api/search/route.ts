@@ -16,22 +16,21 @@ async function searchType(type: "movie" | "series", query: string): Promise<Meta
 export async function GET(request: NextRequest) {
   const query = (request.nextUrl.searchParams.get("q") || "").trim().slice(0, 100);
   if (query.length < 2) return NextResponse.json({ ok: true, results: [] }, { headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" } });
-  const results = await Promise.allSettled([searchType("movie", query), searchType("series", query)]);
-  const metas = results.flatMap(result => result.status === "fulfilled" ? result.value : []);
-  const mapped = metas.map(meta => ({
-    id: `cinemeta-${meta.id}`,
+  const results = await Promise.allSettled([{ type: "movie" as const, promise: searchType("movie", query) }, { type: "series" as const, promise: searchType("series", query) }].map(async entry => ({ type: entry.type, metas: await entry.promise })));
+  const mapped = results.flatMap(result => result.status === "fulfilled" ? result.value.metas.map(meta => ({
+    id: `cinemeta-${result.value.type}-${meta.id}`,
     metaId: meta.id,
     imdbId: meta.id,
     title: meta.name || meta.id,
     overview: meta.description || "",
     year: Number(meta.year || meta.releaseInfo?.slice(0, 4)) || 0,
-    type: "movie" as const,
+    type: result.value.type,
     genres: Array.isArray(meta.genres) ? meta.genres.filter((genre): genre is string => typeof genre === "string") : [],
     rating: Number(meta.imdbRating) || 0,
     poster: meta.poster || "",
     backdrop: meta.background || meta.poster || "",
     source: "Cinemeta metadata",
-    sourceId: "poster"
-  }));
+    sourceId: "cinemeta"
+  })) : []);
   return NextResponse.json({ ok: true, results: mapped }, { headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" } });
 }
