@@ -311,3 +311,118 @@ body{background:radial-gradient(ellipse at 72% -18%,rgba(83,112,151,.13),transpa
 @media(max-width:1000px){.catalog-grid,.catalog-skeletons{grid-template-columns:repeat(4,minmax(0,1fr))}.content{padding-left:26px;padding-right:26px}}
 @media(max-width:760px){.content{padding:16px 16px 28px}.hero{height:360px;border-radius:13px}.hero-content{padding:27px 22px}.hero h1{font-size:43px;letter-spacing:-2px}.hero-kicker{margin-top:42px}.catalog-grid,.catalog-skeletons{grid-template-columns:repeat(2,minmax(0,1fr));gap:19px 12px}.catalog-grid .poster-art{aspect-ratio:2/2.9}.catalog-grid .poster-title{font-size:11px}.catalog-grid .poster-meta{font-size:9px}.catalog-controls{padding:12px 0}.filter-pills{gap:6px}.category-chip{padding:7px 10px}.detail-art{height:200px}.detail-content{padding:0 18px 20px}.detail-content h2{font-size:25px}}
 @media(prefers-reduced-motion:reduce){.catalog-skeleton span{animation:none}}
+
+
+/* Nuvio Mobile web adaptation: native-style surfaces, shelves and floating navigation */
+.nuvio-app{--nuvio-bg:#090b10;--nuvio-surface:#151922;--nuvio-muted:#a1a8b5;min-height:100svh;background:var(--nuvio-bg);color:#f5f6f8;padding-bottom:112px;overflow:hidden;animation:nuvio-app-in .5s ease both}
+.nuvio-header{height:68px;position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,4vw,54px);background:rgba(9,11,16,.72);border-bottom:1px solid rgba(255,255,255,.045);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.nuvio-wordmark{display:flex;align-items:center;gap:10px;border:0;background:none;color:#f5f6f8;font-size:24px;font-weight:760;letter-spacing:-1.3px;cursor:pointer}
+.nuvio-symbol{width:25px;height:25px;display:flex;align-items:center;justify-content:center;gap:2px;transform:skew(-13deg)}
+.nuvio-symbol i{display:block;width:5px;border-radius:5px;background:#e8edf5;box-shadow:0 0 12px rgba(220,232,250,.28)}
+.nuvio-symbol i:nth-child(1){height:12px;opacity:.65}.nuvio-symbol i:nth-child(2){height:21px}.nuvio-symbol i:nth-child(3){height:16px;opacity:.8}
+.nuvio-header-actions{display:flex;align-items:center;gap:14px}
+.nuvio-header-icon{width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:#e3e8f0;cursor:pointer;transition:background .22s,transform .22s}
+.nuvio-header-icon:hover{background:rgba(255,255,255,.09);transform:scale(1.06)}
+.nuvio-profile-button,.nuvio-setting-avatar{width:34px;height:34px;display:grid;place-items:center;border:2px solid rgba(255,255,255,.32);border-radius:50%;color:#fff;font-weight:750;cursor:pointer;box-shadow:0 3px 14px #0008}
+.nuvio-screen{min-height:calc(100svh - 68px);animation:nuvio-screen-enter .42s cubic-bezier(.2,.75,.25,1) both}
+.nuvio-notice{margin:16px clamp(18px,4vw,54px) 0}
+.nuvio-featured{position:relative;isolation:isolate;min-height:clamp(510px,72vw,760px);height:min(78svh,820px);background-size:cover;background-position:center 27%;display:flex;align-items:flex-end;padding:clamp(26px,5vw,72px);overflow:hidden;animation:nuvio-hero-in .75s cubic-bezier(.2,.7,.2,1) both}
+.nuvio-featured:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#090b10 0%,rgba(9,11,16,.72) 18%,transparent 68%),linear-gradient(90deg,rgba(9,11,16,.35),transparent 75%)}
+.nuvio-featured:before{content:"";position:absolute;inset:0;z-index:-2;background:inherit;transform:scale(1.015);animation:nuvio-backdrop-drift 18s ease-in-out infinite alternate}
+.nuvio-featured-content{width:min(650px,100%);padding-bottom:clamp(24px,5vh,62px);animation:nuvio-content-rise .7s .12s both}
+.nuvio-eyebrow{display:flex;align-items:center;gap:9px;color:#d5dbe5;font-size:10px;letter-spacing:2.1px;font-weight:750;margin-bottom:17px}
+.nuvio-eyebrow i{width:7px;height:7px;border-radius:50%;background:#73a9f4;box-shadow:0 0 14px #73a9f4}
+.nuvio-featured-type{font-size:10px;letter-spacing:1.8px;color:#c0c9d8;font-weight:700;margin-bottom:12px}
+.nuvio-featured h1{font-size:clamp(42px,7vw,82px);line-height:.98;letter-spacing:-3.5px;font-weight:780;max-width:760px;margin:0 0 16px;text-wrap:balance;text-shadow:0 4px 28px #0008}
+.nuvio-featured p{max-width:540px;font-size:14px;line-height:1.72;color:#d1d6df;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 2px 12px #000}
+.nuvio-featured-actions{display:flex;align-items:center;gap:11px;margin-top:23px}
+.nuvio-primary-action{height:46px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:9px;background:#f0f3f8;color:#121722;font-size:12px;font-weight:760;cursor:pointer;transition:transform .22s,background .22s,box-shadow .22s;box-shadow:0 8px 26px #0005}
+.nuvio-primary-action:hover{transform:translateY(-2px);background:#fff;box-shadow:0 12px 30px #0007}
+.nuvio-round-action{width:46px;height:46px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:rgba(18,22,30,.48);color:#fff;backdrop-filter:blur(15px);cursor:pointer;transition:transform .22s,background .22s}
+.nuvio-round-action:hover{transform:scale(1.08);background:rgba(255,255,255,.17)}
+.nuvio-hero-pagination{position:absolute;right:clamp(20px,4vw,54px);bottom:48px;display:flex;gap:6px;align-items:center}
+.nuvio-hero-pagination i{width:5px;height:5px;border-radius:8px;background:#ffffff68;transition:width .35s,background .35s}
+.nuvio-hero-pagination i.active{width:22px;background:#fff}
+.nuvio-featured-empty{background:radial-gradient(ellipse at 72% 24%,#26344a 0%,#151c29 34%,#090b10 76%)}
+.nuvio-home-content{padding:12px 0 44px}
+.nuvio-shelf{margin:20px 0 32px;animation:nuvio-content-rise .55s both}
+.nuvio-shelf-heading{display:flex;align-items:baseline;justify-content:space-between;padding:0 clamp(18px,4vw,54px);margin-bottom:13px}
+.nuvio-shelf-heading h2{margin:0;color:#f2f4f8;font-size:clamp(17px,2vw,21px);font-weight:720;letter-spacing:-.55px}
+.nuvio-shelf-heading span{font-size:10px;color:#858e9d}
+.nuvio-shelf-track{display:flex;gap:13px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:2px clamp(18px,4vw,54px) 15px;scrollbar-width:none}
+.nuvio-shelf-track::-webkit-scrollbar{display:none}
+.nuvio-shelf-track .poster-card{flex:0 0 clamp(118px,14vw,174px);width:clamp(118px,14vw,174px);scroll-snap-align:start}
+.nuvio-shelf-track .poster-art{aspect-ratio:2/3;border-radius:9px;background-color:#1b202a;border:1px solid rgba(255,255,255,.055);box-shadow:0 7px 20px #0005;transition:transform .28s cubic-bezier(.2,.7,.2,1),box-shadow .28s,border-color .28s}
+.nuvio-shelf-track .poster-card:hover .poster-art{transform:translateY(-5px) scale(1.018);box-shadow:0 14px 30px #0009;border-color:#ffffff45}
+.nuvio-shelf-track .poster-title{font-size:11px;font-weight:650;color:#e7eaf0;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nuvio-shelf-track .poster-meta{font-size:9px;color:#8791a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nuvio-shelf-track .poster-badge{font-size:7px;letter-spacing:1px}
+.nuvio-shelf-track .poster-hover{opacity:0;transition:opacity .22s}
+.nuvio-shelf-track .poster-card:hover .poster-hover{opacity:1}
+.nuvio-browse-screen{max-width:1500px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(18px,4vw,54px) 60px;animation:nuvio-content-rise .42s both}
+.nuvio-page-title>span{font-size:9px;letter-spacing:2.2px;color:#8f9bad;font-weight:760}
+.nuvio-page-title h1{font-size:clamp(34px,5vw,52px);letter-spacing:-2px;margin:8px 0 7px}
+.nuvio-page-title p{font-size:13px;color:#9aa4b3;margin:0 0 25px}
+.nuvio-search-box{height:54px;max-width:760px;display:flex;align-items:center;gap:12px;padding:0 17px;border:1px solid rgba(255,255,255,.13);border-radius:12px;background:#151922;color:#a9b3c1;box-shadow:0 8px 30px #0003;transition:border-color .2s,box-shadow .2s}
+.nuvio-search-box:focus-within{border-color:#7da9e7;box-shadow:0 0 0 3px #7da9e71c}
+.nuvio-search-box input{flex:1;min-width:0;height:100%;border:0;outline:0;background:transparent;color:#f5f6f8;font-size:13px}
+.nuvio-search-box input::placeholder{color:#7f8998}
+.nuvio-search-box button{border:0;background:transparent;color:#aab3c0;cursor:pointer}
+.nuvio-filter-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:22px 0}
+.nuvio-filter-row .filter-pills{display:flex;gap:7px}
+.nuvio-filter-row .category-chip{border-radius:22px;padding:9px 16px}
+.nuvio-genre-select{height:36px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#9da7b5;background:#151922}
+.nuvio-genre-select select{border:0;outline:0;background:transparent;color:#e4e8ee;font-size:11px}
+.nuvio-genre-select option{background:#151922}
+.nuvio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:24px 16px}
+.nuvio-grid .poster-card{min-width:0;display:grid;gap:7px;text-align:left}
+.nuvio-grid .poster-art{aspect-ratio:2/3;border-radius:9px;background-color:#1a202a;border:1px solid #ffffff0b;box-shadow:0 7px 22px #0005;transition:transform .25s,box-shadow .25s,border-color .25s}
+.nuvio-grid .poster-card:hover .poster-art{transform:translateY(-4px);box-shadow:0 14px 30px #0009;border-color:#ffffff40}
+.nuvio-grid .poster-title{font-size:11px;font-weight:650;color:#e8ebf0;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nuvio-grid .poster-meta{font-size:9px;color:#858f9e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nuvio-grid .empty-state{grid-column:1/-1}
+.nuvio-library-tabs{display:flex;gap:22px;border-bottom:1px solid #ffffff16;margin:15px 0 22px}
+.nuvio-library-tabs button{display:flex;align-items:center;gap:7px;padding:12px 2px;margin-bottom:-1px;border:0;border-bottom:2px solid transparent;background:transparent;color:#929cab;font-size:12px;cursor:pointer}
+.nuvio-library-tabs button.selected{border-color:#8ab5f3;color:#f0f3f8}
+.nuvio-library-tabs b{font-size:9px;color:#9dbce5}
+.nuvio-empty-library{grid-column:1/-1;min-height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;color:#9ba5b3;text-align:center;border:1px dashed #ffffff20;border-radius:15px;background:#ffffff04}
+.nuvio-empty-library strong{font-size:14px;color:#e5e9ef}
+.nuvio-empty-library span{max-width:340px;font-size:11px;line-height:1.6;color:#8994a4}
+.nuvio-loading{display:flex;align-items:center;gap:10px;padding:30px 0;color:#9aa6b7;font-size:11px}
+.nuvio-loading span{width:16px;height:16px;border:2px solid #ffffff25;border-top-color:#91b9ef;border-radius:50%;animation:nuvio-spin .8s linear infinite}
+.nuvio-settings-screen{max-width:850px}
+.nuvio-setting-row{width:100%;min-height:74px;display:flex;align-items:center;gap:14px;padding:13px 15px;margin:9px 0;border:1px solid #ffffff10;border-radius:13px;background:#131821;color:#eef1f5;text-align:left;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.nuvio-setting-row:hover{background:#1a202b;border-color:#ffffff26;transform:translateY(-1px)}
+.nuvio-setting-row>span:nth-child(2){display:grid;gap:5px;flex:1}
+.nuvio-setting-row strong{font-size:12px}.nuvio-setting-row small{font-size:10px;color:#8f9aaa}
+.nuvio-setting-row.static{cursor:default}.nuvio-setting-row.static:hover{transform:none}
+.nuvio-setting-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#ffffff0c;color:#b6c6dc}
+.nuvio-setting-status{font-size:10px;color:#88b5ed}
+.nuvio-about{display:flex;align-items:center;gap:9px;margin-top:34px;padding:24px 4px;color:#f0f2f6}
+.nuvio-about-mark{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:#dce8f7;color:#101722;font-weight:850;font-size:19px}
+.nuvio-about strong{font-size:13px}.nuvio-about small{font-size:10px;color:#7f8b9a}
+.nuvio-bottom-nav{position:fixed;z-index:80;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(440px,calc(100% - 28px));height:68px;display:flex;align-items:center;justify-content:space-around;gap:4px;padding:6px 10px;border:1px solid rgba(255,255,255,.13);border-radius:24px;background:rgba(24,28,37,.78);box-shadow:0 14px 55px #000a,inset 0 1px #ffffff12;backdrop-filter:blur(28px) saturate(1.5);-webkit-backdrop-filter:blur(28px) saturate(1.5);animation:nuvio-nav-rise .55s .18s both}
+.nuvio-nav-item{position:relative;min-width:64px;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:17px;background:transparent;color:#8f98a8;font-size:9px;font-weight:550;cursor:pointer;transition:color .25s,background .25s,transform .25s}
+.nuvio-nav-icon{height:23px;display:grid;place-items:center;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.nuvio-nav-item.active{color:#f4f7fb;background:rgba(132,171,226,.15)}
+.nuvio-nav-item.active .nuvio-nav-icon{transform:translateY(-1px) scale(1.07);color:#a8caff}
+.nuvio-nav-item:active{transform:scale(.92)}
+.nuvio-app .modal-backdrop{z-index:100}
+.nuvio-app .detail-panel{border-radius:18px;overflow:hidden}
+.nuvio-app .poster-card{border:0;background:transparent;color:inherit;padding:0;cursor:pointer}
+.nuvio-app .poster-art{position:relative;display:block;width:100%;overflow:hidden;background-size:cover;background-position:center;background-repeat:no-repeat}
+.nuvio-app .poster-art:after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(0deg,rgba(0,0,0,.58),transparent 38%);pointer-events:none}
+.nuvio-app .poster-badge{position:absolute;z-index:1;top:8px;left:8px;padding:4px 6px;border:1px solid #ffffff24;border-radius:5px;background:#090b10b8;color:#e8edf5;font-size:7px;letter-spacing:.8px}
+.nuvio-app .poster-hover{position:absolute;z-index:2;inset:0;display:grid;place-items:center;color:#fff}
+.nuvio-app .poster-title,.nuvio-app .poster-meta{display:block}
+@keyframes nuvio-app-in{from{opacity:0}to{opacity:1}}
+@keyframes nuvio-screen-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes nuvio-hero-in{from{opacity:.6;transform:scale(1.012)}to{opacity:1;transform:scale(1)}}
+@keyframes nuvio-content-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes nuvio-nav-rise{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes nuvio-backdrop-drift{from{transform:scale(1.015) translate3d(0,0,0)}to{transform:scale(1.09) translate3d(-.8%,.5%,0)}}
+@keyframes nuvio-spin{to{transform:rotate(360deg)}}
+@media(min-width:1100px){.nuvio-featured{min-height:620px}.nuvio-shelf-track .poster-card{flex-basis:clamp(145px,12vw,190px);width:clamp(145px,12vw,190px)}}
+@media(max-width:700px){.nuvio-app{padding-bottom:104px}.nuvio-header{height:58px;padding:0 17px}.nuvio-wordmark{font-size:22px}.nuvio-screen{min-height:calc(100svh - 58px)}.nuvio-featured{height:76svh;min-height:500px;max-height:690px;padding:22px 19px;background-position:55% center}.nuvio-featured-content{padding-bottom:42px}.nuvio-featured h1{font-size:clamp(38px,11vw,58px);letter-spacing:-2.2px}.nuvio-featured p{font-size:12px;max-width:95%;-webkit-line-clamp:3}.nuvio-featured-type{font-size:9px}.nuvio-hero-pagination{right:20px;bottom:25px}.nuvio-home-content{padding-top:4px}.nuvio-shelf{margin:17px 0 25px}.nuvio-shelf-heading{padding:0 17px;margin-bottom:11px}.nuvio-shelf-track{gap:11px;padding:1px 17px 12px}.nuvio-shelf-track .poster-card{flex:0 0 116px;width:116px}.nuvio-shelf-track .poster-title{font-size:10px}.nuvio-shelf-track .poster-meta{font-size:8px}.nuvio-browse-screen{padding:28px 17px 48px}.nuvio-page-title h1{font-size:37px}.nuvio-search-box{height:50px}.nuvio-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:19px 10px}.nuvio-grid .poster-title{font-size:10px}.nuvio-grid .poster-meta{font-size:8px}.nuvio-filter-row{align-items:flex-start}.nuvio-filter-row .filter-pills{width:100%}.nuvio-genre-select{width:100%}.nuvio-genre-select select{flex:1}.nuvio-bottom-nav{bottom:max(10px,env(safe-area-inset-bottom));height:64px;border-radius:22px;width:min(390px,calc(100% - 26px));padding:5px 8px}.nuvio-nav-item{flex:1;min-width:0;height:52px;font-size:8px}.nuvio-about{flex-wrap:wrap}.nuvio-about small{flex-basis:100%;padding-left:37px}}
+@media(max-width:380px){.nuvio-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 8px}.nuvio-featured h1{font-size:36px}.nuvio-shelf-track .poster-card{flex-basis:108px;width:108px}}
+@media(prefers-reduced-motion:reduce){.nuvio-app *,.nuvio-app *:before,.nuvio-app *:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
