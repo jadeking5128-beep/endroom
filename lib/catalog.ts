@@ -11,6 +11,8 @@ export type MediaItem = {
   poster: string;
   backdrop: string;
   source: string;
+  streamUrl?: string;
+  subtitles?: { src: string; lang: string; label: string }[];
 };
 
 export const starterCatalog: MediaItem[] = [
@@ -38,5 +40,8 @@ export function normalizeImportedItem(value: unknown, sourceName: string): Media
   const poster = typeof item.poster === "string" && /^photo-[\w-]+$/.test(item.poster) ? item.poster : "photo-1489599849927-2ee91cede3ba";
   const year = typeof item.year === "number" && item.year >= 1888 && item.year <= 2100 ? item.year : new Date().getFullYear();
   const rating = typeof item.rating === "number" ? Math.max(0, Math.min(10, item.rating)) : 0;
-  return { id: "import-" + title.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Math.random().toString(36).slice(2,7), title, overview: typeof item.overview === "string" ? item.overview.slice(0, 500) : "Imported from your local catalogue.", year, type, genres, rating, poster, backdrop: poster, source: sourceName };
+  const safeHttps = (value: unknown): string | undefined => { if (typeof value !== "string") return undefined; try { const url = new URL(value); return url.protocol === "https:" ? url.toString() : undefined; } catch { return undefined; } };
+  const streamUrl = safeHttps(item.streamUrl);
+  const subtitles = Array.isArray(item.subtitles) ? item.subtitles.slice(0, 8).flatMap((track) => { if (!track || typeof track !== "object") return []; const row = track as Record<string, unknown>; const src = safeHttps(row.src); if (!src) return []; return [{ src, lang: typeof row.lang === "string" ? row.lang.slice(0, 12) : "en", label: typeof row.label === "string" ? row.label.slice(0, 40) : "Subtitle" }]; }) : undefined;
+  return { id: "import-" + title.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Math.random().toString(36).slice(2,7), title, overview: typeof item.overview === "string" ? item.overview.slice(0, 500) : "Imported from your local catalogue.", year, type, genres, rating, poster, backdrop: poster, source: sourceName, ...(streamUrl ? { streamUrl } : {}), ...(subtitles?.length ? { subtitles } : {}) };
 }
