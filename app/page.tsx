@@ -4,7 +4,7 @@ import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Bookmark, Check, ChevronRight, Compass, Film, Grid2X2, Home, Library, ListFilter, Plus, Search, Settings2, Sparkles, Tv, Upload, X, Star, SlidersHorizontal, Play, UserRound, Trash2 } from "lucide-react";
 import { MediaItem, normalizeImportedItem, starterCatalog } from "@/lib/catalog";
 import MediaPlayer from "@/components/MediaPlayer";
-import JellyfinPanel from "@/components/JellyfinPanel";
+import AddonPanel from "@/components/AddonPanel";
 
 type Source = { id: string; name: string; count: number; addedAt: number };
 type Profile = { id: string; name: string; color: string; createdAt: number };
@@ -34,7 +34,7 @@ export default function HomePage() {
   const [catalog,setCatalog]=useState<MediaItem[]>(starterCatalog);
   const [sources,setSources]=useState<Source[]>([]);
   const [sourceOpen,setSourceOpen]=useState(false);
-  const [jellyfinOpen,setJellyfinOpen]=useState(false);
+  const [addonOpen,setAddonOpen]=useState(false);
   const [selected,setSelected]=useState<MediaItem|null>(null);
   const [playerItem,setPlayerItem]=useState<MediaItem|null>(null);
   const [notice,setNotice]=useState("");
@@ -107,7 +107,7 @@ export default function HomePage() {
     </aside>
     <section className="main-column">
       <header className="topbar"><div className="mobile-brand"><span className="brand-mark"><span/></span><strong>nuvio</strong></div><div className="breadcrumb"><span>YOUR SPACE</span><ChevronRight size={13}/><strong>{active}</strong></div>
-        <div className="top-actions"><button className="secondary-button jellyfin-top-button" onClick={()=>setJellyfinOpen(true)}><Tv size={15}/> Jellyfin</button>{showSearch?<div className="search-field"><Search size={16}/><input autoFocus placeholder="Search titles, genres..." value={query} onChange={e=>setQuery(e.target.value)}/><button onClick={()=>{setShowSearch(false);setQuery("");}} aria-label="Close search"><X size={16}/></button></div>:<button className="icon-button" aria-label="Search" onClick={()=>setShowSearch(true)}><Search size={19}/></button>}<button className="icon-button filter-button" aria-label="Manage sources" onClick={()=>setSourceOpen(true)}><SlidersHorizontal size={18}/></button><button className="top-avatar profile-trigger" aria-label="Manage profiles" onClick={()=>setProfileOpen(true)} style={{background:currentProfile.color}}>{currentProfile.name.slice(0,1).toUpperCase()}</button></div>
+        <div className="top-actions"><button className="secondary-button addon-top-button" onClick={()=>setAddonOpen(true)}><Play size={15}/> Add-on library</button>{showSearch?<div className="search-field"><Search size={16}/><input autoFocus placeholder="Search titles, genres..." value={query} onChange={e=>setQuery(e.target.value)}/><button onClick={()=>{setShowSearch(false);setQuery("");}} aria-label="Close search"><X size={16}/></button></div>:<button className="icon-button" aria-label="Search" onClick={()=>setShowSearch(true)}><Search size={19}/></button>}<button className="icon-button filter-button" aria-label="Manage sources" onClick={()=>setSourceOpen(true)}><SlidersHorizontal size={18}/></button><button className="top-avatar profile-trigger" aria-label="Manage profiles" onClick={()=>setProfileOpen(true)} style={{background:currentProfile.color}}>{currentProfile.name.slice(0,1).toUpperCase()}</button></div>
       </header>
       <div className="content">
         {notice&&<div className="notice"><Sparkles size={15}/><span>{notice}</span><button onClick={()=>setNotice("")} aria-label="Dismiss"><X size={15}/></button></div>}
@@ -125,6 +125,6 @@ export default function HomePage() {
     {selected&&<div className="modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setSelected(null);}}><section className="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detail-title"><div className="detail-art" style={{backgroundImage:`linear-gradient(0deg,#101216,transparent 75%),url("${image(selected.poster)}")`}}/><button className="detail-close icon-button" onClick={()=>setSelected(null)} aria-label="Close details"><X size={18}/></button><div className="detail-content"><div className="section-overline">{selected.type.toUpperCase()} · {selected.year}</div><h2 id="detail-title">{selected.title}</h2><div className="detail-meta"><span><Star size={14} fill="currentColor"/> {selected.rating?selected.rating.toFixed(1):"Not rated"}</span><span>{selected.genres.join(" · ")}</span><span>{selected.runtime|| (selected.seasons?`${selected.seasons} seasons`:"")}</span></div><p>{selected.overview}</p><div className="detail-source">Metadata source: {selected.source}</div><div className="detail-actions"><button className="secondary-button" onClick={()=>toggleWatchlist(selected)}><Bookmark size={15} fill={savedIds.includes(selected.id)?"currentColor":"none"}/>{savedIds.includes(selected.id)?"In My List":"Add to My List"}</button>{selected.streamUrl ? <button className="primary-button detail-play" onClick={()=>{setPlayerItem(selected);setSelected(null);}}><Play size={15} fill="currentColor"/> Play with your authorised source</button> : <div className="detail-placeholder">No playback source attached. Add an HTTPS streamUrl to a catalogue entry you own or are licensed to access.</div>}</div>
         {selected.subtitles?.length ? <div className="detail-source">{selected.subtitles.length} subtitle track(s) available</div> : null}</div></section></div>}
     {playerItem&&<MediaPlayer item={playerItem} onClose={()=>setPlayerItem(null)}/>}
-    {jellyfinOpen&&<JellyfinPanel onClose={()=>setJellyfinOpen(false)} onPlay={item=>{setJellyfinOpen(false);setPlayerItem(item);}}/>}
+    {addonOpen&&<AddonPanel onClose={()=>setAddonOpen(false)} onPlay={item=>{setAddonOpen(false);setPlayerItem(item);}}/>}
   </main>;
 }
