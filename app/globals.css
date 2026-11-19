@@ -255,3 +255,39 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .detail-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:18px}
 .detail-actions .detail-play{margin-top:0}
 @media(max-width:520px){.profile-create{flex-direction:column}.profile-create .primary-button{justify-content:center}.detail-actions{align-items:stretch;flex-direction:column}.detail-actions>*{justify-content:center}}
+
+
+/* Nuvio add-on catalogue and local playback source picker */
+.addon-top-button{height:34px;padding:0 11px;background:rgba(82,145,220,.12);border-color:rgba(105,165,239,.25);color:#b9d6ff}
+.addon-panel{width:min(1000px,100%);max-height:min(92vh,900px);overflow:auto;background:#11151b;border:1px solid rgba(255,255,255,.13);border-radius:18px;padding:22px;box-shadow:0 28px 100px #000b}
+.addon-heading{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.addon-heading h2{font-size:23px;margin:5px 0 6px;letter-spacing:-.6px}
+.addon-heading p{font-size:11px;color:#8995a5;line-height:1.6;margin:0;max-width:650px}
+.addon-toolbar{display:flex;align-items:center;gap:10px;margin:20px 0 16px;flex-wrap:wrap}
+.addon-toolbar select{height:34px;max-width:220px;min-width:150px;border:1px solid var(--line);border-radius:8px;background:#0c1015;color:#dbe3ed;padding:0 10px;font-size:10px}
+.addon-search{height:34px;display:flex;align-items:center;gap:7px;padding:0 9px;border:1px solid var(--line);border-radius:8px;background:#0c1015;flex:1;min-width:180px;color:#8c9bad}
+.addon-search input{min-width:0;flex:1;background:transparent;border:0;outline:0;color:#edf2f8;font-size:10px}
+.addon-search button{border:0;background:transparent;color:#a9c9f4;font-size:10px;cursor:pointer}
+.addon-catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:15px}
+.addon-card{display:grid;gap:6px;text-align:left;min-width:0;border:0;padding:0;background:transparent;color:#edf2f8;cursor:pointer}
+.addon-card>span{display:block;aspect-ratio:2/3;border-radius:9px;overflow:hidden;background:#202630}
+.addon-card img{width:100%;height:100%;object-fit:cover;display:block}
+.addon-card strong{font-size:10px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.addon-card small{font-size:9px;color:#8491a1}
+.addon-poster-fallback{height:100%;display:grid;place-items:center;color:#83aee8;font-size:32px;font-weight:700}
+.addon-empty{grid-column:1/-1;padding:34px 15px;text-align:center;color:#8793a2;font-size:11px;border:1px dashed var(--line);border-radius:10px}
+.addon-loading{display:flex;align-items:center;justify-content:center;gap:9px;padding:16px;color:#a9c8ef;font-size:10px}
+.addon-error{margin-top:12px}
+.addon-stream-view{margin-top:18px}
+.addon-selected{padding:17px 0 12px;display:grid;gap:6px}
+.addon-selected strong{font-size:18px}
+.addon-selected span{font-size:10px;color:#8e9bab}
+.addon-selected p{font-size:11px;line-height:1.6;color:#aab4c1;margin:2px 0}
+.addon-stream-list{display:grid;gap:8px}
+.addon-stream{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.025)}
+.addon-stream>div{display:grid;gap:5px;flex:1;min-width:0}
+.addon-stream strong{font-size:11px;color:#e7edf6}
+.addon-stream span{font-size:9px;color:#8995a5;overflow-wrap:anywhere}
+.addon-stream .primary-button{flex-shrink:0}
+.addon-footnote{display:block;margin-top:18px;padding-top:13px;border-top:1px solid var(--line);font-size:9px;line-height:1.7;color:#788594}
+@media(max-width:760px){.addon-panel{width:100%;height:100%;max-height:100%;border-radius:0;padding:17px}.addon-toolbar{align-items:stretch}.addon-toolbar select,.addon-search{max-width:none;width:100%;flex-basis:100%}.addon-catalog-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.addon-card strong{font-size:9px}.addon-stream{align-items:flex-start}.addon-stream .primary-button{padding:0 9px}}
