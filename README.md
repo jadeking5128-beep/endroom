@@ -97,5 +97,7 @@ npm run build
 4. Accounts, profiles, watchlist and synchronisation
 5. Accessibility, performance, security, testing and deployment
 
-## Reference and licensing
-NuvioMobile is published under the GNU General Public License v3.0. This project references its public feature set and broad interaction model; it does not copy NuvioMobile's Kotlin/Compose implementation. See the [upstream repository](https://github.com/NuvioMedia/NuvioMobile) and its [GPL-3.0 license](https://github.com/NuvioMedia/NuvioMobile/blob/cmp-rewrite/LICENSE).
+## Nuvio architecture and licensing
+EndRoom adapts the Nuvio Mobile experience for the web and follows the NuvioTV add-on protocol for catalogue and metadata integration. The frontend is a Next.js web implementation; Android-specific Kotlin services are not run on Vercel and must be implemented with web-compatible server routes. Only direct, provider-authorised browser playback is supported. Torrent resolution and provider-specific authentication bypasses are not part of this web port.
+
+This repository is distributed under the GNU General Public License v3.0. See [LICENSE](./LICENSE). Upstream references: [NuvioMobile](https://github.com/NuvioMedia/NuvioMobile) and [NuvioTV](https://github.com/NuvioMedia/NuvioTV), both distributed under GPL-3.0. This is an independent community web adaptation and is not an official NuvioMedia product or affiliated with NuvioMedia.
