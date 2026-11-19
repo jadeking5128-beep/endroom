@@ -16,3 +16,9 @@
 .nuvio-episode-copy small{font-size:9px;color:#8995a5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nuvio-episode-row>svg{flex:0 0 auto;color:#a9c9f3}
 @media(max-width:700px){.nuvio-episode-row{padding:11px 10px;gap:9px}.nuvio-episode-number{flex-basis:64px;font-size:8px}.nuvio-episode-copy strong{font-size:10px}.nuvio-episode-copy small{font-size:8px}}
+
+.nuvio-sync-row{align-items:flex-start!important}
+.nuvio-sync-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
+.nuvio-sync-actions button{border:1px solid rgba(255,255,255,.13);border-radius:8px;background:#1a2330;color:#c9dcf6;padding:8px 10px;font-size:9px;font-weight:700;cursor:pointer}
+.nuvio-sync-actions button:hover{background:#26374c;border-color:#ffffff30}
+@media(max-width:700px){.nuvio-sync-row{flex-wrap:wrap}.nuvio-sync-actions{width:100%;padding-left:52px;justify-content:flex-start}.nuvio-sync-actions button{flex:1}}
