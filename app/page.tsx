@@ -89,19 +89,21 @@ export default function HomePage() {
     const q=query.trim();
     if(active!=="Search"||q.length<2){setRemoteSearchResults(null);setRemoteSearchBusy(false);return;}
     const supported=catalogSources.filter(source=>source.extraSupported?.includes("search")||source.extra?.some(item=>typeof item==="string"?item==="search":item.name==="search"));
-    if(!supported.length){setRemoteSearchResults(null);return;}
     let cancelled=false;
     setRemoteSearchResults(null);
     const timer=setTimeout(async()=>{setRemoteSearchBusy(true);try{
-      const results=await Promise.allSettled(supported.map(async source=>{
+      const [globalPayload,results]=await Promise.all([
+        fetch("/api/search?q="+encodeURIComponent(q),{cache:"force-cache"}).then(response=>response.ok?response.json():{results:[]}).catch(()=>({results:[]})),
+        Promise.allSettled(supported.map(async source=>{
         const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"catalog",sourceId:source.sourceId||"poster",type:source.type,catalogId:source.id,extra:{search:q}})});
         const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.error||"Search request failed.");
         return (Array.isArray(payload.data?.metas)?payload.data.metas:[]).flatMap((meta:{id?:string;name?:string;description?:string;year?:number;releaseInfo?:string;genres?:string[];imdbRating?:string;poster?:string;background?:string})=>typeof meta.id==="string"&&meta.id?[{id:(source.sourceId||"poster")+"-"+source.type+"-"+meta.id,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres:[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.background||meta.poster||"",source:source.addonName||source.name||"Configured catalogue",sourceId:source.sourceId||"poster"} as MediaItem]:[]);
-      }));
-      if(!cancelled){const combined=[...catalog.filter(item=>[item.title,item.overview,...item.genres].join(" ").toLowerCase().includes(q.toLowerCase())),...results.flatMap(result=>result.status==="fulfilled"?result.value:[])];setRemoteSearchResults(Array.from(new Map(combined.map(item=>[item.id,item])).values()));}
+        }))
+      ]);
+      if(!cancelled){const combined=[...catalog.filter(item=>[item.title,item.overview,...item.genres].join(" ").toLowerCase().includes(q.toLowerCase())),...(Array.isArray(globalPayload.results)?globalPayload.results:[]),...results.flatMap(result=>result.status==="fulfilled"?result.value:[])];setRemoteSearchResults(Array.from(new Map(combined.map(item=>[item.id,item])).values()));}
     }catch{if(!cancelled)setRemoteSearchResults([]);}finally{if(!cancelled)setRemoteSearchBusy(false);}},350);
     return()=>{cancelled=true;clearTimeout(timer);};
-  },[query,active,catalogSources]);
+  },[query,active,catalogSources,catalog]);
 
   const currentProfile=profiles.find(p=>p.id===profileId)||defaultProfile;
   const savedIds=watchlists[profileId]||[];
