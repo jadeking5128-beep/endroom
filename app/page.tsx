@@ -34,6 +34,9 @@ export default function HomePage() {
   const [remoteSearchResults,setRemoteSearchResults]=useState<MediaItem[]|null>(null);
   const [remoteSearchBusy,setRemoteSearchBusy]=useState(false);
   const [catalogBusy,setCatalogBusy]=useState(true);
+  const [catalogSkip,setCatalogSkip]=useState(0);
+  const [catalogMoreBusy,setCatalogMoreBusy]=useState(false);
+  const [catalogHasMore,setCatalogHasMore]=useState(true);
   const [selected,setSelected]=useState<MediaItem|null>(null);
   const [detailBusy,setDetailBusy]=useState(false);
   const [playerItem,setPlayerItem]=useState<MediaItem|null>(null);
@@ -129,6 +132,27 @@ export default function HomePage() {
     }catch(error){setStreamError(error instanceof Error?error.message:"Source lookup failed.");}
     finally{setStreamBusy(false);}
   };
+  const loadMoreCatalog=async()=>{
+    if(catalogMoreBusy||!catalogHasMore||!catalogSources.length)return;
+    setCatalogMoreBusy(true);
+    const nextSkip=catalogSkip+100;
+    try{
+      const pages=await Promise.allSettled(catalogSources.map(async source=>{
+        const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"catalog",sourceId:source.sourceId||"poster",type:source.type,catalogId:source.id,extra:{skip:String(nextSkip)}})});
+        const payload=await response.json();
+        if(!response.ok||!payload.ok)throw new Error(payload.error||"Could not load another catalogue page.");
+        return (Array.isArray(payload.data?.metas)?payload.data.metas:[]).flatMap((meta:{id?:string;name?:string;description?:string;year?:number;releaseInfo?:string;genres?:string[];imdbRating?:string;poster?:string;background?:string})=>typeof meta.id==="string"&&meta.id?[{id:(source.sourceId||"poster")+"-"+source.type+"-"+meta.id,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres:[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.background||meta.poster||"",source:source.addonName||source.name||"Configured catalogue",sourceId:source.sourceId||"poster"} as MediaItem]:[]);
+      }));
+      const incoming=pages.flatMap(page=>page.status==="fulfilled"?page.value:[]);
+      let added=0;
+      setCatalog(current=>{const merged=new Map(current.map(item=>[item.id,item]));for(const item of incoming)if(!merged.has(item.id)){merged.set(item.id,item);added++;}return Array.from(merged.values());});
+      setCatalogSkip(nextSkip);
+      if(!added)setCatalogHasMore(false);
+      else setNotice(`Loaded ${added} more titles.`);
+    }catch{setNotice("Could not load the next catalogue page. Try again later.");}
+    finally{setCatalogMoreBusy(false);}
+  };
+
   const selectNav=(label:string)=>{setActive(label);setShowSearch(label==="Search");setType("all");setGenre("all");if(label!=="Search")setQuery("");};
 
 
@@ -196,6 +220,7 @@ export default function HomePage() {
           {seriesItems.length>0&&shelf("Popular series",seriesItems)}
           {animeItems.length>0&&shelf("Anime",animeItems)}
           {catalog.length>0&&shelf("Recently added",catalog.slice().reverse())}
+          {catalog.length>0&&catalogHasMore&&<div className="nuvio-load-more-wrap"><button className="nuvio-load-more" onClick={()=>void loadMoreCatalog()} disabled={catalogMoreBusy}>{catalogMoreBusy?"Loading more titles…":"Load more titles"}</button></div>}
           {!catalogBusy&&!catalog.length&&<div className="nuvio-empty-library"><Film size={25}/><strong>Your catalogue is empty</strong><span>{notice||"Titles from your configured manifest will appear here."}</span></div>}
         </div>
       </>}
