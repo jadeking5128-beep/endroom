@@ -1,5 +1,6 @@
 export type MediaItem = {
   id: string;
+  metaId?: string;
   title: string;
   overview: string;
   year: number;
