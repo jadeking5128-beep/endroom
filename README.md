@@ -70,7 +70,7 @@ Add `streamUrl`, optional `subtitles`, and (only when your provider requires it)
 Supported DRM key systems in the current configuration are `com.widevine.alpha` and `com.microsoft.playready`. A working DRM stream still requires a compatible browser/device, a valid provider-issued license server, correct CORS and response headers, and any required account entitlement. This does not provide DRM keys, bypass licensing, or make protected content accessible without the provider's authorisation. FairPlay and certificate-based configurations are not included in this baseline.
 
 HLS and DASH support depends on browser Media Source Extensions and codec support. Some providers require signed URLs, request headers, cookies, or custom license challenges; those provider-specific authentication flows are not guessed or bypassed here. External subtitle files should be WebVTT (`.vtt`) and allow cross-origin requests where hosted separately. Playback progress remains local to this browser and device.
-## Development
+## Jellyfin integration\n\n- Connect to a user-managed Jellyfin server with its server URL and Jellyfin account.\n- Browse libraries and search movie/series items through the Jellyfin API.\n- Request playback information from Jellyfin and use its direct, remuxed, or HLS-transcoded stream URL.\n- Poster images are loaded from the connected Jellyfin server.\n- The Jellyfin session token is stored in browser local storage for convenience; disconnect to clear it. Use HTTPS and only connect to servers you trust.\n- The Jellyfin server must allow this web app origin through its CORS/network configuration. A server on `localhost` is only reachable from the same device; remote devices need a reachable LAN or HTTPS server address.\n- Jellyfin can transcode compatible media and solve many codec/container/browser compatibility problems. It does not decrypt third-party DRM-protected content or bypass provider licences.\n\n## Development
 ```bash
 npm install
 npm run dev
@@ -81,7 +81,7 @@ npm run build
 ## Roadmap
 1. Foundation and responsive shell
 2. Discovery, catalogues, metadata and source management
-3. Playback, adaptive streaming, subtitles and authorised DRM configuration
+3. Playback, adaptive streaming, subtitles, and Jellyfin server integration
 4. Accounts, profiles, watchlist and synchronisation
 5. Accessibility, performance, security, testing and deployment
 
