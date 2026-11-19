@@ -43,7 +43,7 @@ export default function AddonPanel({ onClose, onPlay }: Props) {
       const data = await api() as Manifest;
       setManifest(data);
       const first = data.catalogs?.find(c => ["movie", "series"].includes(c.type));
-      if (first) { setCatalogId(first.id); setType(mediaType(first.type)); }
+      if (first) { setCatalogId(first.id); setType(mediaType(first.type)); await loadCatalog(first.id, mediaType(first.type)); }
       else setError("The add-on manifest has no movie or series catalogues.");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not connect to the configured add-on."); }
     finally { setBusy(false); }
