@@ -125,10 +125,17 @@ export default function HomePage() {
     if(!item.metaId){setStreamError("This title has no metadata ID for source lookup.");return;}
     setStreamBusy(true);setStreamError("");setStreamOptions([]);
     try{
-      const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"streams",sourceId:item.sourceId||"poster",type:item.type==="anime"?"series":item.type,id:item.metaId})});
-      const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.error||"Could not load available sources.");
-      setStreamOptions(Array.isArray(payload.data?.streams)?payload.data.streams:[]);
-      if(!payload.data?.streams?.length)setStreamError("No direct browser-compatible streams were returned by this source.");
+      const mediaType=item.type==="anime"?"series":item.type;
+      const sources=item.sourceId==="cinemeta"?catalogSources.filter(source=>source.type===mediaType):[{sourceId:item.sourceId||"poster",type:mediaType,id:""}];
+      const outcomes=await Promise.allSettled(sources.map(async source=>{
+        const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"streams",sourceId:source.sourceId||"poster",type:mediaType,id:item.metaId})});
+        const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.error||"Could not load available sources.");
+        return Array.isArray(payload.data?.streams)?payload.data.streams:[];
+      }));
+      const streams=outcomes.flatMap(result=>result.status==="fulfilled"?result.value:[]);
+      const unique=Array.from(new Map(streams.map(stream=>[stream.url,stream])).values());
+      setStreamOptions(unique);
+      if(!unique.length)setStreamError("No compatible playback sources were returned by the configured catalogues.");
     }catch(error){setStreamError(error instanceof Error?error.message:"Source lookup failed.");}
     finally{setStreamBusy(false);}
   };
