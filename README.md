@@ -70,7 +70,17 @@ Add `streamUrl`, optional `subtitles`, and (only when your provider requires it)
 Supported DRM key systems in the current configuration are `com.widevine.alpha` and `com.microsoft.playready`. A working DRM stream still requires a compatible browser/device, a valid provider-issued license server, correct CORS and response headers, and any required account entitlement. This does not provide DRM keys, bypass licensing, or make protected content accessible without the provider's authorisation. FairPlay and certificate-based configurations are not included in this baseline.
 
 HLS and DASH support depends on browser Media Source Extensions and codec support. Some providers require signed URLs, request headers, cookies, or custom license challenges; those provider-specific authentication flows are not guessed or bypassed here. External subtitle files should be WebVTT (`.vtt`) and allow cross-origin requests where hosted separately. Playback progress remains local to this browser and device.
-## Jellyfin integration\n\n- Connect to a user-managed Jellyfin server with its server URL and Jellyfin account.\n- Browse libraries and search movie/series items through the Jellyfin API.\n- Request playback information from Jellyfin and use its direct, remuxed, or HLS-transcoded stream URL.\n- Poster images are loaded from the connected Jellyfin server.\n- The Jellyfin session token is stored in browser local storage for convenience; disconnect to clear it. Use HTTPS and only connect to servers you trust.\n- The Jellyfin server must allow this web app origin through its CORS/network configuration. A server on `localhost` is only reachable from the same device; remote devices need a reachable LAN or HTTPS server address.\n- Jellyfin can transcode compatible media and solve many codec/container/browser compatibility problems. It does not decrypt third-party DRM-protected content or bypass provider licences.\n\n## Phase 4 · Profiles, watchlist and personalisation\n\n- Create, switch between, and delete local browser profiles.\n- Each profile has an independent My List watchlist.\n- Add or remove titles from My List in the media details view.\n- Profile selection and watchlists persist in browser local storage.\n- These are local profiles, not authenticated accounts: there are no passwords, cloud backups, or cross-device sync in this phase. The UI states this limitation explicitly.\n- Jellyfin authentication remains managed by the connected Jellyfin server and is separate from Nuvio local profiles.\n\n## Development
+## Nuvio add-on integration and local playback
+
+- Configure `NUVIO_ADDON_MANIFEST_URL` in Vercel as an encrypted server-side environment variable. It must point to an HTTPS `/manifest.json` endpoint.
+- The server-side `/api/addon` route reads the secret and requests the add-on manifest, catalogues, and stream results. The manifest URL is never sent to the browser.
+- The Add-on library UI lists movie and series catalogues, loads metadata, and requests stream sources for a selected title.
+- Returned direct HTTPS browser-playable streams are handed to the local Shaka/native player. WebVTT subtitle URLs are supported.
+- Add-ons must permit requests from the deployed site's server and provide streams the user is authorised to access. HLS/DASH playback still depends on browser codec/MSE support and the provider's CORS configuration.
+- Torrent/info-hash-only results, non-web-ready streams, HTTP stream URLs, and provider-specific authentication flows are not handled by this integration. DRM is not bypassed; protected playback requires a supported browser and provider-issued license configuration.
+- The manifest secret is not exposed through a `NEXT_PUBLIC_` variable. Set it in Vercel Project Settings → Environment Variables, then redeploy.
+
+## Phase 4 · Profiles, watchlist and personalisation\n\n- Create, switch between, and delete local browser profiles.\n- Each profile has an independent My List watchlist.\n- Add or remove titles from My List in the media details view.\n- Profile selection and watchlists persist in browser local storage.\n- These are local profiles, not authenticated accounts: there are no passwords, cloud backups, or cross-device sync in this phase. The UI states this limitation explicitly.\n- \n\n## Development
 ```bash
 npm install
 npm run dev
@@ -81,7 +91,7 @@ npm run build
 ## Roadmap
 1. Foundation and responsive shell
 2. Discovery, catalogues, metadata and source management
-3. Playback, adaptive streaming, subtitles, and Jellyfin server integration
+3. Playback, adaptive streaming, subtitles, and Nuvio-compatible add-on integration
 4. Accounts, profiles, watchlist and synchronisation
 5. Accessibility, performance, security, testing and deployment
 
