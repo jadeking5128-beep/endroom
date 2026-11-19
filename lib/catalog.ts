@@ -47,6 +47,6 @@ export function normalizeImportedItem(value: unknown, sourceName: string): Media
   const drmInput = item.drm && typeof item.drm === "object" ? item.drm as Record<string, unknown> : null;
   const licenseServer = safeHttps(drmInput?.licenseServer);
   const keySystem = drmInput?.keySystem;
-  const drm = licenseServer && (keySystem === "com.widevine.alpha" || keySystem === "com.microsoft.playready") ? { keySystem, licenseServer } : undefined;
+  const drm: MediaItem["drm"] = licenseServer && (keySystem === "com.widevine.alpha" || keySystem === "com.microsoft.playready") ? { keySystem: keySystem as "com.widevine.alpha" | "com.microsoft.playready", licenseServer } : undefined;
   return { id: "import-" + title.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Math.random().toString(36).slice(2,7), title, overview: typeof item.overview === "string" ? item.overview.slice(0, 500) : "Imported from your local catalogue.", year, type, genres, rating, poster, backdrop: poster, source: sourceName, ...(streamUrl ? { streamUrl } : {}), ...(subtitles?.length ? { subtitles } : {}), ...(drm ? { drm } : {}) };
 }
