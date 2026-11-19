@@ -19,6 +19,7 @@ function configuredSources(): Source[] {
   });
 }
 function baseUrl(sourceId = "poster") {
+  if (sourceId === "cinemeta") return new URL("https://v3-cinemeta.strem.io/");
   const source = configuredSources().find(item => item.id === sourceId);
   if (!source) throw new Error("Unknown or unconfigured catalogue source.");
   const manifest = new URL(source.url);
