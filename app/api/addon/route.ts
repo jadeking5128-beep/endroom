@@ -20,7 +20,7 @@ function addonBase(source: "posters" | "streams") {
 }
 
 function safeSegment(value: unknown, label: string, max = 180): string {
-  if (typeof value !== "string" || !value.trim() || value.length > max || value.includes("/") || value.includes("\\\\")) {
+  if (typeof value !== "string" || !value.trim() || value.length > max || value.includes("/") || value.includes("\\")) {
     throw new Error(`Invalid ${label}.`);
   }
   return encodeURIComponent(value.trim());
