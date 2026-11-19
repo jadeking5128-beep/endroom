@@ -30,7 +30,7 @@ export default function HomePage() {
   const [genre,setGenre]=useState("all");
   const [sort,setSort]=useState("popular");
   const [catalog,setCatalog]=useState<MediaItem[]>([]);
-  const [catalogSources,setCatalogSources]=useState<{id:string;type:"movie"|"series"|"anime";name?:string;sourceId?:string;extraSupported?:string[];extra?:(string|{name?:string})[]}[]>([]);
+  const [catalogSources,setCatalogSources]=useState<{id:string;type:"movie"|"series"|"anime";name?:string;sourceId?:string;addonName?:string;extraSupported?:string[];extra?:(string|{name?:string})[]}[]>([]);
   const [remoteSearchResults,setRemoteSearchResults]=useState<MediaItem[]|null>(null);
   const [remoteSearchBusy,setRemoteSearchBusy]=useState(false);
   const [catalogBusy,setCatalogBusy]=useState(true);
@@ -58,11 +58,10 @@ export default function HomePage() {
     const manifestResponse=await fetch("/api/addon",{cache:"no-store"});
     const manifestPayload=await manifestResponse.json();
     if(!manifestResponse.ok||!manifestPayload.ok)throw new Error(manifestPayload.error||"Manifest could not be loaded.");
-    const manifest=manifestPayload.manifest;
-    if(!Array.isArray(manifest?.catalogs))throw new Error("Manifest is valid JSON but has no catalogs array.");
-    const sources=manifest.catalogs.filter((entry:{type?:string;id?:string})=>(entry.type==="movie"||entry.type==="series"||entry.type==="anime")&&typeof entry.id==="string") as {id:string;type:"movie"|"series"|"anime";name?:string;extraSupported?:string[];extra?:{name?:string}[]}[];
+    const manifests=Array.isArray(manifestPayload.manifests)?manifestPayload.manifests:[{sourceId:"poster",manifest:manifestPayload.manifest}];
+    const sources=manifests.flatMap((entry:{sourceId?:string;manifest?:{name?:string;catalogs?:unknown[]}})=>Array.isArray(entry.manifest?.catalogs)?entry.manifest.catalogs.filter((catalog):catalog is {id:string;type:"movie"|"series"|"anime";name?:string;extraSupported?:string[];extra?:(string|{name?:string})[]}=>!!catalog&&typeof catalog==="object"&&typeof (catalog as {id?:unknown}).id==="string"&&["movie","series","anime"].includes(String((catalog as {type?:unknown}).type))).map(catalog=>({...catalog,sourceId:entry.sourceId||"poster",addonName:entry.manifest?.name||"Catalogue"})):[]);
+    if(!sources.length)throw new Error("No supported movie, series or anime catalogues were found in the configured manifests.");
     if(!cancelled)setCatalogSources(sources);
-    if(!sources.length)throw new Error("Manifest loaded, but it contains no supported movie or series catalogs.");
     const outcomes=await Promise.allSettled(sources.map(async(source:{id:string;type:"movie"|"series"|"anime";name?:string;sourceId?:string;addonName?:string})=>{
       const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"catalog",sourceId:source.sourceId||"poster",type:source.type,catalogId:source.id})});
       const payload=await response.json();
@@ -70,7 +69,7 @@ export default function HomePage() {
       const metas=Array.isArray(payload.data?.metas)?payload.data.metas:[];
       return metas.flatMap((meta:{id?:string;name?:string;description?:string;year?:number;releaseInfo?:string;genres?:string[];imdbRating?:string;poster?:string})=>{
         if(typeof meta.id!=="string"||!meta.id)return [];
-        return [{id:`${source.type}-${meta.id}`,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres.filter((g):g is string=>typeof g==="string"):[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.poster||"",source:source.addonName||"Configured catalogue",sourceId:source.sourceId||"poster"} as MediaItem];
+        return [{id:`${source.sourceId||"poster"}-${source.type}-${meta.id}`,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres.filter((g):g is string=>typeof g==="string"):[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.poster||"",source:source.addonName||"Configured catalogue",sourceId:source.sourceId||"poster"} as MediaItem];
       });
     }));
     const loaded=outcomes.flatMap(result=>result.status==="fulfilled"?result.value:[]);
@@ -90,7 +89,7 @@ export default function HomePage() {
       const results=await Promise.allSettled(supported.map(async source=>{
         const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"catalog",sourceId:source.sourceId||"poster",type:source.type,catalogId:source.id,extra:{search:q}})});
         const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.error||"Search request failed.");
-        return (Array.isArray(payload.data?.metas)?payload.data.metas:[]).flatMap((meta:{id?:string;name?:string;description?:string;year?:number;releaseInfo?:string;genres?:string[];imdbRating?:string;poster?:string;background?:string})=>typeof meta.id==="string"&&meta.id?[{id:source.type+"-"+meta.id,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres:[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.background||meta.poster||"",source:source.addonName||source.name||"Configured catalogue",sourceId:source.sourceId||"poster"} as MediaItem]:[]);
+        return (Array.isArray(payload.data?.metas)?payload.data.metas:[]).flatMap((meta:{id?:string;name?:string;description?:string;year?:number;releaseInfo?:string;genres?:string[];imdbRating?:string;poster?:string;background?:string})=>typeof meta.id==="string"&&meta.id?[{id:(source.sourceId||"poster")+"-"+source.type+"-"+meta.id,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres:[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.background||meta.poster||"",source:source.addonName||source.name||"Configured catalogue",sourceId:source.sourceId||"poster"} as MediaItem]:[]);
       }));
       if(!cancelled)setRemoteSearchResults(Array.from(new Map(results.flatMap(result=>result.status==="fulfilled"?result.value:[]).map(item=>[item.id,item])).values()));
     }catch{if(!cancelled)setRemoteSearchResults([]);}finally{if(!cancelled)setRemoteSearchBusy(false);}},350);
