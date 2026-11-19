@@ -30,7 +30,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ pro
     result.cookies.set(`${provider}_access`, data.access_token, cookie);
     if (provider === "trakt" && typeof data.refresh_token === "string") result.cookies.set("trakt_refresh", data.refresh_token, cookie);
     if (provider === "trakt") result.cookies.set("trakt_expires", String(Date.now() + Math.max(60, Number(data.expires_in) || 604800) * 1000), cookie);
-    for (const name of ["pkce_verifier", "oauth_state", "redirect_uri"]) result.cookies.set(`${provider}_${name}`, "", { ...cookie, maxAge: 0 });
+    for (const name of ["pkce_verifier", "oauth_state", "redirect_uri"]) result.cookies.set(`${provider}_${name}`, "", { ...cookie, path: `/api/sync/${provider}`, maxAge: 0 });
     return result;
   } catch { return fail("Could not complete provider sign-in."); }
 }
