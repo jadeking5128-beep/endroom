@@ -39,7 +39,38 @@ The poster field accepts an Unsplash photo ID in the `photo-...` format. Invalid
 
 The built-in catalogue is illustrative preview data, not a live metadata feed. A live metadata provider and API-key configuration can be added without exposing credentials in the browser. Remote source fetching is not part of Phase 2.
 
-## Phase 3 · Playback and subtitles\n- Native HTML5 video player for direct HTTPS media URLs supplied by the user\n- Optional WebVTT subtitle tracks through the browser player controls\n- Per-title playback position saved locally, with resume and start-over actions\n- Player error messaging for unavailable sources and format/CORS problems\n- No stream discovery, DRM bypass, scraping, or third-party content hosting\n\n### Playback import fields\n\nAdd `streamUrl` and an optional `subtitles` array to a catalogue item. Use only direct media URLs you own or are authorised to access. Subtitle URLs must be HTTPS and should point to browser-compatible WebVTT (`.vtt`) files. Example:\n\n```json\n{\n  "title": "Example title",\n  "type": "movie",\n  "streamUrl": "https://media.example.org/video.mp4",\n  "subtitles": [\n    { "src": "https://media.example.org/subtitles/en.vtt", "lang": "en", "label": "English" }\n  ]\n}\n```\n\nThe player uses the browser native media engine. MP4/WebM support depends on browser codecs; HLS works only where the browser natively supports it. Cross-origin media and subtitle servers must allow browser access (CORS). DRM-protected streams and adaptive-streaming compatibility beyond native browser support are not implemented. Playback position is stored in this browser only.\n\n## Development
+## Phase 3 · Playback, adaptive streaming and subtitles
+
+- Native browser playback for direct MP4/WebM media URLs
+- Shaka Player integration for HLS (`.m3u8`) and MPEG-DASH (`.mpd`) adaptive streams
+- Optional Widevine and PlayReady DRM configuration using provider-issued HTTPS license endpoints
+- External WebVTT subtitle tracks
+- Playback position saved locally with resume and start-over actions
+- Retry handling and clearer player initialisation / media errors
+
+### Playback import fields
+
+Add `streamUrl`, optional `subtitles`, and (only when your provider requires it) optional `drm` to a catalogue item. Use media and license endpoints you own or are authorised to access.
+
+```json
+{
+  "title": "Example title",
+  "type": "movie",
+  "streamUrl": "https://media.example.org/manifest.mpd",
+  "subtitles": [
+    { "src": "https://media.example.org/subtitles/en.vtt", "lang": "en", "label": "English" }
+  ],
+  "drm": {
+    "keySystem": "com.widevine.alpha",
+    "licenseServer": "https://license.example.org/widevine"
+  }
+}
+```
+
+Supported DRM key systems in the current configuration are `com.widevine.alpha` and `com.microsoft.playready`. A working DRM stream still requires a compatible browser/device, a valid provider-issued license server, correct CORS and response headers, and any required account entitlement. This does not provide DRM keys, bypass licensing, or make protected content accessible without the provider's authorisation. FairPlay and certificate-based configurations are not included in this baseline.
+
+HLS and DASH support depends on browser Media Source Extensions and codec support. Some providers require signed URLs, request headers, cookies, or custom license challenges; those provider-specific authentication flows are not guessed or bypassed here. External subtitle files should be WebVTT (`.vtt`) and allow cross-origin requests where hosted separately. Playback progress remains local to this browser and device.
+## Development
 ```bash
 npm install
 npm run dev
@@ -50,7 +81,7 @@ npm run build
 ## Roadmap
 1. Foundation and responsive shell
 2. Discovery, catalogues, metadata and source management
-3. Playback, subtitles and stream handling (implemented baseline)
+3. Playback, adaptive streaming, subtitles and authorised DRM configuration
 4. Accounts, profiles, watchlist and synchronisation
 5. Accessibility, performance, security, testing and deployment
 
