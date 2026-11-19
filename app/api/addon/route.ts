@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const POSTER_MANIFEST_URL = "https://btttr.cc/TYxBDoMwDAT_4nP6gXyg96q3qgcLrBQpxNR2VCHE36sEAtzGs-tdoEPDyEHBvyCikdptBNdQwYFxj3OVG50OwUHH45BCjXfUE0vBhFLfKsdRShNPOaLUoPE2PsHbwUiG4Je1hGok4JcaecBsXH6Eg5AqeJNM-_gTwyG-GeNg81Xph393SkJX8UAbUmgGA13Fuv4B/manifest.json";
+const DEFAULT_MANIFEST_URL = "https://btttr.cc/TYxBDoMwDAT_4nP6gXyg96q3qgcLrBQpxNR2VCHE36sEAtzGs-tdoEPDyEHBvyCikdptBNdQwYFxj3OVG50OwUHH45BCjXfUE0vBhFLfKsdRShNPOaLUoPE2PsHbwUiG4Je1hGok4JcaecBsXH6Eg5AqeJNM-_gTwyG-GeNg81Xph393SkJX8UAbUmgGA13Fuv4B/manifest.json";\nconst MANIFEST_URL = process.env.POSTER_MANIFEST_URL || DEFAULT_MANIFEST_URL;
 
 function baseUrl() {
-  const manifest = new URL(POSTER_MANIFEST_URL);
+  const manifest = new URL(MANIFEST_URL);
   if (manifest.protocol !== "https:" || !manifest.pathname.endsWith("/manifest.json")) throw new Error("Invalid catalogue manifest configuration.");
   manifest.pathname = manifest.pathname.slice(0, -"manifest.json".length);
   manifest.search = "";
@@ -14,15 +14,15 @@ function baseUrl() {
   return manifest;
 }
 function segment(value: unknown, label: string, max = 180) {
-  if (typeof value !== "string" || !value.trim() || value.length > max || value.includes("/") || value.includes("\\\\")) throw new Error(`Invalid ${label}.`);
+  if (typeof value !== "string" || !value.trim() || value.length > max || value.includes("/") || value.includes("\\")) throw new Error(`Invalid ${label}.`);
   return encodeURIComponent(value.trim());
 }
 async function request(path: string) {
-  const response = await fetch(new URL(path, baseUrl()), { headers: { Accept: "application/json" }, cache: "no-store", redirect: "error", signal: AbortSignal.timeout(12000) });
-  if (!response.ok) throw new Error(`Catalogue source returned HTTP ${response.status}.`);
+  const response = await fetch(new URL(path, baseUrl()), { headers: { Accept: "application/json" }, cache: "no-store", redirect: "follow", signal: AbortSignal.timeout(12000) });
+  if (new URL(response.url).origin !== baseUrl().origin) throw new Error("Catalogue source redirected to an unexpected host.");\n  if (!response.ok) throw new Error(`Catalogue source returned HTTP ${response.status}.`);
   const body = await response.text();
   if (body.length > 5_000_000) throw new Error("Catalogue response is too large.");
-  try { return JSON.parse(body); } catch { throw new Error("Catalogue source returned invalid JSON."); }
+  try { return JSON.parse(body); } catch { throw new Error("Catalogue source returned invalid JSON. Check that the configured URL points directly to manifest.json."); }
 }
 export async function GET() {
   try { return NextResponse.json({ ok: true, manifest: await request("manifest.json") }, { headers: { "Cache-Control": "no-store" } }); }
