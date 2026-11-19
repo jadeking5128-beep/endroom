@@ -62,7 +62,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .secondary-button:hover{background:rgba(255,255,255,.13)}
 .hero-index{position:absolute;right:28px;bottom:25px;display:flex;align-items:center;gap:9px;color:#8b95a3;font-size:9px;letter-spacing:1px}
 .hero-index span:first-child{color:#eaf2ff}.hero-index i{width:40px;height:1px;background:#a4bad7}
-.section-heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:17px}
+.section-heading{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:17px}
 .section-overline{font-size:9px;letter-spacing:1.65px;color:#77818e;font-weight:700;margin-bottom:7px}
 .section-heading h2{font:700 21px Manrope,sans-serif;letter-spacing:-.65px;margin:0;color:#f1f3f7}
 .text-button{border:0;background:transparent;color:#8caedc;display:flex;align-items:center;gap:4px;font-size:10px;cursor:pointer;padding:5px 0}
