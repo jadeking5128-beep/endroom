@@ -3,7 +3,8 @@
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Bookmark, Check, ChevronRight, Compass, Film, Grid2X2, Home, Library, ListFilter, Plus, Search, Settings2, Sparkles, Tv, Upload, X, Star, SlidersHorizontal, Play } from "lucide-react";
 import { MediaItem, normalizeImportedItem, starterCatalog } from "@/lib/catalog";
-import MediaPlayer from "@/components/MediaPlayer";\nimport JellyfinPanel from "@/components/JellyfinPanel";
+import MediaPlayer from "@/components/MediaPlayer";
+import JellyfinPanel from "@/components/JellyfinPanel";
 
 type Source = { id: string; name: string; count: number; addedAt: number };
 const navItems = [{ label:"Home", icon:Home },{ label:"Discover", icon:Compass },{ label:"Movies", icon:Film },{ label:"Series", icon:Tv },{ label:"Anime", icon:Sparkles },{ label:"Library", icon:Library }];
@@ -27,7 +28,8 @@ export default function HomePage() {
   const [sort,setSort]=useState("popular");
   const [catalog,setCatalog]=useState<MediaItem[]>(starterCatalog);
   const [sources,setSources]=useState<Source[]>([]);
-  const [sourceOpen,setSourceOpen]=useState(false);\n  const [jellyfinOpen,setJellyfinOpen]=useState(false);
+  const [sourceOpen,setSourceOpen]=useState(false);
+  const [jellyfinOpen,setJellyfinOpen]=useState(false);
   const [selected,setSelected]=useState<MediaItem|null>(null);
   const [playerItem,setPlayerItem]=useState<MediaItem|null>(null);
   const [notice,setNotice]=useState("");
@@ -99,6 +101,7 @@ export default function HomePage() {
     {sourceOpen&&<div className="modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setSourceOpen(false);}}><section className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="source-title"><div className="modal-heading"><div><div className="section-overline">PERSONAL CATALOGUE</div><h2 id="source-title">Manage sources</h2></div><button className="icon-button" onClick={()=>setSourceOpen(false)} aria-label="Close"><X size={18}/></button></div><p className="modal-copy">Import a JSON catalogue you own or have permission to use. Entries are stored locally in this browser; no remote source is contacted.</p><div className="import-drop"><Upload size={22}/><strong>Import catalogue JSON</strong><span>Choose a .json file containing an array of titles or an object with an items array.</span><button className="primary-button" onClick={()=>fileRef.current?.click()}><Plus size={15}/> Choose file</button><input ref={fileRef} type="file" accept=".json,application/json" hidden onChange={importFile}/></div><div className="source-list-heading">CONNECTED LOCAL SOURCES <span>{sources.length}</span></div>{sources.length?sources.map(source=><div className="source-row" key={source.id}><div className="source-icon"><Library size={17}/></div><div className="source-info"><strong>{source.name}</strong><span>{source.count} titles · This device only</span></div><button className="remove-source" onClick={()=>removeSource(source)} aria-label={`Remove ${source.name}`}><X size={16}/></button></div>):<div className="source-empty">No imported sources yet. Your starter catalogue is ready to browse.</div>}<div className="modal-footnote"><Check size={14}/> Local-first import · No account or external service required</div></section></div>}
     {selected&&<div className="modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setSelected(null);}}><section className="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detail-title"><div className="detail-art" style={{backgroundImage:`linear-gradient(0deg,#101216,transparent 75%),url("${image(selected.poster)}")`}}/><button className="detail-close icon-button" onClick={()=>setSelected(null)} aria-label="Close details"><X size={18}/></button><div className="detail-content"><div className="section-overline">{selected.type.toUpperCase()} · {selected.year}</div><h2 id="detail-title">{selected.title}</h2><div className="detail-meta"><span><Star size={14} fill="currentColor"/> {selected.rating?selected.rating.toFixed(1):"Not rated"}</span><span>{selected.genres.join(" · ")}</span><span>{selected.runtime|| (selected.seasons?`${selected.seasons} seasons`:"")}</span></div><p>{selected.overview}</p><div className="detail-source">Metadata source: {selected.source}</div>{selected.streamUrl ? <button className="primary-button detail-play" onClick={()=>{setPlayerItem(selected);setSelected(null);}}><Play size={15} fill="currentColor"/> Play with your authorised source</button> : <div className="detail-placeholder">No playback source attached. Add an HTTPS streamUrl to a catalogue entry you own or are licensed to access.</div>}
         {selected.subtitles?.length ? <div className="detail-source">{selected.subtitles.length} subtitle track(s) available</div> : null}</div></section></div>}
-    {playerItem&&<MediaPlayer item={playerItem} onClose={()=>setPlayerItem(null)}/>}\n    {jellyfinOpen&&<JellyfinPanel onClose={()=>setJellyfinOpen(false)} onPlay={item=>{setJellyfinOpen(false);setPlayerItem(item);}}/>}
+    {playerItem&&<MediaPlayer item={playerItem} onClose={()=>setPlayerItem(null)}/>}
+    {jellyfinOpen&&<JellyfinPanel onClose={()=>setJellyfinOpen(false)} onPlay={item=>{setJellyfinOpen(false);setPlayerItem(item);}}/>}
   </main>;
 }
