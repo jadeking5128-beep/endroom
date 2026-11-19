@@ -7,6 +7,7 @@ import type { MediaItem } from "@/lib/catalog";
 type Props = { item: MediaItem; onClose: () => void };
 type ShakaPlayer = { load: (uri: string) => Promise<void>; destroy: () => Promise<void>; configure: (config: unknown) => void };
 type SkipSegment = { type: "intro" | "recap" | "outro" | "postCredits"; start: number; end: number; confidence: number };
+type SubtitleTrack = { src: string; lang: string; label: string };
 const isAdaptive = (url: string) => /\.(m3u8|mpd)(?:$|[?#])/i.test(url);
 
 export default function MediaPlayer({ item, onClose }: Props) {
@@ -21,6 +22,11 @@ export default function MediaPlayer({ item, onClose }: Props) {
   const [position, setPosition] = useState(0);
   const [segments, setSegments] = useState<SkipSegment[]>([]);
   const [segmentNotice, setSegmentNotice] = useState("");
+  const [subtitleTracks, setSubtitleTracks] = useState<SubtitleTrack[]>(item.subtitles || []);
+  const [subtitleBusy, setSubtitleBusy] = useState(false);
+  const [subtitleError, setSubtitleError] = useState("");
+  const [subtitleMenu, setSubtitleMenu] = useState(false);
+  const [selectedSubtitle, setSelectedSubtitle] = useState(0);
   const progressKey = `nuvio-progress:${item.id}`;
   const streamUrl = item.streamUrl || "";
   const imdbId = item.imdbId || item.metaId || "";
@@ -113,12 +119,35 @@ export default function MediaPlayer({ item, onClose }: Props) {
     };
   }, [streamUrl, item.drm, retry]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    Array.from(video.textTracks).forEach((track, index) => { track.mode = selectedSubtitle === index + 1 ? "showing" : "disabled"; });
+  }, [selectedSubtitle, subtitleTracks]);
+
+  const findSubtitles = async () => {
+    if (!item.metaId || !item.sourceId) {
+      setSubtitleError("This title does not expose a subtitle-search ID from its catalogue.");
+      return;
+    }
+    setSubtitleBusy(true);
+    setSubtitleError("");
+    try {
+      const response = await fetch("/api/addon", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "subtitles", sourceId: item.sourceId, type: item.type === "anime" ? "series" : item.type, id: item.metaId }) });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) throw new Error(payload.error || "Subtitle search failed.");
+      const incoming: SubtitleTrack[] = Array.isArray(payload.data?.subtitles) ? payload.data.subtitles.filter((track: SubtitleTrack) => typeof track.src === "string" && /^https:\/\//.test(track.src)).map((track: SubtitleTrack) => ({ src: track.src, lang: track.lang || "und", label: track.label || track.lang || "Subtitle" })) : [];
+      setSubtitleTracks(current => Array.from(new Map([...current, ...incoming].map(track => [track.src, track])).values()));
+      if (!incoming.length) setSubtitleError("No additional subtitles were returned by this catalogue.");
+      else setSubtitleMenu(true);
+    } catch (cause) {
+      setSubtitleError(cause instanceof Error ? cause.message : "Subtitle search failed.");
+    } finally { setSubtitleBusy(false); }
+  };
+
   const resume = () => {
     const video = videoRef.current;
-    if (video) {
-      video.currentTime = resumeAt;
-      void video.play().catch(() => setError("Playback was blocked. Press play in the player to continue."));
-    }
+    if (video) { video.currentTime = resumeAt; void video.play().catch(() => setError("Playback was blocked. Press play in the player to continue.")); }
     setResumeAt(0);
   };
   const startOver = () => {
@@ -149,14 +178,21 @@ export default function MediaPlayer({ item, onClose }: Props) {
           onLoadedMetadata={() => setLoading(false)}
           onEnded={() => { try { localStorage.removeItem(progressKey); } catch { /* Ignore unavailable storage. */ } }}
           onError={() => { if (!error) setError("The media server rejected playback. Check that the URL is a direct media manifest/file and permits browser CORS access."); }}>
-          {item.subtitles?.map((track, index) => <track key={`${track.src}-${index}`} kind="subtitles" src={track.src} srcLang={track.lang} label={track.label} default={index === 0}/>)}
+          {subtitleTracks.map((track, index) => <track key={`${track.src}-${index}`} kind="subtitles" src={track.src} srcLang={track.lang} label={track.label} onLoad={() => { if (selectedSubtitle === index + 1 && videoRef.current?.textTracks[index]) videoRef.current.textTracks[index].mode = "showing"; }} />)}
         </video>
         {loading && <div className="player-loading">Preparing stream…</div>}
         {activeSegment && <button className="player-skip" onClick={skipSegment}><SkipForward size={16}/><span>Skip {segmentName}<small> {Math.round(activeSegment.end - position)}s</small></span></button>}
         {segmentNotice && <div className="player-loading">{segmentNotice}</div>}
         {error && <div className="player-error" role="alert"><span>{error}</span><button className="text-button" onClick={() => { setError(""); setRetry(value => value + 1); }}><RotateCcw size={13}/> Retry</button></div>}
       </div>
-      <div className="player-footer"><span><Captions size={15}/> {item.subtitles?.length ? `${item.subtitles.length} subtitle track(s)` : "No external subtitles supplied"}</span><span className="player-engine-status">{segments.length ? `IntroDB · ${segments.length} segment(s)` : "Progress saved on this device"}</span></div>
+      <div className="player-footer">
+        <span><Captions size={15}/> {subtitleTracks.length ? `${subtitleTracks.length} subtitle track(s)` : "No subtitle tracks loaded"}</span>
+        <button className="text-button" onClick={() => void findSubtitles()} disabled={subtitleBusy}>{subtitleBusy ? "Searching…" : "Find subtitles"}</button>
+        <button className="text-button" onClick={() => setSubtitleMenu(value => !value)} disabled={!subtitleTracks.length}>Tracks</button>
+        <span className="player-engine-status">{segments.length ? `IntroDB · ${segments.length} segment(s)` : "Progress saved on this device"}</span>
+      </div>
+      {subtitleError && <div className="player-error" role="status">{subtitleError}</div>}
+      {subtitleMenu && <div className="resume-prompt"><button className="text-button" onClick={() => setSelectedSubtitle(0)}>Off</button>{subtitleTracks.map((track,index)=><button key={track.src} className="text-button" onClick={() => { setSelectedSubtitle(index+1); setSubtitleMenu(false); }}>{track.label} · {track.lang}</button>)}</div>}
       {resumeAt > 10 && <div className="resume-prompt"><span>Resume from {Math.floor(resumeAt / 60)}:{String(Math.floor(resumeAt % 60)).padStart(2,"0")}?</span><button className="primary-button" onClick={resume}><Play size={14}/> Resume</button><button className="text-button" onClick={startOver}>Start over</button></div>}
     </section>
   </div>;
