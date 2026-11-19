@@ -136,7 +136,7 @@ export default function MediaPlayer({ item, onClose }: Props) {
       const response = await fetch("/api/addon", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "subtitles", sourceId: item.sourceId, type: item.type === "anime" ? "series" : item.type, id: item.metaId }) });
       const payload = await response.json();
       if (!response.ok || !payload.ok) throw new Error(payload.error || "Subtitle search failed.");
-      const incoming: SubtitleTrack[] = Array.isArray(payload.data?.subtitles) ? payload.data.subtitles.filter((track: SubtitleTrack) => typeof track.src === "string" && /^https:\/\//.test(track.src)).map((track: SubtitleTrack) => ({ src: track.src, lang: track.lang || "und", label: track.label || track.lang || "Subtitle" })) : [];
+      const incoming: SubtitleTrack[] = Array.isArray(payload.data?.subtitles) ? payload.data.subtitles.flatMap((value: unknown) => { if (!value || typeof value !== "object") return []; const track = value as { url?: unknown; lang?: unknown; label?: unknown }; if (typeof track.url !== "string" || !/^https:\/\//.test(track.url)) return []; return [{ src: track.url, lang: typeof track.lang === "string" ? track.lang : "und", label: typeof track.label === "string" ? track.label : "Subtitle" }]; }) : [];
       setSubtitleTracks(current => Array.from(new Map([...current, ...incoming].map(track => [track.src, track])).values()));
       if (!incoming.length) setSubtitleError("No additional subtitles were returned by this catalogue.");
       else setSubtitleMenu(true);
