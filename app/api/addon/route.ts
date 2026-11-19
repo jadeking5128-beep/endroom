@@ -34,7 +34,7 @@ function segment(value: unknown, label: string, max = 180) {
 }
 async function request(sourceId: string, path: string) {
   const base = baseUrl(sourceId);
-  const response = await fetch(new URL(path, base), { headers: { Accept: "application/json" }, cache: "no-store", redirect: "follow", signal: AbortSignal.timeout(12000) });
+  const response = await fetch(new URL(path, base), { headers: { Accept: "application/json" }, next: { revalidate: path.startsWith("catalog/") ? 300 : 3600 }, redirect: "follow", signal: AbortSignal.timeout(12000) });
   if (new URL(response.url).origin !== base.origin) throw new Error("Catalogue source redirected to an unexpected host.");
   if (!response.ok) throw new Error(`Catalogue source returned HTTP ${response.status}.`);
   const body = await response.text();
