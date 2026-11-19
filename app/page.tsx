@@ -11,7 +11,7 @@ const ACTIVE_PROFILE_KEY = "nuvio-active-profile-v1";
 const WATCHLIST_KEY = "nuvio-watchlists-v1";
 const defaultProfile: Profile = { id: "default", name: "Guest", color: "#6d9de8", createdAt: 0 };
 const navItems = [{ label:"Home", icon:Home },{ label:"Search", icon:Compass },{ label:"Library", icon:Library },{ label:"Settings", icon:UserRound }];
-const image = (id:string) => /^https?:\\/\\//i.test(id) ? id : `https://images.unsplash.com/${id || "photo-1489599849927-2ee91cede3ba"}?auto=format&fit=crop&w=760&q=85`;
+const image = (id:string) => id.startsWith("https://") || id.startsWith("http://") ? id : `https://images.unsplash.com/${id || "photo-1489599849927-2ee91cede3ba"}?auto=format&fit=crop&w=760&q=85`;
 
 function PosterCard({ item, onSelect }: { item:MediaItem; onSelect:(item:MediaItem)=>void }) {
   return <button className="poster-card" type="button" onClick={()=>onSelect(item)} aria-label={`View ${item.title} details`}>
