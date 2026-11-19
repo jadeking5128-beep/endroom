@@ -30,6 +30,9 @@ export default function HomePage() {
   const [genre,setGenre]=useState("all");
   const [sort,setSort]=useState("popular");
   const [catalog,setCatalog]=useState<MediaItem[]>([]);
+  const [catalogSources,setCatalogSources]=useState<{id:string;type:"movie"|"series"|"anime";name?:string;extraSupported?:string[];extra?:{name?:string}[]}[]>([]);
+  const [remoteSearchResults,setRemoteSearchResults]=useState<MediaItem[]|null>(null);
+  const [remoteSearchBusy,setRemoteSearchBusy]=useState(false);
   const [catalogBusy,setCatalogBusy]=useState(true);
   const [selected,setSelected]=useState<MediaItem|null>(null);
   const [detailBusy,setDetailBusy]=useState(false);
@@ -57,9 +60,10 @@ export default function HomePage() {
     if(!manifestResponse.ok||!manifestPayload.ok)throw new Error(manifestPayload.error||"Manifest could not be loaded.");
     const manifest=manifestPayload.manifest;
     if(!Array.isArray(manifest?.catalogs))throw new Error("Manifest is valid JSON but has no catalogs array.");
-    const sources=manifest.catalogs.filter((entry:{type?:string;id?:string})=>(entry.type==="movie"||entry.type==="series")&&typeof entry.id==="string");
+    const sources=manifest.catalogs.filter((entry:{type?:string;id?:string})=>(entry.type==="movie"||entry.type==="series"||entry.type==="anime")&&typeof entry.id==="string") as {id:string;type:"movie"|"series"|"anime";name?:string;extraSupported?:string[];extra?:{name?:string}[]}[];
+    if(!cancelled)setCatalogSources(sources);
     if(!sources.length)throw new Error("Manifest loaded, but it contains no supported movie or series catalogs.");
-    const outcomes=await Promise.allSettled(sources.map(async(source:{id:string;type:"movie"|"series";name?:string})=>{
+    const outcomes=await Promise.allSettled(sources.map(async(source:{id:string;type:"movie"|"series"|"anime";name?:string})=>{
       const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"catalog",type:source.type,catalogId:source.id})});
       const payload=await response.json();
       if(!response.ok||!payload.ok)throw new Error(payload.error||`Could not load ${source.name||source.id}.`);
@@ -76,6 +80,23 @@ export default function HomePage() {
 
   useEffect(()=>{if(!selected?.metaId)return;let cancelled=false;(async()=>{setDetailBusy(true);try{const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"meta",type:selected.type==="anime"?"series":selected.type,id:selected.metaId})});const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.error||"Could not load title details.");const meta=payload.data?.meta;if(!meta||cancelled)return;setSelected(current=>current?.id===selected.id?({...current,title:meta.name||current.title,overview:meta.description||current.overview,year:Number(meta.year||meta.releaseInfo?.slice(0,4))||current.year,genres:Array.isArray(meta.genres)?meta.genres:current.genres,rating:Number(meta.imdbRating)||current.rating,poster:meta.poster||current.poster,backdrop:meta.background||meta.poster||current.backdrop,runtime:meta.runtime||current.runtime,seasons:Array.isArray(meta.videos)?new Set(meta.videos.map((v:{season?:number})=>v.season).filter((v:number|undefined)=>typeof v==="number")).size||current.seasons:current.seasons}):current);}catch(error){if(!cancelled)setNotice(error instanceof Error?error.message:"Could not load title details.");}finally{if(!cancelled)setDetailBusy(false);}})();return()=>{cancelled=true;}},[selected?.id]);
 
+  useEffect(()=>{
+    const q=query.trim();
+    if(active!=="Search"||q.length<2){setRemoteSearchResults(null);setRemoteSearchBusy(false);return;}
+    const supported=catalogSources.filter(source=>source.extraSupported?.includes("search")||source.extra?.some(item=>item.name==="search"));
+    if(!supported.length){setRemoteSearchResults(null);return;}
+    let cancelled=false;
+    const timer=setTimeout(async()=>{setRemoteSearchBusy(true);try{
+      const results=await Promise.allSettled(supported.map(async source=>{
+        const response=await fetch("/api/addon",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"catalog",type:source.type,catalogId:source.id,extra:{search:q}})});
+        const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.error||"Search request failed.");
+        return (Array.isArray(payload.data?.metas)?payload.data.metas:[]).flatMap((meta:{id?:string;name?:string;description?:string;year?:number;releaseInfo?:string;genres?:string[];imdbRating?:string;poster?:string;background?:string})=>typeof meta.id==="string"&&meta.id?[{id:source.type+"-"+meta.id,metaId:meta.id,title:meta.name||meta.id,overview:meta.description||"",year:Number(meta.year||meta.releaseInfo?.slice(0,4))||0,type:source.type,genres:Array.isArray(meta.genres)?meta.genres:[],rating:Number(meta.imdbRating)||0,poster:meta.poster||"",backdrop:meta.background||meta.poster||"",source:source.name||"Configured catalogue"} as MediaItem]:[]);
+      }));
+      if(!cancelled)setRemoteSearchResults(Array.from(new Map(results.flatMap(result=>result.status==="fulfilled"?result.value:[]).map(item=>[item.id,item])).values()));
+    }catch{if(!cancelled)setRemoteSearchResults([]);}finally{if(!cancelled)setRemoteSearchBusy(false);}},350);
+    return()=>{cancelled=true;clearTimeout(timer);};
+  },[query,active,catalogSources]);
+
   const currentProfile=profiles.find(p=>p.id===profileId)||defaultProfile;
   const savedIds=watchlists[profileId]||[];
   const visibleCatalog=active==="My List"?catalog.filter(item=>savedIds.includes(item.id)):catalog;
@@ -86,8 +107,9 @@ export default function HomePage() {
   const genres=useMemo(()=>Array.from(new Set(catalog.flatMap(item=>item.genres))).sort(),[catalog]);
   const filtered=useMemo(()=>{
     const q=query.trim().toLowerCase();
-    return visibleCatalog.filter(item=>(type==="all"||item.type===type)&&(genre==="all"||item.genres.includes(genre))&&(!q||[item.title,item.overview,...item.genres].join(" ").toLowerCase().includes(q))).sort((a,b)=>sort==="title"?a.title.localeCompare(b.title):sort==="newest"?b.year-a.year:b.rating-a.rating);
-  },[catalog,query,type,genre,sort]);
+    const source= q.length>=2&&remoteSearchResults!==null?remoteSearchResults:visibleCatalog;
+    return source.filter(item=>(type==="all"||item.type===type)&&(genre==="all"||item.genres.includes(genre))&&(!q||[item.title,item.overview,...item.genres].join(" ").toLowerCase().includes(q))).sort((a,b)=>sort==="title"?a.title.localeCompare(b.title):sort==="newest"?b.year-a.year:b.rating-a.rating);
+  },[catalog,query,type,genre,sort,remoteSearchResults]);
   const selectNav=(label:string)=>{setActive(label);setShowSearch(label==="Search");setType("all");setGenre("all");if(label!=="Search")setQuery("");};
 
 
@@ -129,7 +151,7 @@ export default function HomePage() {
         </div>
       </>}
 
-      {active==="Search"&&<section className="nuvio-browse-screen"><div className="nuvio-page-title"><span>DISCOVER</span><h1>Search</h1><p>Find something worth watching.</p></div><div className="nuvio-search-box"><Search size={19}/><input autoFocus placeholder="Movies, series, genres…" value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<button onClick={()=>setQuery("")} aria-label="Clear search"><X size={17}/></button>}</div><div className="nuvio-filter-row"><div className="filter-pills">{["all","movie","series"].map(v=><button key={v} className={type===v?"category-chip selected":"category-chip"} onClick={()=>setType(v)}>{v==="all"?"All":v==="movie"?"Movies":"Series"}</button>)}</div><label className="nuvio-genre-select"><ListFilter size={14}/><select aria-label="Filter by genre" value={genre} onChange={e=>setGenre(e.target.value)}><option value="all">All genres</option>{genres.map(g=><option key={g} value={g}>{g}</option>)}</select></label></div>{catalogBusy?<div className="nuvio-loading"><span/> Loading catalogue</div>:catalogueGrid}</section>}
+      {active==="Search"&&<section className="nuvio-browse-screen"><div className="nuvio-page-title"><span>DISCOVER</span><h1>Search</h1><p>Find something worth watching.</p></div><div className="nuvio-search-box"><Search size={19}/><input autoFocus placeholder="Movies, series, genres…" value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<button onClick={()=>setQuery("")} aria-label="Clear search"><X size={17}/></button>}</div><div className="nuvio-filter-row"><div className="filter-pills">{["all","movie","series"].map(v=><button key={v} className={type===v?"category-chip selected":"category-chip"} onClick={()=>setType(v)}>{v==="all"?"All":v==="movie"?"Movies":"Series"}</button>)}</div><label className="nuvio-genre-select"><ListFilter size={14}/><select aria-label="Filter by genre" value={genre} onChange={e=>setGenre(e.target.value)}><option value="all">All genres</option>{genres.map(g=><option key={g} value={g}>{g}</option>)}</select></label></div>{catalogBusy||remoteSearchBusy?<div className="nuvio-loading"><span/> {remoteSearchBusy?"Searching your catalogues":"Loading catalogue"}</div>:catalogueGrid}</section>}
 
       {active==="Library"&&<section className="nuvio-browse-screen"><div className="nuvio-page-title"><span>YOUR SPACE</span><h1>Library</h1><p>Saved titles, ready when you are.</p></div><div className="nuvio-library-tabs"><button className="selected">My List <b>{savedIds.length}</b></button><button onClick={()=>setProfileOpen(true)}>{currentProfile.name}</button></div>{catalogBusy?<div className="nuvio-loading"><span/> Loading library</div>:<div className="nuvio-grid">{visibleCatalog.filter(item=>savedIds.includes(item.id)).map(item=><PosterCard key={item.id} item={item} onSelect={setSelected}/>) }{!savedIds.length&&<div className="nuvio-empty-library"><Bookmark size={25}/><strong>Your list is waiting</strong><span>Save titles from their detail page and they will show up here.</span></div>}</div>}</section>}
 
