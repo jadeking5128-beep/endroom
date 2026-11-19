@@ -5,6 +5,7 @@ import { Bookmark, Check, ChevronRight, Compass, Film, Grid2X2, Home, Library, L
 import { MediaItem, normalizeImportedItem, starterCatalog } from "@/lib/catalog";
 import MediaPlayer from "@/components/MediaPlayer";
 import AddonPanel from "@/components/AddonPanel";
+import PosterPanel from "@/components/PosterPanel";
 
 type Source = { id: string; name: string; count: number; addedAt: number };
 type Profile = { id: string; name: string; color: string; createdAt: number };
@@ -35,6 +36,7 @@ export default function HomePage() {
   const [sources,setSources]=useState<Source[]>([]);
   const [sourceOpen,setSourceOpen]=useState(false);
   const [addonOpen,setAddonOpen]=useState(false);
+  const [posterOpen,setPosterOpen]=useState(false);
   const [selected,setSelected]=useState<MediaItem|null>(null);
   const [playerItem,setPlayerItem]=useState<MediaItem|null>(null);
   const [notice,setNotice]=useState("");
@@ -107,7 +109,7 @@ export default function HomePage() {
     </aside>
     <section className="main-column">
       <header className="topbar"><div className="mobile-brand"><span className="brand-mark"><span/></span><strong>nuvio</strong></div><div className="breadcrumb"><span>YOUR SPACE</span><ChevronRight size={13}/><strong>{active}</strong></div>
-        <div className="top-actions"><button className="secondary-button addon-top-button" onClick={()=>setAddonOpen(true)}><Play size={15}/> Add-on library</button>{showSearch?<div className="search-field"><Search size={16}/><input autoFocus placeholder="Search titles, genres..." value={query} onChange={e=>setQuery(e.target.value)}/><button onClick={()=>{setShowSearch(false);setQuery("");}} aria-label="Close search"><X size={16}/></button></div>:<button className="icon-button" aria-label="Search" onClick={()=>setShowSearch(true)}><Search size={19}/></button>}<button className="icon-button filter-button" aria-label="Manage sources" onClick={()=>setSourceOpen(true)}><SlidersHorizontal size={18}/></button><button className="top-avatar profile-trigger" aria-label="Manage profiles" onClick={()=>setProfileOpen(true)} style={{background:currentProfile.color}}>{currentProfile.name.slice(0,1).toUpperCase()}</button></div>
+        <div className="top-actions"><button className="secondary-button addon-top-button" onClick={()=>setAddonOpen(true)}><Play size={15}/> Add-on library</button><button className="secondary-button addon-top-button" onClick={()=>setPosterOpen(true)}><Film size={15}/> Poster library</button>{showSearch?<div className="search-field"><Search size={16}/><input autoFocus placeholder="Search titles, genres..." value={query} onChange={e=>setQuery(e.target.value)}/><button onClick={()=>{setShowSearch(false);setQuery("");}} aria-label="Close search"><X size={16}/></button></div>:<button className="icon-button" aria-label="Search" onClick={()=>setShowSearch(true)}><Search size={19}/></button>}<button className="icon-button filter-button" aria-label="Manage sources" onClick={()=>setSourceOpen(true)}><SlidersHorizontal size={18}/></button><button className="top-avatar profile-trigger" aria-label="Manage profiles" onClick={()=>setProfileOpen(true)} style={{background:currentProfile.color}}>{currentProfile.name.slice(0,1).toUpperCase()}</button></div>
       </header>
       <div className="content">
         {notice&&<div className="notice"><Sparkles size={15}/><span>{notice}</span><button onClick={()=>setNotice("")} aria-label="Dismiss"><X size={15}/></button></div>}
@@ -126,5 +128,6 @@ export default function HomePage() {
         {selected.subtitles?.length ? <div className="detail-source">{selected.subtitles.length} subtitle track(s) available</div> : null}</div></section></div>}
     {playerItem&&<MediaPlayer item={playerItem} onClose={()=>setPlayerItem(null)}/>}
     {addonOpen&&<AddonPanel onClose={()=>setAddonOpen(false)} onPlay={item=>{setAddonOpen(false);setPlayerItem(item);}}/>}
+    {posterOpen&&<PosterPanel onClose={()=>setPosterOpen(false)}/>}
   </main>;
 }
