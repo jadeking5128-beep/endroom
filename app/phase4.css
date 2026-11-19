@@ -6,3 +6,13 @@
 @keyframes playerSkipIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:760px){.player-skip{right:14px;bottom:66px;padding:10px 13px;font-size:11px}.player-footer{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.player-skip{animation:none}}
+
+.nuvio-episode-list{display:grid;gap:8px;margin-top:14px}
+.nuvio-episode-row{display:flex;align-items:center;gap:13px;width:100%;padding:13px 14px;border:1px solid rgba(255,255,255,.09);border-radius:11px;background:rgba(255,255,255,.035);color:#e9edf3;text-align:left;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.nuvio-episode-row:hover{background:rgba(255,255,255,.08);border-color:rgba(145,184,239,.34);transform:translateY(-1px)}
+.nuvio-episode-number{flex:0 0 74px;color:#91b9ef;font-size:9px;font-weight:800;letter-spacing:.7px}
+.nuvio-episode-copy{display:grid;gap:4px;min-width:0;flex:1}
+.nuvio-episode-copy strong{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nuvio-episode-copy small{font-size:9px;color:#8995a5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nuvio-episode-row>svg{flex:0 0 auto;color:#a9c9f3}
+@media(max-width:700px){.nuvio-episode-row{padding:11px 10px;gap:9px}.nuvio-episode-number{flex-basis:64px;font-size:8px}.nuvio-episode-copy strong{font-size:10px}.nuvio-episode-copy small{font-size:8px}}
