@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   const base = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
   const traktRedirect = new URL("/api/sync/trakt/callback", base).toString();
   const secure = base.startsWith("https://");
-  const response = NextResponse.json({ ok: true, results }, { headers: { "Cache-Control": "no-store" } });
+  const cookieUpdates: { name: string; value: string; maxAge: number }[] = [];
 
   if (traktToken && clientTrakt) {
     let access = traktToken;
@@ -43,9 +43,9 @@ export async function POST(request: NextRequest) {
           if (refreshed.ok && typeof tokenData.access_token === "string") {
             access = tokenData.access_token;
             const cookie = { httpOnly: true, secure, sameSite: "lax" as const, path: "/api/sync", maxAge: 60 * 60 * 24 * 180 };
-            response.cookies.set("trakt_access", access, cookie);
-            if (typeof tokenData.refresh_token === "string") response.cookies.set("trakt_refresh", tokenData.refresh_token, cookie);
-            response.cookies.set("trakt_expires", String(Date.now() + Math.max(60, Number(tokenData.expires_in) || 604800) * 1000), cookie);
+            cookieUpdates.push({ name: "trakt_access", value: access, maxAge: cookie.maxAge });
+            if (typeof tokenData.refresh_token === "string") cookieUpdates.push({ name: "trakt_refresh", value: tokenData.refresh_token, maxAge: cookie.maxAge });
+            cookieUpdates.push({ name: "trakt_expires", value: String(Date.now() + Math.max(60, Number(tokenData.expires_in) || 604800) * 1000), maxAge: cookie.maxAge });
           }
         } catch { /* The provider result below reports a failed sync without interrupting playback. */ }
       }
@@ -68,5 +68,7 @@ export async function POST(request: NextRequest) {
       results.simkl = { ok: sync.ok, status: sync.status };
     } catch { results.simkl = { ok: false, error: "Network error" }; }
   }
+  const response = NextResponse.json({ ok: true, results }, { headers: { "Cache-Control": "no-store" } });
+  for (const update of cookieUpdates) response.cookies.set(update.name, update.value, { httpOnly: true, secure, sameSite: "lax", path: "/api/sync", maxAge: update.maxAge });
   return response;
 }
