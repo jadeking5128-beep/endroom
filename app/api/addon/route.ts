@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const DEFAULT_MANIFEST_URL = "https://btttr.cc/TYxBDoMwDAT_4nP6gXyg96q3qgcLrBQpxNR2VCHE36sEAtzGs-tdoEPDyEHBvyCikdptBNdQwYFxj3OVG50OwUHH45BCjXfUE0vBhFLfKsdRShNPOaLUoPE2PsHbwUiG4Je1hGok4JcaecBsXH6Eg5AqeJNM-_gTwyG-GeNg81Xph393SkJX8UAbUmgGA13Fuv4B/manifest.json";
+const DEFAULT_MANIFEST_URL = "https://btttr.cc/VYxBDoIwEEXv8td4gV7AuHCj7oyLCUwqCbQ4ncYQwt1NCwXcvf_-n5lQk1LnbYB5oiPloKceVcGACuobGrNcaHeECrXvW2dzvWLYMQ1U2DVlsoU0GvwQO5JcFF6eD3hV6FkJZppTGZQFZsqVAUX16Ua8FQ4BRiXy-vxBdhOfSF2r41GFt_-e2QkfxY20dbYYsvwvJKe7j1IzDC5XzPMP/manifest.json";
 const MANIFEST_URL = process.env.POSTER_MANIFEST_URL || DEFAULT_MANIFEST_URL;
 
 function baseUrl() {
