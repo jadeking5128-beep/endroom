@@ -236,3 +236,22 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 .spin{animation:jellyfin-spin 1s linear infinite}
 @keyframes jellyfin-spin{to{transform:rotate(360deg)}}
 @media(max-width:760px){.jellyfin-panel{width:100%;max-height:100%;height:100%;border-radius:0;padding:17px}.jellyfin-library-tools{align-items:stretch;flex-direction:column}.jellyfin-library-tools .filter-pills{max-width:100%}.jellyfin-library-tools>input{width:100%}.jellyfin-item{gap:9px}.jellyfin-item img{width:43px;height:62px}.jellyfin-item p{display:none}.jellyfin-item .primary-button{padding:0 9px}.jellyfin-server-url{display:none}}
+
+
+/* Phase 4: profile and watchlist surfaces */
+.profile-trigger{border:0;cursor:pointer;color:#fff;font-weight:700}
+.profile-panel{max-width:520px}
+.profile-list{display:grid;gap:8px;margin:18px 0}
+.profile-row{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.025)}
+.profile-row.active{border-color:rgba(93,156,255,.45);background:rgba(93,156,255,.07)}
+.profile-select{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left;background:transparent;border:0;cursor:pointer;padding:2px}
+.profile-avatar-large{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;color:white;font-size:15px;font-weight:700;flex-shrink:0}
+.profile-select strong,.profile-select small{display:block}
+.profile-select strong{font-size:12px;color:var(--text)}
+.profile-select small{font-size:9px;color:var(--muted);margin-top:4px}
+.profile-create{display:flex;gap:9px;margin-top:15px}
+.profile-create input{flex:1;min-width:0;height:38px;border:1px solid var(--line);border-radius:8px;background:#0c1015;color:var(--text);padding:0 11px;font-size:11px}
+.profile-create .primary-button{flex-shrink:0}
+.detail-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:18px}
+.detail-actions .detail-play{margin-top:0}
+@media(max-width:520px){.profile-create{flex-direction:column}.profile-create .primary-button{justify-content:center}.detail-actions{align-items:stretch;flex-direction:column}.detail-actions>*{justify-content:center}}
