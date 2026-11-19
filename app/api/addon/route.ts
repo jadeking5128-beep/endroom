@@ -20,7 +20,8 @@ function segment(value: unknown, label: string, max = 180) {
 }
 async function request(path: string) {
   const response = await fetch(new URL(path, baseUrl()), { headers: { Accept: "application/json" }, cache: "no-store", redirect: "follow", signal: AbortSignal.timeout(12000) });
-  if (new URL(response.url).origin !== baseUrl().origin) throw new Error("Catalogue source redirected to an unexpected host.");\n  if (!response.ok) throw new Error(`Catalogue source returned HTTP ${response.status}.`);
+  if (new URL(response.url).origin !== baseUrl().origin) throw new Error("Catalogue source redirected to an unexpected host.");
+  if (!response.ok) throw new Error(`Catalogue source returned HTTP ${response.status}.`);
   const body = await response.text();
   if (body.length > 5_000_000) throw new Error("Catalogue response is too large.");
   try { return JSON.parse(body); } catch { throw new Error("Catalogue source returned invalid JSON. Check that the configured URL points directly to manifest.json."); }
