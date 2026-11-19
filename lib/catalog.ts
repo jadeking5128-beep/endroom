@@ -1,6 +1,9 @@
 export type MediaItem = {
   id: string;
   metaId?: string;
+  imdbId?: string;
+  season?: number;
+  episode?: number;
   sourceId?: string;
   title: string;
   overview: string;
