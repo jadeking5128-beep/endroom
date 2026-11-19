@@ -502,3 +502,8 @@ body{background:radial-gradient(ellipse at 72% -18%,rgba(83,112,151,.13),transpa
 }
 @media(max-width:380px){.nuvio-detail-hero{grid-template-columns:94px minmax(0,1fr);gap:12px;padding-top:250px}.nuvio-detail-poster-wrap{width:94px}.nuvio-detail-heading h2{font-size:22px}.nuvio-detail-actions{gap:5px}.nuvio-detail-play,.nuvio-detail-list{padding:0 9px}}
 @media(prefers-reduced-motion:reduce){.nuvio-detail-backdrop,.nuvio-detail-poster-wrap,.nuvio-detail-heading{animation:none}}
+
+.nuvio-load-more-wrap{display:flex;justify-content:center;padding:24px 16px 40px}
+.nuvio-load-more{min-width:190px;border:1px solid rgba(160,190,230,.24);border-radius:999px;background:rgba(22,31,44,.82);color:#dce8f7;padding:12px 20px;font-size:11px;font-weight:700;letter-spacing:.2px;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.nuvio-load-more:hover:not(:disabled){background:rgba(44,62,84,.9);border-color:rgba(160,190,230,.48);transform:translateY(-1px)}
+.nuvio-load-more:disabled{opacity:.55;cursor:wait}
