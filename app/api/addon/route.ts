@@ -53,7 +53,6 @@ export async function POST(request: NextRequest) {
     const action = body.action as Action;
     const type = safeSegment(body.type, "media type", 12);
     if (!allowedTypes.has(String(body.type))) throw new Error("Only movie and series catalogues are supported.");
-    const id = safeSegment(body.id, "media ID");
     let path = "";
     if (action === "catalog") {
       const catalogId = safeSegment(body.catalogId, "catalogue ID");
@@ -67,8 +66,10 @@ export async function POST(request: NextRequest) {
         if (query) path += `?${query}`;
       }
     } else if (action === "meta") {
+      const id = safeSegment(body.id, "media ID");
       path = `meta/${type}/${id}.json`;
     } else if (action === "stream") {
+      const id = safeSegment(body.id, "media ID");
       path = `stream/${type}/${id}.json`;
     } else {
       throw new Error("Unsupported add-on action.");
