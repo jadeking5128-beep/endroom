@@ -45,7 +45,7 @@ const schema = {
   properties: {
     points: {
       type: "array",
-      minItems: 1,
+      minItems: 0,
       maxItems: 80,
       items: pointSchema
     },
@@ -180,9 +180,6 @@ export async function POST(request: NextRequest) {
       point.source_excerpt.trim().length > 0 && sourceText.includes(point.source_excerpt.trim())
     ).map(point => ({ source_excerpt: point.source_excerpt.trim().slice(0, 4000) }));
 
-    if (!points.length) {
-      return NextResponse.json({ error: "The paragraph did not produce any verifiable source excerpts. Nothing was saved." }, { status: 422 });
-    }
 
     const parentConnections = parsed.parentConnections.slice(0, 20).filter(connection =>
       connection && typeof connection.existing_thought_id === "string" &&
