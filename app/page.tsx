@@ -174,7 +174,12 @@ export default function Home() {
         if (target && !target.links.includes(from.id)) target.links.push(from.id);
         if (target) target.connectionReasons[from.id] = connection.reason.slice(0, 280);
       }
-      if (created.length === 1 && !created[0].links.length) created[0].links.push("origin");
+      for (const node of created) {
+        if (node.links.length === 0) {
+          node.links.push("origin");
+          node.connectionReasons.origin = "No stronger direct relationship was identified, so this point is kept under the central node without claiming a conceptual connection.";
+        }
+      }
       await persist({ ...vault, thoughts: [...thoughts, ...created] });
       setDraft("");
       setSelected(created[0].id);
