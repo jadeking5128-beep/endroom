@@ -191,7 +191,7 @@ export default function Home() {
         const radius = 76 + (Math.floor(index / 8) * 34);
         return {
           id: makeId(),
-          title: point.title.slice(0, 100),
+          title: (point.source_excerpt || point.content).split(/\\s+/).slice(0, 8).join(" ").slice(0, 100),
           body: (point.source_excerpt || point.content).slice(0, 4000),
           sourceText: (point.source_excerpt || point.content).slice(0, 4000),
           createdAt: now + index + 1,
@@ -214,7 +214,7 @@ export default function Home() {
         if (!existingIds.has(connection.existing_thought_id)) continue;
         const targetId = connection.existing_thought_id;
         if (!parent.links.includes(targetId)) parent.links.push(targetId);
-        parent.connectionReasons![targetId] = connection.reason.slice(0, 280);
+        parent.connectionReasons![targetId] = "AI-SUGGESTED LINK — " + connection.reason.slice(0, 250);
       }
 
       for (const connection of result.connections || []) {
@@ -228,10 +228,10 @@ export default function Home() {
         }
         if (!targetId || targetId === from.id || targetId === parentId) continue;
         if (!from.links.includes(targetId)) from.links.push(targetId);
-        from.connectionReasons![targetId] = connection.reason.slice(0, 280);
+        from.connectionReasons![targetId] = "AI-SUGGESTED LINK — " + connection.reason.slice(0, 250);
         const target = points.find(item => item.id === targetId);
         if (target && !target.links.includes(from.id)) target.links.push(from.id);
-        if (target) target.connectionReasons![from.id] = connection.reason.slice(0, 280);
+        if (target) target.connectionReasons![from.id] = "AI-SUGGESTED LINK — " + connection.reason.slice(0, 250);
       }
 
       await persist({ ...vault, thoughts: [...thoughts, parent, ...points] });
@@ -275,9 +275,7 @@ export default function Home() {
         linkKeys.add([item.thought.id, item.thought.parentId].sort().join(":"));
       }
       for (const linkId of item.thought.links) {
-        const target = thoughts.find(candidate => candidate.id === linkId);
-        const isParentEdge = target?.parentId === item.thought.id || item.thought.parentId === linkId;
-        if (matchedIds.has(linkId) || isParentEdge) linkKeys.add([item.thought.id, linkId].sort().join(":"));
+        if (directIds.has(linkId)) linkKeys.add([item.thought.id, linkId].sort().join(":"));
       }
     }
     const matches = scored.map(({ thought, matched }) => ({
@@ -349,27 +347,27 @@ export default function Home() {
         <div className="recall">
           <form className="recall-box" onSubmit={findMemory}>
             <span className="recall-mark">⌕</span>
-            <input value={recallQuery} onChange={e => setRecallQuery(e.target.value)} placeholder="Ask your memories · find a detail, person, or idea…" aria-label="Search your memories" />
+            <input value={recallQuery} onChange={e => { setRecallQuery(e.target.value); setRecall(null); }} placeholder="Ask your memories · find a detail, person, or idea…" aria-label="Search your memories" />
             <button type="submit" disabled={!recallQuery.trim()}>FIND MEMORY</button>
             {recall && <button type="button" className="recall-clear" onClick={() => { setRecall(null); setRecallQuery(""); }} aria-label="Clear memory recall">×</button>}
           </form>
           {recall && <div className="recall-results">
             <div className="recall-heading"><span>DIRECT TEXT MATCHES · NO AI GUESSES</span><span>{recall.matches.length} FOUND · TEMPORARY</span></div>
-            {recall.matches.length ? recall.matches.map(match => <button key={match.id} className="recall-result" onClick={() => { setSelected(match.id); setEditing(false); }}>
+            {recall.matches.length ? recall.matches.map(match => <button key={match.id} className="recall-result" onClick={() => { setRecall(null); setSelected(match.id); setEditing(false); }}>
               <strong>{match.title}</strong><span>{match.excerpt}</span>
             </button>) : <p className="recall-empty">No matching stored memories were found. Nothing was generated or added.</p>}
           </div>}
         </div>
         <div className="capture">
           <form className="capture-box" onSubmit={addThought}><textarea value={draft} onChange={e => setDraft(e.target.value)} placeholder="Drop a paragraph, idea, or collection of thoughts…" aria-label="Paragraph to structure" rows={2} disabled={isAnalysing} /><button className="capture-button" disabled={!draft.trim() || isAnalysing} type="submit">{isAnalysing ? "ANALYSING…" : "BUILD ONE MEMORY ↗"}</button></form>{aiError && <div className="error ai-error">{aiError}</div>}
-          <div className="quick-row"><button className="quick" onClick={() => setSelected("origin")}>⌘ CENTRE NODE</button><button className="quick" onClick={() => { setDraft("An idea: "); document.querySelector<HTMLTextAreaElement>(".capture-box textarea")?.focus(); }}>＋ NEW IDEA</button><button className="quick" onClick={() => setSelected(graphThoughts[0]?.id ?? "origin")}>◉ EXPLORE</button></div>
+          <div className="quick-row"><button className="quick" onClick={() => { setRecall(null); setSelected("origin"); }}>⌘ CENTRE NODE</button><button className="quick" onClick={() => { setRecall(null); setDraft("An idea: "); document.querySelector<HTMLTextAreaElement>(".capture-box textarea")?.focus(); }}>＋ NEW IDEA</button><button className="quick" onClick={() => { setRecall(null); setSelected(graphThoughts[0]?.id ?? "origin"); }}>◉ EXPLORE</button></div>
         </div>
       </section>
       <div className="bottomline"><span>{thoughts.length} THOUGHTS STORED</span><span>ENCRYPTED ON THIS DEVICE</span></div>
       {selectedThought && <aside className="detail">
-        <div className="detail-top"><span className="detail-type">{selectedThought.id === "origin" ? "THE CORE" : selectedThought.role === "detail" ? "EXTRACTED SOURCE DETAIL" : "ORIGINAL MEMORY · UNIFIED NODE"}</span><button className="icon-button" onClick={() => { setSelected(null); setEditing(false); }} aria-label="Close thought">×</button></div>
+        <div className="detail-top"><span className="detail-type">{selectedThought.id === "origin" ? "THE CORE" : selectedThought.role === "detail" ? "EXTRACTED SOURCE DETAIL" : "ORIGINAL MEMORY · UNIFIED NODE"}</span><button className="icon-button" onClick={() => { setRecall(null); setSelected(null); setEditing(false); }} aria-label="Close thought">×</button></div>
         {editing ? <><input value={editTitle} onChange={e => setEditTitle(e.target.value)} aria-label="Thought title" style={{ background: "#090909", color: "#eee", border: "1px solid var(--line)", padding: 11, borderRadius: 8, marginTop: 25 }}/><textarea value={editBody} onChange={e => setEditBody(e.target.value)} aria-label="Thought content" style={{ flex: 1, resize: "none", background: "#090909", color: "#ddd", border: "1px solid var(--line)", padding: 12, borderRadius: 8, marginTop: 10 }}/><div className="detail-actions"><button className="gold-button" onClick={saveEdit}>SAVE CHANGES</button><button className="ghost-button" onClick={() => setEditing(false)}>CANCEL</button></div></> : <>
-          <h2>{selectedThought.title}</h2><div className="detail-body">{selectedThought.body}</div><div className="detail-meta">SAVED {new Date(selectedThought.createdAt).toLocaleString()} · {selectedThought.links.length} CONNECTIONS</div>{selectedThought.sourceText && <div className="detail-source"><span className="detail-type">{selectedThought.role === "detail" ? "EXACT SOURCE EXCERPT" : "ORIGINAL PARAGRAPH · PRESERVED"}</span><p>{selectedThought.sourceText}</p></div>}{selectedThought.connectionReasons && Object.keys(selectedThought.connectionReasons).length > 0 && <div className="detail-source"><span className="detail-type">WHY THESE CONNECT</span>{Object.entries(selectedThought.connectionReasons).map(([id, reason]) => <p key={id}>{thoughts.find(item => item.id === id)?.title || "Related point"} — {reason}</p>)}</div>}
+          <h2>{selectedThought.title}</h2><div className="detail-body">{selectedThought.body}</div><div className="detail-meta">SAVED {new Date(selectedThought.createdAt).toLocaleString()} · {selectedThought.links.length} CONNECTIONS</div>{selectedThought.sourceText && <div className="detail-source"><span className="detail-type">{selectedThought.role === "detail" ? "EXACT SOURCE EXCERPT" : "ORIGINAL PARAGRAPH · PRESERVED"}</span><p>{selectedThought.sourceText}</p></div>}{selectedThought.connectionReasons && Object.keys(selectedThought.connectionReasons).length > 0 && <div className="detail-source"><span className="detail-type">AI-SUGGESTED LINKS · NOT VERIFIED FACTS</span>{Object.entries(selectedThought.connectionReasons).map(([id, reason]) => <p key={id}>{thoughts.find(item => item.id === id)?.title || "Related point"} — {reason}</p>)}</div>}
           <div className="detail-actions"><button className="ghost-button" onClick={beginEdit}>EDIT THOUGHT</button>{selectedThought.id !== "origin" && <button className="ghost-button" onClick={deleteSelected}>DELETE</button>}</div>
         </>}
       </aside>}
