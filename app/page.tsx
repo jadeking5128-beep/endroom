@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent, useEffect, useMemo, useRef, useState } from "react";
 
 type Thought = { id: string; title: string; body: string; createdAt: number; x: number; y: number; links: string[] };
 type Vault = { version: 1; thoughts: Thought[] };
@@ -164,7 +164,7 @@ export default function Home() {
     setOffset({ x: dragRef.current.ox + (e.clientX - dragRef.current.x), y: dragRef.current.oy + (e.clientY - dragRef.current.y) });
   }
   function onPointerUp() { dragRef.current = null; setDragging(false); }
-  function onWheel(e: React.WheelEvent<HTMLDivElement>) {
+  function onWheel(e: ReactWheelEvent<HTMLDivElement>) {
     e.preventDefault();
     setScale(s => Math.max(.55, Math.min(2.3, s * (e.deltaY < 0 ? 1.08 : .92))));
   }
