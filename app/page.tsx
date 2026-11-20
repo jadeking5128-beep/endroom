@@ -7,7 +7,7 @@ type Thought = { id: string; title: string; body: string; createdAt: number; x: 
 type AiResult = { points: { source_excerpt: string }[]; parentConnections: { existing_thought_id: string; reason: string }[]; connections: { from_point_index: number; to_point_index: number; existing_thought_id: string; reason: string }[] };
 type Vault = { version: 1; thoughts: Thought[] };
 type StoredVault = { salt: string; iv: string; data: string; version: 1 };
-type RecallState = { query: string; ids: string[]; links: string[]; matches: { id: string; title: string; excerpt: string }[] };
+type RecallState = { query: string; mode: "groq" | "local"; ids: string[]; links: string[]; matches: { id: string; title: string; excerpt: string }[] };
 
 const STORAGE_KEY = "altbrain.private.vault.v1";
 const encoder = new TextEncoder();
@@ -63,6 +63,8 @@ export default function Home() {
   const [aiError, setAiError] = useState("");
   const [recallQuery, setRecallQuery] = useState("");
   const [recall, setRecall] = useState<RecallState | null>(null);
+  const [isRecalling, setIsRecalling] = useState(false);
+  const [recallError, setRecallError] = useState("");
 
 
   useEffect(() => {
@@ -235,48 +237,79 @@ export default function Home() {
     }
   }
 
-  function findMemory(e?: FormEvent) {
+  async function findMemory(e?: FormEvent) {
     e?.preventDefault();
     const query = recallQuery.trim();
-    if (!query) { setRecall(null); return; }
-    const terms = query.toLocaleLowerCase().split(/[^\\p{L}\\p{N}]+/u).filter(term => term.length > 1);
-    if (!terms.length) { setRecall(null); return; }
-    const scored = thoughts.map(thought => {
-      const title = thought.title.toLocaleLowerCase();
-      const body = thought.body.toLocaleLowerCase();
-      const source = (thought.sourceText || "").toLocaleLowerCase();
-      const all = `${title} ${body} ${source}`;
-      const matched = terms.filter(term => all.includes(term));
-      const titleMatches = terms.filter(term => title.includes(term)).length;
-      const score = matched.length + titleMatches * 1.5 + (all.includes(query.toLocaleLowerCase()) ? 3 : 0);
-      return { thought, score, matched };
-    }).filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score || b.thought.createdAt - a.thought.createdAt)
-      .slice(0, 8);
-    if (!scored.length) {
-      setRecall({ query, ids: [], links: [], matches: [] });
-      return;
-    }
-    const matchedIds = new Set(scored.map(item => item.thought.id));
-    const directIds = new Set(matchedIds);
-    const linkKeys = new Set<string>();
-    for (const item of scored) {
-      if (item.thought.parentId) {
-        directIds.add(item.thought.parentId);
-        linkKeys.add([item.thought.id, item.thought.parentId].sort().join(":"));
+    if (!query || isRecalling) { setRecall(null); return; }
+    setIsRecalling(true);
+    setRecall(null);
+    setRecallError("");
+
+    const makeRecall = (items: { id: string; title: string; excerpt: string }[], mode: "groq" | "local"): RecallState => {
+      const matchedIds = new Set(items.map(item => item.id));
+      const highlightedIds = new Set(matchedIds);
+      const highlightedLinks = new Set<string>();
+      for (const item of items) {
+        const thought = thoughts.find(candidate => candidate.id === item.id);
+        if (!thought) continue;
+        if (thought.parentId) {
+          highlightedIds.add(thought.parentId);
+          highlightedLinks.add([thought.id, thought.parentId].sort().join(":"));
+        }
+        for (const linkId of thought.links) {
+          if (highlightedIds.has(linkId)) highlightedLinks.add([thought.id, linkId].sort().join(":"));
+        }
       }
-      for (const linkId of item.thought.links) {
-        if (directIds.has(linkId)) linkKeys.add([item.thought.id, linkId].sort().join(":"));
-      }
+      return { query, mode, ids: [...highlightedIds], links: [...highlightedLinks], matches: items };
+    };
+
+    try {
+      const response = await fetch("/api/groq/recall", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query,
+          thoughts: thoughts.slice(0, 160).map(({ id, title, body, sourceText }) => ({
+            id,
+            title,
+            body: body.slice(0, 1800),
+            sourceText: sourceText && sourceText !== body ? sourceText.slice(0, 5000) : ""
+          }))
+        })
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "Semantic memory recall is unavailable.");
+      const items = Array.isArray(payload.matches) ? payload.matches.flatMap((match: { thought_id?: string; source_excerpt?: string }) => {
+        const thought = thoughts.find(candidate => candidate.id === match.thought_id);
+        const excerpt = typeof match.source_excerpt === "string" ? match.source_excerpt : "";
+        if (!thought || !excerpt || (!thought.body.includes(excerpt) && !(thought.sourceText || "").includes(excerpt))) return [];
+        return [{ id: thought.id, title: thought.title, excerpt }];
+      }) : [];
+      setRecall(makeRecall(items, "groq"));
+    } catch (err) {
+      setRecallError(err instanceof Error ? err.message : "Groq recall is unavailable. Showing exact text matches only.");
+      const terms = query.toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u).filter(term => term.length > 1);
+      const scored = thoughts.map(thought => {
+        const title = thought.title.toLocaleLowerCase();
+        const body = thought.body.toLocaleLowerCase();
+        const source = (thought.sourceText || "").toLocaleLowerCase();
+        const all = title + " " + body + " " + source;
+        const matched = terms.filter(term => all.includes(term));
+        const score = matched.length + terms.filter(term => title.includes(term)).length * 1.5 +
+          (all.includes(query.toLocaleLowerCase()) ? 3 : 0);
+        return { thought, score };
+      }).filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score || b.thought.createdAt - a.thought.createdAt)
+        .slice(0, 8);
+      const items = scored.map(({ thought }) => ({
+        id: thought.id,
+        title: thought.title,
+        excerpt: thought.body.length > 190 ? thought.body.slice(0, 187) + "…" : thought.body
+      }));
+      setRecall(makeRecall(items, "local"));
+    } finally {
+      setIsRecalling(false);
     }
-    const matches = scored.map(({ thought, matched }) => ({
-      id: thought.id,
-      title: thought.title,
-      excerpt: thought.body.length > 190 ? `${thought.body.slice(0, 187)}…` : thought.body || `Matched in original source: ${matched.join(", ")}`
-    }));
-    setRecall({ query, ids: [...directIds], links: [...linkKeys], matches });
-    setSelected(null);
-    setEditing(false);
   }
 
   async function saveEdit() {
@@ -339,11 +372,12 @@ export default function Home() {
           <form className="recall-box" onSubmit={findMemory}>
             <span className="recall-mark">⌕</span>
             <input value={recallQuery} onChange={e => { setRecallQuery(e.target.value); setRecall(null); }} placeholder="Ask your memories · find a detail, person, or idea…" aria-label="Search your memories" />
-            <button type="submit" disabled={!recallQuery.trim()}>FIND MEMORY</button>
+            <button type="submit" disabled={!recallQuery.trim() || isRecalling}>{isRecalling ? "SEARCHING…" : "FIND MEMORY"}</button>
             {recall && <button type="button" className="recall-clear" onClick={() => { setRecall(null); setRecallQuery(""); }} aria-label="Clear memory recall">×</button>}
           </form>
+          {recallError && <p className="recall-error">{recallError}</p>}
           {recall && <div className="recall-results">
-            <div className="recall-heading"><span>DIRECT TEXT MATCHES · NO AI GUESSES</span><span>{recall.matches.length} FOUND · TEMPORARY</span></div>
+            <div className="recall-heading"><span>{recall.mode === "groq" ? "SOURCE-VERIFIED MEMORY RECALL" : "LOCAL EXACT-TEXT FALLBACK"}</span><span>{recall.matches.length} FOUND · TEMPORARY</span></div>
             {recall.matches.length ? recall.matches.map(match => <button key={match.id} className="recall-result" onClick={() => { setRecall(null); setSelected(match.id); setEditing(false); }}>
               <strong>{match.title}</strong><span>{match.excerpt}</span>
             </button>) : <p className="recall-empty">No matching stored memories were found. Nothing was generated or added.</p>}
