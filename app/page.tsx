@@ -270,7 +270,7 @@ export default function Home() {
             id,
             title,
             body: body.slice(0, 1800),
-            sourceText: sourceText && sourceText !== body ? sourceText.slice(0, 5000) : ""
+            sourceText: sourceText ? sourceText.slice(0, 14000) : body.length > 1800 ? body.slice(0, 14000) : ""
           }))
         })
       });
