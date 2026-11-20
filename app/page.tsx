@@ -48,7 +48,6 @@ function makeId() { return crypto.randomUUID(); }
 export default function Home() {
   const [stored, setStored] = useState<StoredVault | null>(null);
   const [ready, setReady] = useState(false);
-  const [serverAuthenticated, setServerAuthenticated] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
   const [password, setPassword] = useState("");
   const [vault, setVault] = useState<Vault | null>(null);
@@ -74,11 +73,7 @@ export default function Home() {
         if (parsed.version === 1 && parsed.salt && parsed.iv && parsed.data) setStored(parsed);
       }
     } catch { setError("This browser could not read the local vault."); }
-    fetch("/api/auth/session", { cache: "no-store" })
-      .then(response => response.ok ? response.json() : { authenticated: false })
-      .then(result => setServerAuthenticated(result.authenticated === true))
-      .catch(() => setServerAuthenticated(false))
-      .finally(() => setReady(true));
+    setReady(true);
   }, []);
 
   const thoughts = vault?.thoughts ?? [];
@@ -91,12 +86,9 @@ export default function Home() {
     setError("");
     if (password.length < 10) { setError("Use at least 10 characters for your main password."); return; }
     try {
-      if (!serverAuthenticated) {
-        const authResponse = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
-        const authPayload = await authResponse.json();
-        if (!authResponse.ok) throw new Error(authPayload.error || "Main password authentication failed.");
-        setServerAuthenticated(true);
-      }
+      const authResponse = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
+      const authPayload = await authResponse.json();
+      if (!authResponse.ok) throw new Error(authPayload.error || "Main password authentication failed.");
       let salt: Uint8Array;
       let key: CryptoKey;
       if (stored) {
@@ -131,7 +123,6 @@ export default function Home() {
 
   function lock() {
     fetch("/api/auth/logout", { method: "POST" }).catch(() => undefined);
-    setServerAuthenticated(false);
     setUnlocked(false);
     setVault(null);
     setVaultKey(null);
