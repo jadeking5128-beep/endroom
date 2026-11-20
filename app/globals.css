@@ -119,3 +119,5 @@ h1{font:500 clamp(30px,5vw,54px)/1.08 Arial, sans-serif;letter-spacing:-.055em;m
 
 .recall-privacy,.capture-privacy{margin:6px 3px 0;color:#69655e;font-size:9px;line-height:1.55;letter-spacing:.015em}
 .recall-error{margin:7px 4px;color:#c5a16e;font-size:10px;line-height:1.5}
+
+.setup-link{display:block;margin:12px auto 0;color:#b69a69;font-size:9px;letter-spacing:.12em;text-decoration:none;text-align:center}.setup-link:hover{color:#e4c78f}
