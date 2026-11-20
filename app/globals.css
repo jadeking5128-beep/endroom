@@ -25,7 +25,7 @@ h1{font:500 clamp(30px,5vw,54px)/1.08 Arial, sans-serif;letter-spacing:-.055em;m
 .brain-canvas{display:block;width:100%;height:100%;outline:none}
 .brain-scene[data-webgl="unavailable"]:after{content:"3D graphics are unavailable in this browser";position:absolute;inset:45% 0 auto;text-align:center;color:#9bbac2;font:11px Arial,sans-serif}
 .graph-wrap.dragging{cursor:grabbing}
-.graph-wrap:after{content:"";position:absolute;inset:15%;border-radius:50%;background:radial-gradient(circle,rgba(190,157,97,.055),transparent 67%);pointer-events:none}
+.graph-wrap:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(190,157,97,.035),transparent 72%);pointer-events:none}
 .graph-svg{width:100%;height:100%;overflow:visible;position:relative;z-index:1;touch-action:none}
 .edge{stroke:rgba(183,164,126,.25);stroke-width:1;fill:none}
 .edge.soft{stroke:rgba(255,255,255,.11)}
