@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     id: item.id.slice(0, 80),
     title: item.title.slice(0, 120),
     body: item.body.slice(0, 1800),
-    sourceText: item.sourceText.slice(0, 5000)
+    sourceText: item.sourceText.slice(0, 14000)
   }));
   if (!thoughts.length) return NextResponse.json({ matches: [] });
 
