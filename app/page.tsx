@@ -7,6 +7,7 @@ type Thought = { id: string; title: string; body: string; createdAt: number; x: 
 type AiResult = { parent: { title: string; content: string }; points: { title: string; content: string }[]; parentConnections: { existing_thought_id: string; reason: string }[]; connections: { from_point_index: number; to_point_index: number; existing_thought_id: string; reason: string }[] };
 type Vault = { version: 1; thoughts: Thought[] };
 type StoredVault = { salt: string; iv: string; data: string; version: 1 };
+type RecallState = { query: string; ids: string[]; links: string[]; matches: { id: string; title: string; excerpt: string }[] };
 
 const STORAGE_KEY = "altbrain.private.vault.v1";
 const encoder = new TextEncoder();
@@ -60,6 +61,8 @@ export default function Home() {
   const [editBody, setEditBody] = useState("");
   const [isAnalysing, setIsAnalysing] = useState(false);
   const [aiError, setAiError] = useState("");
+  const [recallQuery, setRecallQuery] = useState("");
+  const [recall, setRecall] = useState<RecallState | null>(null);
 
 
   useEffect(() => {
@@ -75,6 +78,8 @@ export default function Home() {
 
   const thoughts = vault?.thoughts ?? [];
   const selectedThought = thoughts.find(t => t.id === selected) ?? null;
+
+  useEffect(() => { setRecall(null); }, [thoughts]);
 
   async function unlock(e: FormEvent) {
     e.preventDefault();
@@ -119,7 +124,8 @@ export default function Home() {
     setVaultKey(null);
     setSelected(null);
     setEditing(false);
-
+    setRecall(null);
+    setRecallQuery("");
   }
 
   async function addThought(e?: FormEvent) {
@@ -128,6 +134,8 @@ export default function Home() {
     if (!value || !vault || isAnalysing) return;
     setIsAnalysing(true);
     setAiError("");
+    setRecall(null);
+    setRecallQuery("");
     setSelected(null);
     try {
       const response = await fetch("/api/groq/structure", {
@@ -221,8 +229,50 @@ export default function Home() {
     }
   }
 
+  function findMemory(e?: FormEvent) {
+    e?.preventDefault();
+    const query = recallQuery.trim();
+    if (!query) { setRecall(null); return; }
+    const terms = query.toLocaleLowerCase().split(/[^\\p{L}\\p{N}]+/u).filter(term => term.length > 1);
+    if (!terms.length) { setRecall(null); return; }
+    const scored = thoughts.map(thought => {
+      const title = thought.title.toLocaleLowerCase();
+      const body = thought.body.toLocaleLowerCase();
+      const source = (thought.sourceText || "").toLocaleLowerCase();
+      const all = `${title} ${body} ${source}`;
+      const matched = terms.filter(term => all.includes(term));
+      const titleMatches = terms.filter(term => title.includes(term)).length;
+      const score = matched.length + titleMatches * 1.5 + (all.includes(query.toLocaleLowerCase()) ? 3 : 0);
+      return { thought, score, matched };
+    }).filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score || b.thought.createdAt - a.thought.createdAt)
+      .slice(0, 8);
+    if (!scored.length) {
+      setRecall({ query, ids: [], links: [], matches: [] });
+      return;
+    }
+    const directIds = new Set(scored.map(item => item.thought.id));
+    const linkKeys = new Set<string>();
+    for (const item of scored) {
+      for (const linkId of item.thought.links) {
+        if (!thoughts.some(candidate => candidate.id === linkId)) continue;
+        directIds.add(linkId);
+        linkKeys.add([item.thought.id, linkId].sort().join(":"));
+      }
+    }
+    const matches = scored.map(({ thought, matched }) => ({
+      id: thought.id,
+      title: thought.title,
+      excerpt: thought.body.length > 190 ? `${thought.body.slice(0, 187)}…` : thought.body || `Matched in original source: ${matched.join(", ")}`
+    }));
+    setRecall({ query, ids: [...directIds], links: [...linkKeys], matches });
+    setSelected(null);
+    setEditing(false);
+  }
+
   async function saveEdit() {
     if (!vault || !selectedThought) return;
+    setRecall(null);
     const next = { ...vault, thoughts: thoughts.map(t => t.id === selectedThought.id ? { ...t, title: editTitle.trim() || "Untitled thought", body: editBody } : t) };
     await persist(next);
     setEditing(false);
@@ -230,6 +280,7 @@ export default function Home() {
 
   async function deleteSelected() {
     if (!vault || !selectedThought || selectedThought.id === "origin") return;
+    setRecall(null);
     const nextThoughts = thoughts.filter(t => t.id !== selectedThought.id).map(t => ({ ...t, links: t.links.filter(id => id !== selectedThought.id) }));
     await persist({ ...vault, thoughts: nextThoughts });
     setSelected(null);
@@ -272,8 +323,22 @@ export default function Home() {
       <section className="workspace">
         <div className="intro"><div className="eyebrow">A PRIVATE EXTENSION OF YOUR MIND</div><h1>What&apos;s on your mind?</h1><div className="subtitle">Every thought has a place. Every connection has a reason.</div></div>
         <div className="graph-wrap">
-          <BrainScene thoughts={thoughts} selected={selected} onSelect={(id) => { setSelected(id); setEditing(false); }} />
+          <BrainScene thoughts={thoughts} selected={selected} highlightedIds={recall?.ids ?? []} highlightedLinks={recall?.links ?? []} onSelect={(id) => { setRecall(null); setSelected(id); setEditing(false); }} />
           <div className="graph-hint">CONNECTED THOUGHTS · DRAG TO ROTATE · PINCH TO ZOOM</div>
+        </div>
+        <div className="recall">
+          <form className="recall-box" onSubmit={findMemory}>
+            <span className="recall-mark">⌕</span>
+            <input value={recallQuery} onChange={e => setRecallQuery(e.target.value)} placeholder="Ask your memories · find a detail, person, or idea…" aria-label="Search your memories" />
+            <button type="submit" disabled={!recallQuery.trim()}>FIND MEMORY</button>
+            {recall && <button type="button" className="recall-clear" onClick={() => { setRecall(null); setRecallQuery(""); }} aria-label="Clear memory recall">×</button>}
+          </form>
+          {recall && <div className="recall-results">
+            <div className="recall-heading"><span>LOCAL MEMORY MATCHES</span><span>{recall.matches.length} FOUND · HIGHLIGHT IS TEMPORARY</span></div>
+            {recall.matches.length ? recall.matches.map(match => <button key={match.id} className="recall-result" onClick={() => { setSelected(match.id); setEditing(false); }}>
+              <strong>{match.title}</strong><span>{match.excerpt}</span>
+            </button>) : <p className="recall-empty">No matching stored memories were found. Nothing was generated or added.</p>}
+          </div>}
         </div>
         <div className="capture">
           <form className="capture-box" onSubmit={addThought}><textarea value={draft} onChange={e => setDraft(e.target.value)} placeholder="Drop a paragraph, idea, or collection of thoughts…" aria-label="Paragraph to structure" rows={2} disabled={isAnalysing} /><button className="capture-button" disabled={!draft.trim() || isAnalysing} type="submit">{isAnalysing ? "ANALYSING…" : "BUILD ONE MEMORY ↗"}</button></form>{aiError && <div className="error ai-error">{aiError}</div>}
