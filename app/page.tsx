@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import BrainScene from "./brain-scene";
 
-type Thought = { id: string; title: string; body: string; createdAt: number; x: number; y: number; links: string[]; sourceText?: string; parentId?: string; role?: "memory" | "detail"; connectionReasons?: Record<string, string> };
+type Thought = { id: string; title: string; body: string; createdAt: number; x: number; y: number; links: string[]; sourceText?: string; parentId?: string; role?: "memory" | "detail" | "system"; connectionReasons?: Record<string, string> };
 type AiResult = { points: { source_excerpt: string }[]; parentConnections: { existing_thought_id: string; reason: string }[]; connections: { from_point_index: number; to_point_index: number; existing_thought_id: string; reason: string }[] };
 type Vault = { version: 1; thoughts: Thought[] };
 type StoredVault = { salt: string; iv: string; data: string; version: 1 };
@@ -13,13 +13,10 @@ const STORAGE_KEY = "altbrain.private.vault.v1";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 const initialThoughts: Thought[] = [
-  { id: "origin", title: "The beginning", body: "This is the centre of Tyler's Brain. New thoughts will grow outward from here.", createdAt: Date.now(), x: 0, y: 0, links: [] },
-  { id: "curiosity", title: "Curiosity", body: "Questions worth keeping. Ideas that might become something later.", createdAt: Date.now(), x: -178, y: -92, links: ["origin"] },
-  { id: "patterns", title: "Patterns", body: "Connections between things that seem unrelated at first.", createdAt: Date.now(), x: 166, y: -105, links: ["origin"] },
-  { id: "ideas", title: "Ideas", body: "A place for unfinished thoughts and possibilities.", createdAt: Date.now(), x: -198, y: 104, links: ["origin"] },
-  { id: "reflection", title: "Reflection", body: "What changed, what mattered, and what to remember.", createdAt: Date.now(), x: 188, y: 104, links: ["origin"] },
-  { id: "learning", title: "Learning", body: "Knowledge gathered over time, connected to its original context.", createdAt: Date.now(), x: 0, y: 188, links: ["origin", "ideas"] }
+  { id: "origin", title: "Tyler's Brain", body: "Structural centre of the graph. This is not a personal memory.", createdAt: Date.now(), x: 0, y: 0, links: [], role: "system" }
 ];
+const starterIds = new Set(["origin", "curiosity", "patterns", "ideas", "reflection", "learning"]);
+function isSystemThought(thought: Thought) { return thought.role === "system" || starterIds.has(thought.id); }
 
 const toB64 = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes));
 const fromB64 = (value: string) => Uint8Array.from(atob(value), c => c.charCodeAt(0));
@@ -149,7 +146,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           text: value,
-          existingThoughts: thoughts.slice(0, 80).map(({ id, title, body }) => ({ id, title, body: body.slice(0, 500) }))
+          existingThoughts: thoughts.filter(thought => !isSystemThought(thought)).slice(0, 80).map(({ id, title, body }) => ({ id, title, body: body.slice(0, 500) }))
         })
       });
       const payload = await response.json();
@@ -269,7 +266,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query,
-          thoughts: thoughts.map(({ id, title, body, sourceText }) => ({
+          thoughts: thoughts.filter(thought => !isSystemThought(thought)).map(({ id, title, body, sourceText }) => ({
             id,
             title,
             body: body.slice(0, 1800),
@@ -289,7 +286,7 @@ export default function Home() {
     } catch (err) {
       setRecallError(err instanceof Error ? err.message : "Groq recall is unavailable. Showing exact text matches only.");
       const terms = query.toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u).filter(term => term.length > 1);
-      const scored = thoughts.map(thought => {
+      const scored = thoughts.filter(thought => !isSystemThought(thought)).map(thought => {
         const title = thought.title.toLocaleLowerCase();
         const body = thought.body.toLocaleLowerCase();
         const source = (thought.sourceText || "").toLocaleLowerCase();
@@ -391,7 +388,7 @@ export default function Home() {
       </section>
       <div className="bottomline"><span>{thoughts.length} THOUGHTS STORED</span><span>ENCRYPTED ON THIS DEVICE</span></div>
       {selectedThought && <aside className="detail">
-        <div className="detail-top"><span className="detail-type">{selectedThought.id === "origin" ? "THE CORE" : selectedThought.role === "detail" ? "EXTRACTED SOURCE DETAIL" : "ORIGINAL MEMORY · UNIFIED NODE"}</span><button className="icon-button" onClick={() => { setRecall(null); setSelected(null); setEditing(false); }} aria-label="Close thought">×</button></div>
+        <div className="detail-top"><span className="detail-type">{isSystemThought(selectedThought) ? "SYSTEM PLACEHOLDER · NOT A MEMORY" : selectedThought.role === "detail" ? "EXTRACTED SOURCE DETAIL" : "ORIGINAL MEMORY · UNIFIED NODE"}</span><button className="icon-button" onClick={() => { setRecall(null); setSelected(null); setEditing(false); }} aria-label="Close thought">×</button></div>
         {editing ? <><input value={editTitle} onChange={e => setEditTitle(e.target.value)} aria-label="Thought title" style={{ background: "#090909", color: "#eee", border: "1px solid var(--line)", padding: 11, borderRadius: 8, marginTop: 25 }}/><textarea value={editBody} onChange={e => setEditBody(e.target.value)} aria-label="Thought content" style={{ flex: 1, resize: "none", background: "#090909", color: "#ddd", border: "1px solid var(--line)", padding: 12, borderRadius: 8, marginTop: 10 }}/><div className="detail-actions"><button className="gold-button" onClick={saveEdit}>SAVE CHANGES</button><button className="ghost-button" onClick={() => setEditing(false)}>CANCEL</button></div></> : <>
           <h2>{selectedThought.title}</h2><div className="detail-body">{selectedThought.body}</div><div className="detail-meta">SAVED {new Date(selectedThought.createdAt).toLocaleString()} · {selectedThought.links.length} CONNECTIONS</div>{selectedThought.sourceText && <div className="detail-source"><span className="detail-type">{selectedThought.role === "detail" ? "EXACT SOURCE EXCERPT" : "ORIGINAL PARAGRAPH · PRESERVED"}</span><p>{selectedThought.sourceText}</p></div>}{selectedThought.connectionReasons && Object.keys(selectedThought.connectionReasons).length > 0 && <div className="detail-source"><span className="detail-type">AI-SUGGESTED LINKS · NOT VERIFIED FACTS</span>{Object.entries(selectedThought.connectionReasons).map(([id, reason]) => <p key={id}>{thoughts.find(item => item.id === id)?.title || "Related point"} — {reason}</p>)}</div>}
           <div className="detail-actions"><button className="ghost-button" onClick={beginEdit}>EDIT THOUGHT</button>{selectedThought.id !== "origin" && <button className="ghost-button" onClick={deleteSelected}>DELETE</button>}</div>
