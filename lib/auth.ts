@@ -1,9 +1,7 @@
 import "server-only";
 import { createHmac, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import type { NextRequest, NextResponse } from "next/server";
-import { promisify } from "node:util";
 
-const scryptAsync = promisify(scrypt);
 export const SESSION_COOKIE = "altbrain_session";
 const SESSION_SECONDS = 60 * 60 * 12;
 
@@ -25,7 +23,12 @@ export async function verifyMainPassword(password: string) {
   const salt = Buffer.from(saltText, "base64url");
   const expected = Buffer.from(hashText, "base64url");
   if (salt.length < 16 || expected.length !== 64) throw new Error("Altbrain password hash has an invalid format.");
-  const actual = (await scryptAsync(password, salt, 64, { N: 32768, r: 8, p: 1, maxmem: 64 * 1024 * 1024 })) as Buffer;
+  const actual = await new Promise<Buffer>((resolve, reject) => {
+    scrypt(password, salt, 64, { N: 32768, r: 8, p: 1, maxmem: 64 * 1024 * 1024 }, (error, derivedKey) => {
+      if (error) reject(error);
+      else resolve(derivedKey as Buffer);
+    });
+  });
   return timingSafeEqual(actual, expected);
 }
 
