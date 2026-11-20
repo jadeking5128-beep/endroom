@@ -6,6 +6,8 @@ export const dynamic = "force-dynamic";
 
 type Memory = { id: string; title: string; body: string; sourceText: string };
 
+const requestCounts = new Map<string, { count: number; resetAt: number }>();
+
 const schema = {
   type: "object",
   additionalProperties: false,
@@ -34,6 +36,14 @@ export async function POST(request: NextRequest) {
   if (!hasValidSession(request)) {
     return NextResponse.json({ error: "Unlock your private Altbrain session first." }, { status: 401 });
   }
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const now = Date.now();
+  const current = requestCounts.get(ip);
+  if (current && current.resetAt > now && current.count >= 10) {
+    return NextResponse.json({ error: "Too many recall requests. Wait a minute and try again." }, { status: 429 });
+  }
+  if (!current || current.resetAt <= now) requestCounts.set(ip, { count: 1, resetAt: now + 60_000 });
+  else current.count += 1;
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
@@ -50,8 +60,11 @@ export async function POST(request: NextRequest) {
   if (!Array.isArray(input.thoughts)) {
     return NextResponse.json({ error: "Memory context is missing." }, { status: 400 });
   }
+  if (input.thoughts.length > 160) {
+    return NextResponse.json({ error: "Semantic recall currently supports up to 160 nodes. Local exact-text search is available for larger vaults." }, { status: 413 });
+  }
 
-  const thoughts: Memory[] = input.thoughts.slice(0, 160).filter(item =>
+  const thoughts: Memory[] = input.thoughts.filter(item =>
     item && typeof item.id === "string" && typeof item.title === "string" &&
     typeof item.body === "string" && typeof item.sourceText === "string"
   ).map(item => ({
