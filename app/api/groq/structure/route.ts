@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type ExistingThought = { id: string; title: string; body: string };
-type DetailPoint = { title: string; content: string };
+type DetailPoint = { title: string; content: string; source_excerpt?: string };
 type Connection = {
   from_point_index: number;
   to_point_index: number;
