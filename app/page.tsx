@@ -134,8 +134,8 @@ export default function Home() {
 
   async function addThought(e?: FormEvent) {
     e?.preventDefault();
-    const value = draft.trim();
-    if (!value || !vault || isAnalysing) return;
+    const value = draft;
+    if (!value.trim() || !vault || isAnalysing) return;
     setIsAnalysing(true);
     setAiError("");
     setRecall(null);
@@ -163,7 +163,7 @@ export default function Home() {
       const groupRadius = 190 + (Math.floor(thoughts.length / 6) * 72);
       const groupX = Math.cos(groupAngle) * groupRadius;
       const groupY = Math.sin(groupAngle) * groupRadius;
-      const parentTitle = value.split(/\s+/).slice(0, 9).join(" ").slice(0, 90);
+      const parentTitle = value.trim().split(/\s+/).slice(0, 9).join(" ").slice(0, 90);
       const parent: Thought = {
         id: parentId,
         title: parentTitle || "Captured paragraph",
@@ -177,7 +177,7 @@ export default function Home() {
         connectionReasons: {}
       };
 
-      const points: Thought[] = result.points.slice(0, 40).map((point, index) => {
+      const points: Thought[] = result.points.slice(0, 80).map((point, index) => {
         const angle = (index * 2.399) - Math.PI / 2;
         const radius = 76 + (Math.floor(index / 8) * 34);
         return {
