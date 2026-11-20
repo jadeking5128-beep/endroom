@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import BrainScene from "./brain-scene";
 
-type Thought = { id: string; title: string; body: string; createdAt: number; x: number; y: number; links: string[] };
+type Thought = { id: string; title: string; body: string; createdAt: number; x: number; y: number; links: string[]; sourceText?: string; connectionReasons?: Record<string, string> };
+type AiResult = { nodes: { title: string; content: string }[]; connections: { from_node_index: number; to_node_index: number; existing_thought_id: string; reason: string }[] };
 type Vault = { version: 1; thoughts: Thought[] };
 type StoredVault = { salt: string; iv: string; data: string; version: 1 };
 
@@ -57,6 +58,8 @@ export default function Home() {
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editBody, setEditBody] = useState("");
+  const [isAnalysing, setIsAnalysing] = useState(false);
+  const [aiError, setAiError] = useState("");
 
 
   useEffect(() => {
@@ -122,14 +125,64 @@ export default function Home() {
   async function addThought(e?: FormEvent) {
     e?.preventDefault();
     const value = draft.trim();
-    if (!value || !vault) return;
-    const title = value.length > 52 ? value.slice(0, 49).trimEnd() + "…" : value;
-    const angle = (thoughts.length * 2.399) - Math.PI / 2;
-    const radius = 135 + (Math.floor(thoughts.length / 7) * 48);
-    const thought: Thought = { id: makeId(), title, body: value, createdAt: Date.now(), x: Math.cos(angle) * radius, y: Math.sin(angle) * radius, links: ["origin"] };
-    await persist({ ...vault, thoughts: [...thoughts, thought] });
-    setDraft("");
-    setSelected(thought.id);
+    if (!value || !vault || isAnalysing) return;
+    setIsAnalysing(true);
+    setAiError("");
+    try {
+      const response = await fetch("/api/groq/structure", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: value,
+          existingThoughts: thoughts.slice(0, 80).map(({ id, title, body }) => ({ id, title, body: body.slice(0, 500) }))
+        })
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "Groq analysis failed.");
+      const result = payload as AiResult;
+      if (!Array.isArray(result.nodes) || result.nodes.length === 0) throw new Error("No separate knowledge points were found. Try adding more detail.");
+      const now = Date.now();
+      const created = result.nodes.slice(0, 24).map((node, index) => {
+        const angle = ((thoughts.length + index) * 2.399) - Math.PI / 2;
+        const radius = 145 + (Math.floor((thoughts.length + index) / 7) * 48);
+        return {
+          id: makeId(),
+          title: node.title.slice(0, 90),
+          body: node.content.slice(0, 4000),
+          createdAt: now + index,
+          x: Math.cos(angle) * radius,
+          y: Math.sin(angle) * radius,
+          links: [] as string[],
+          sourceText: value,
+          connectionReasons: {} as Record<string, string>
+        };
+      });
+      const existingIds = new Set(thoughts.map(item => item.id));
+      for (const connection of result.connections || []) {
+        const from = created[connection.from_node_index];
+        if (!from) continue;
+        let targetId = "";
+        if (Number.isInteger(connection.to_node_index) && connection.to_node_index >= 0 && connection.to_node_index < created.length) {
+          targetId = created[connection.to_node_index].id;
+        } else if (existingIds.has(connection.existing_thought_id)) {
+          targetId = connection.existing_thought_id;
+        }
+        if (!targetId || targetId === from.id) continue;
+        if (!from.links.includes(targetId)) from.links.push(targetId);
+        from.connectionReasons[targetId] = connection.reason.slice(0, 280);
+        const target = created.find(item => item.id === targetId);
+        if (target && !target.links.includes(from.id)) target.links.push(from.id);
+        if (target) target.connectionReasons[from.id] = connection.reason.slice(0, 280);
+      }
+      if (created.length === 1 && !created[0].links.length) created[0].links.push("origin");
+      await persist({ ...vault, thoughts: [...thoughts, ...created] });
+      setDraft("");
+      setSelected(created[0].id);
+    } catch (err) {
+      setAiError(err instanceof Error ? err.message : "Could not analyse this paragraph.");
+    } finally {
+      setIsAnalysing(false);
+    }
   }
 
   async function saveEdit() {
@@ -187,7 +240,7 @@ export default function Home() {
           <div className="graph-hint">CONNECTED THOUGHTS · DRAG TO ROTATE · PINCH TO ZOOM</div>
         </div>
         <div className="capture">
-          <form className="capture-box" onSubmit={addThought}><input value={draft} onChange={e => setDraft(e.target.value)} placeholder="Catch a thought before it disappears…" aria-label="New thought" /><button className="capture-button" disabled={!draft.trim()} type="submit">CAPTURE ↗</button></form>
+          <form className="capture-box" onSubmit={addThought}><textarea value={draft} onChange={e => setDraft(e.target.value)} placeholder="Drop a paragraph, idea, or collection of thoughts…" aria-label="Paragraph to structure" rows={2} disabled={isAnalysing} /><button className="capture-button" disabled={!draft.trim() || isAnalysing} type="submit">{isAnalysing ? "ANALYSING…" : "SPLIT + CONNECT ↗"}</button></form>{aiError && <div className="error ai-error">{aiError}</div>}
           <div className="quick-row"><button className="quick" onClick={() => setSelected("origin")}>⌘ CENTRE NODE</button><button className="quick" onClick={() => { setDraft("An idea: "); document.querySelector<HTMLInputElement>(".capture-box input")?.focus(); }}>＋ NEW IDEA</button><button className="quick" onClick={() => setSelected(graphThoughts[0]?.id ?? "origin")}>◉ EXPLORE</button></div>
         </div>
       </section>
@@ -195,7 +248,7 @@ export default function Home() {
       {selectedThought && <aside className="detail">
         <div className="detail-top"><span className="detail-type">{selectedThought.id === "origin" ? "THE CORE" : "THOUGHT NODE"}</span><button className="icon-button" onClick={() => { setSelected(null); setEditing(false); }} aria-label="Close thought">×</button></div>
         {editing ? <><input value={editTitle} onChange={e => setEditTitle(e.target.value)} aria-label="Thought title" style={{ background: "#090909", color: "#eee", border: "1px solid var(--line)", padding: 11, borderRadius: 8, marginTop: 25 }}/><textarea value={editBody} onChange={e => setEditBody(e.target.value)} aria-label="Thought content" style={{ flex: 1, resize: "none", background: "#090909", color: "#ddd", border: "1px solid var(--line)", padding: 12, borderRadius: 8, marginTop: 10 }}/><div className="detail-actions"><button className="gold-button" onClick={saveEdit}>SAVE CHANGES</button><button className="ghost-button" onClick={() => setEditing(false)}>CANCEL</button></div></> : <>
-          <h2>{selectedThought.title}</h2><div className="detail-body">{selectedThought.body}</div><div className="detail-meta">SAVED {new Date(selectedThought.createdAt).toLocaleString()} · {selectedThought.links.length} CONNECTIONS</div>
+          <h2>{selectedThought.title}</h2><div className="detail-body">{selectedThought.body}</div><div className="detail-meta">SAVED {new Date(selectedThought.createdAt).toLocaleString()} · {selectedThought.links.length} CONNECTIONS</div>{selectedThought.sourceText && <div className="detail-source"><span className="detail-type">SOURCE PARAGRAPH</span><p>{selectedThought.sourceText}</p></div>}{selectedThought.connectionReasons && Object.keys(selectedThought.connectionReasons).length > 0 && <div className="detail-source"><span className="detail-type">WHY THESE CONNECT</span>{Object.entries(selectedThought.connectionReasons).map(([id, reason]) => <p key={id}>{thoughts.find(item => item.id === id)?.title || "Related point"} — {reason}</p>)}</div>}
           <div className="detail-actions"><button className="ghost-button" onClick={beginEdit}>EDIT THOUGHT</button>{selectedThought.id !== "origin" && <button className="ghost-button" onClick={deleteSelected}>DELETE</button>}</div>
         </>}
       </aside>}
