@@ -4,18 +4,12 @@ Altbrain uses a password-only owner session and a separate encrypted local vault
 
 ## 1. Set the main password
 
-Run this in a local terminal from the repository root:
-
-```bash
-node scripts/hash-altbrain-password.mjs
-```
-
-Enter the password when prompted. The script does not echo the password. It prints a salted scrypt hash.
+Open the browser-only generator at `/setup` on your Altbrain deployment. Enter and confirm your password there. The password stays in your browser; the page derives a salted PBKDF2 hash locally and does not send the password to the server. You can also run `node scripts/hash-altbrain-password.mjs` in a local terminal; it uses hidden input and prints the same PBKDF2 format.
 
 In **Vercel → altbrain → Settings → Environment Variables**, add:
 
 - Name: `ALTBRAIN_PASSWORD_HASH`
-- Value: the complete `scrypt$...` string printed by the script
+- Value: the complete `pbkdf2$600000$...` string printed by the script
 - Type: Sensitive
 - Environments: Production, Preview, Development
 
