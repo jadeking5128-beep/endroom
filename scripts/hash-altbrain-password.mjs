@@ -1,4 +1,4 @@
-import { randomBytes, scryptSync } from "node:crypto";
+import { randomBytes, pbkdf2Sync } from "node:crypto";
 import { stdin, stdout } from "node:process";
 
 if (!stdin.isTTY || !stdout.isTTY) {
@@ -49,6 +49,6 @@ if (password !== confirmation) {
 }
 
 const salt = randomBytes(16);
-const hash = scryptSync(password, salt, 64, { N: 32768, r: 8, p: 1, maxmem: 64 * 1024 * 1024 });
+const hash = pbkdf2Sync(password, salt, 600_000, 32, "sha256");
 console.log("Copy this value into Vercel as ALTBRAIN_PASSWORD_HASH:");
-console.log(`scrypt$${salt.toString("base64url")}$${hash.toString("base64url")}`);
+console.log(`pbkdf2$600000${salt.toString("base64url")}${hash.toString("base64url")}`);
