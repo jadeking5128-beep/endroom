@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 
 function toBase64Url(bytes: Uint8Array) {
   let binary = "";
@@ -16,7 +16,7 @@ export default function PasswordSetup() {
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  async function generate(event: React.FormEvent) {
+  async function generate(event: FormEvent) {
     event.preventDefault();
     setError("");
     setHash("");
