@@ -3,8 +3,8 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import BrainScene from "./brain-scene";
 
-type Thought = { id: string; title: string; body: string; createdAt: number; x: number; y: number; links: string[]; sourceText?: string; connectionReasons?: Record<string, string> };
-type AiResult = { nodes: { title: string; content: string }[]; connections: { from_node_index: number; to_node_index: number; existing_thought_id: string; reason: string }[] };
+type Thought = { id: string; title: string; body: string; createdAt: number; x: number; y: number; links: string[]; sourceText?: string; parentId?: string; role?: "memory" | "detail"; connectionReasons?: Record<string, string> };
+type AiResult = { parent: { title: string; content: string }; points: { title: string; content: string }[]; parentConnections: { existing_thought_id: string; reason: string }[]; connections: { from_point_index: number; to_point_index: number; existing_thought_id: string; reason: string }[] };
 type Vault = { version: 1; thoughts: Thought[] };
 type StoredVault = { salt: string; iv: string; data: string; version: 1 };
 
@@ -128,6 +128,7 @@ export default function Home() {
     if (!value || !vault || isAnalysing) return;
     setIsAnalysing(true);
     setAiError("");
+    setSelected(null);
     try {
       const response = await fetch("/api/groq/structure", {
         method: "POST",
@@ -140,49 +141,79 @@ export default function Home() {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || "Groq analysis failed.");
       const result = payload as AiResult;
-      if (!Array.isArray(result.nodes) || result.nodes.length === 0) throw new Error("No separate knowledge points were found. Try adding more detail.");
+      if (!result.parent?.title || !result.parent?.content || !Array.isArray(result.points) || result.points.length === 0) {
+        throw new Error("The paragraph could not be structured into one memory and its details.");
+      }
+
       const now = Date.now();
-      const created = result.nodes.slice(0, 24).map((node, index) => {
-        const angle = ((thoughts.length + index) * 2.399) - Math.PI / 2;
-        const radius = 145 + (Math.floor((thoughts.length + index) / 7) * 48);
+      const parentId = makeId();
+      const groupAngle = (thoughts.length * 2.399) - Math.PI / 2;
+      const groupRadius = 190 + (Math.floor(thoughts.length / 6) * 72);
+      const groupX = Math.cos(groupAngle) * groupRadius;
+      const groupY = Math.sin(groupAngle) * groupRadius;
+      const parent: Thought = {
+        id: parentId,
+        title: result.parent.title.slice(0, 90),
+        body: result.parent.content.slice(0, 5000),
+        createdAt: now,
+        x: groupX,
+        y: groupY,
+        links: [],
+        sourceText: value,
+        role: "memory",
+        connectionReasons: {}
+      };
+
+      const points: Thought[] = result.points.slice(0, 40).map((point, index) => {
+        const angle = (index * 2.399) - Math.PI / 2;
+        const radius = 76 + (Math.floor(index / 8) * 34);
         return {
           id: makeId(),
-          title: node.title.slice(0, 90),
-          body: node.content.slice(0, 4000),
-          createdAt: now + index,
-          x: Math.cos(angle) * radius,
-          y: Math.sin(angle) * radius,
-          links: [] as string[],
-          sourceText: value,
-          connectionReasons: {} as Record<string, string>
+          title: point.title.slice(0, 100),
+          body: point.content.slice(0, 4000),
+          createdAt: now + index + 1,
+          x: groupX + Math.cos(angle) * radius,
+          y: groupY + Math.sin(angle) * radius,
+          links: [parentId],
+          parentId,
+          role: "detail",
+          connectionReasons: { [parentId]: "Detail extracted from this unified paragraph memory." }
         };
       });
+
+      for (const point of points) {
+        parent.links.push(point.id);
+        parent.connectionReasons![point.id] = "This point preserves a specific detail from the original paragraph.";
+      }
+
       const existingIds = new Set(thoughts.map(item => item.id));
+      for (const connection of result.parentConnections || []) {
+        if (!existingIds.has(connection.existing_thought_id)) continue;
+        const targetId = connection.existing_thought_id;
+        if (!parent.links.includes(targetId)) parent.links.push(targetId);
+        parent.connectionReasons![targetId] = connection.reason.slice(0, 280);
+      }
+
       for (const connection of result.connections || []) {
-        const from = created[connection.from_node_index];
+        const from = points[connection.from_point_index];
         if (!from) continue;
         let targetId = "";
-        if (Number.isInteger(connection.to_node_index) && connection.to_node_index >= 0 && connection.to_node_index < created.length) {
-          targetId = created[connection.to_node_index].id;
+        if (Number.isInteger(connection.to_point_index) && connection.to_point_index >= 0 && connection.to_point_index < points.length) {
+          targetId = points[connection.to_point_index].id;
         } else if (existingIds.has(connection.existing_thought_id)) {
           targetId = connection.existing_thought_id;
         }
-        if (!targetId || targetId === from.id) continue;
+        if (!targetId || targetId === from.id || targetId === parentId) continue;
         if (!from.links.includes(targetId)) from.links.push(targetId);
-        from.connectionReasons[targetId] = connection.reason.slice(0, 280);
-        const target = created.find(item => item.id === targetId);
+        from.connectionReasons![targetId] = connection.reason.slice(0, 280);
+        const target = points.find(item => item.id === targetId);
         if (target && !target.links.includes(from.id)) target.links.push(from.id);
-        if (target) target.connectionReasons[from.id] = connection.reason.slice(0, 280);
+        if (target) target.connectionReasons![from.id] = connection.reason.slice(0, 280);
       }
-      for (const node of created) {
-        if (node.links.length === 0) {
-          node.links.push("origin");
-          node.connectionReasons.origin = "No stronger direct relationship was identified, so this point is kept under the central node without claiming a conceptual connection.";
-        }
-      }
-      await persist({ ...vault, thoughts: [...thoughts, ...created] });
+
+      await persist({ ...vault, thoughts: [...thoughts, parent, ...points] });
       setDraft("");
-      setSelected(created[0].id);
+      setSelected(parentId);
     } catch (err) {
       setAiError(err instanceof Error ? err.message : "Could not analyse this paragraph.");
     } finally {
@@ -245,8 +276,8 @@ export default function Home() {
           <div className="graph-hint">CONNECTED THOUGHTS · DRAG TO ROTATE · PINCH TO ZOOM</div>
         </div>
         <div className="capture">
-          <form className="capture-box" onSubmit={addThought}><textarea value={draft} onChange={e => setDraft(e.target.value)} placeholder="Drop a paragraph, idea, or collection of thoughts…" aria-label="Paragraph to structure" rows={2} disabled={isAnalysing} /><button className="capture-button" disabled={!draft.trim() || isAnalysing} type="submit">{isAnalysing ? "ANALYSING…" : "SPLIT + CONNECT ↗"}</button></form>{aiError && <div className="error ai-error">{aiError}</div>}
-          <div className="quick-row"><button className="quick" onClick={() => setSelected("origin")}>⌘ CENTRE NODE</button><button className="quick" onClick={() => { setDraft("An idea: "); document.querySelector<HTMLInputElement>(".capture-box input")?.focus(); }}>＋ NEW IDEA</button><button className="quick" onClick={() => setSelected(graphThoughts[0]?.id ?? "origin")}>◉ EXPLORE</button></div>
+          <form className="capture-box" onSubmit={addThought}><textarea value={draft} onChange={e => setDraft(e.target.value)} placeholder="Drop a paragraph, idea, or collection of thoughts…" aria-label="Paragraph to structure" rows={2} disabled={isAnalysing} /><button className="capture-button" disabled={!draft.trim() || isAnalysing} type="submit">{isAnalysing ? "ANALYSING…" : "BUILD ONE MEMORY ↗"}</button></form>{aiError && <div className="error ai-error">{aiError}</div>}
+          <div className="quick-row"><button className="quick" onClick={() => setSelected("origin")}>⌘ CENTRE NODE</button><button className="quick" onClick={() => { setDraft("An idea: "); document.querySelector<HTMLTextAreaElement>(".capture-box textarea")?.focus(); }}>＋ NEW IDEA</button><button className="quick" onClick={() => setSelected(graphThoughts[0]?.id ?? "origin")}>◉ EXPLORE</button></div>
         </div>
       </section>
       <div className="bottomline"><span>{thoughts.length} THOUGHTS STORED</span><span>ENCRYPTED ON THIS DEVICE</span></div>
