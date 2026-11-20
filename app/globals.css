@@ -115,3 +115,7 @@ h1{font:500 clamp(30px,5vw,54px)/1.08 Arial, sans-serif;letter-spacing:-.055em;m
 .recall-result span{font-size:10px;line-height:1.5;color:#85827b}
 .recall-empty{color:#89857c;font-size:11px;padding:6px}
 @media(max-width:640px){.recall{margin-bottom:8px}.recall-box{gap:7px;padding-left:10px}.recall-box input{font-size:11px}.recall-box button{font-size:8px;padding:8px}.recall-heading{font-size:7px}.recall-results{max-height:160px}}
+
+
+.recall-privacy,.capture-privacy{margin:6px 3px 0;color:#69655e;font-size:9px;line-height:1.55;letter-spacing:.015em}
+.recall-error{margin:7px 4px;color:#c5a16e;font-size:10px;line-height:1.5}
