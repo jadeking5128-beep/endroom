@@ -184,11 +184,11 @@ export default function Home() {
         <div className="intro"><div className="eyebrow">A PRIVATE EXTENSION OF YOUR MIND</div><h1>What&apos;s on your mind?</h1><div className="subtitle">Every thought has a place. Every connection has a reason.</div></div>
         <div className="graph-wrap">
           <BrainScene thoughts={thoughts} selected={selected} onSelect={(id) => { setSelected(id); setEditing(false); }} />
-          <div className="graph-hint">DRAG TO ROTATE · PINCH OR SCROLL TO ZOOM · SELECT A THOUGHT</div>
+          <div className="graph-hint">CONNECTED THOUGHTS · DRAG TO ROTATE · PINCH TO ZOOM</div>
         </div>
         <div className="capture">
           <form className="capture-box" onSubmit={addThought}><input value={draft} onChange={e => setDraft(e.target.value)} placeholder="Catch a thought before it disappears…" aria-label="New thought" /><button className="capture-button" disabled={!draft.trim()} type="submit">CAPTURE ↗</button></form>
-          <div className="quick-row"><button className="quick" onClick={() => setSelected("origin")}>⌘ THE CORE</button><button className="quick" onClick={() => { setDraft("An idea: "); document.querySelector<HTMLInputElement>(".capture-box input")?.focus(); }}>＋ NEW IDEA</button><button className="quick" onClick={() => setSelected(graphThoughts[0]?.id ?? "origin")}>◉ EXPLORE</button></div>
+          <div className="quick-row"><button className="quick" onClick={() => setSelected("origin")}>⌘ CENTRE NODE</button><button className="quick" onClick={() => { setDraft("An idea: "); document.querySelector<HTMLInputElement>(".capture-box input")?.focus(); }}>＋ NEW IDEA</button><button className="quick" onClick={() => setSelected(graphThoughts[0]?.id ?? "origin")}>◉ EXPLORE</button></div>
         </div>
       </section>
       <div className="bottomline"><span>{thoughts.length} THOUGHTS STORED</span><span>ENCRYPTED ON THIS DEVICE</span></div>
