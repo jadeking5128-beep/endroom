@@ -346,6 +346,7 @@ export default function Home() {
           <p>{stored ? "Enter your main password to unlock your private vault." : "Set your main password in Vercel first. This same password unlocks your encrypted vault."}</p>
           <input type="password" autoComplete="current-password" placeholder="Main password · no username" value={password} onChange={e => setPassword(e.target.value)} minLength={10} required autoFocus />
           <button className="gold-button" type="submit">{stored ? "UNLOCK YOUR BRAIN" : "CREATE PRIVATE VAULT"}</button>
+          <a href="/setup" className="setup-link">GENERATE MAIN PASSWORD HASH</a>
           {error && <p className="error">{error}</p>}
           <p className="lock-note">OWNER-ONLY SESSION · AES-256-GCM VAULT ENCRYPTION</p>
         </form>
