@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
           },
           {
             role: "user",
-            content: JSON.stringify({ paragraph: input.text.trim(), existing_thoughts_for_context: existing })
+            content: JSON.stringify({ paragraph: input.text, existing_thoughts_for_context: existing })
           }
         ]
       })
@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Groq returned an invalid unified memory structure." }, { status: 502 });
     }
 
-    const sourceText = input.text.trim();
+    const sourceText = input.text;
     const points = parsed.points.slice(0, 80).filter(point =>
       point && typeof point.source_excerpt === "string" &&
       point.source_excerpt.trim().length > 0 && sourceText.includes(point.source_excerpt.trim())
