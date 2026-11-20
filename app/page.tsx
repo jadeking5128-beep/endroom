@@ -51,7 +51,6 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [vault, setVault] = useState<Vault | null>(null);
   const [lockPassword, setLockPassword] = useState("");
-  const [isNew, setIsNew] = useState(false);
   const [error, setError] = useState("");
   const [draft, setDraft] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
@@ -70,7 +69,7 @@ export default function Home() {
       if (raw) {
         const parsed = JSON.parse(raw) as StoredVault;
         if (parsed.version === 1 && parsed.salt && parsed.iv && parsed.data) setStored(parsed);
-      } else setIsNew(true);
+      }
     } catch { setError("This browser could not read the local vault."); }
     setReady(true);
   }, []);
