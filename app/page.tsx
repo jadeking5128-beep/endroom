@@ -152,7 +152,7 @@ export default function Home() {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || "Groq analysis failed.");
       const result = payload as AiResult;
-      if (!Array.isArray(result.points) || result.points.length === 0) {
+      if (!Array.isArray(result.points)) {
         throw new Error("The paragraph could not be structured into one memory and its details.");
       }
 
