@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hasValidSession, sameOrigin } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,9 +35,10 @@ const pointSchema = {
   additionalProperties: false,
   properties: {
     title: { type: "string" },
-    content: { type: "string" }
+    content: { type: "string" },
+    source_excerpt: { type: "string" }
   },
-  required: ["title", "content"]
+  required: ["title", "content", "source_excerpt"]
 };
 
 const schema = {
@@ -91,17 +93,11 @@ const schema = {
 };
 
 export async function POST(request: NextRequest) {
-  const origin = request.headers.get("origin");
-  const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
-  if (!origin || !host) {
+  if (!sameOrigin(request)) {
     return NextResponse.json({ error: "Request origin could not be verified." }, { status: 403 });
   }
-  try {
-    if (new URL(origin).host !== host) {
-      return NextResponse.json({ error: "Cross-origin requests are not allowed." }, { status: 403 });
-    }
-  } catch {
-    return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
+  if (!hasValidSession(request)) {
+    return NextResponse.json({ error: "Unlock your private Altbrain session first." }, { status: 401 });
   }
 
   const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
@@ -151,7 +147,8 @@ export async function POST(request: NextRequest) {
             content: [
               "You are Altbrain's knowledge-structuring engine. Convert exactly one submitted paragraph into exactly one unified parent memory node plus a set of smaller detail points beneath it.",
               "The parent is ONE node representing the paragraph as a whole. Give it a concise title and a coherent, compact description that preserves the paragraph's overall meaning. Do not create multiple parent notes.",
-              "Then extract every meaningful detail into smaller points: distinct facts, claims, definitions, names, dates, quantities, examples, explanations, conditions, questions, causes, effects, comparisons, exceptions, and qualifications. Do not omit details just to make the result shorter. Use as many points as needed, up to 40. Keep each point independently understandable and faithful to the source.",
+              "Then extract every meaningful detail into smaller points: distinct facts, claims, definitions, names, dates, quantities, examples, explanations, conditions, questions, causes, effects, comparisons, exceptions, and qualifications. Do not omit details just to make the result shorter. Use as many points as needed, up to 40.",
+              "Each point must include source_excerpt copied EXACTLY as a contiguous substring from the submitted paragraph. Never paraphrase or invent this excerpt. The title is only a short navigation label; the saved detail body must be the exact source_excerpt, not a rewritten sentence.",
               "Do not simply copy the whole paragraph into every point. Distribute its information carefully so that the points collectively preserve the full detail. The parent provides the unified overview; the points retain the specifics.",
               "Do not add outside facts, assumptions, invented context, or conclusions. Preserve ambiguity and uncertainty exactly where the source is unclear.",
               "Connect detail points to each other only when a real conceptual relationship exists, such as explanation, cause/effect, example/general rule, contrast, or dependency. Use exact existing memory IDs only when the supplied context supports a meaningful relationship.",
@@ -194,10 +191,12 @@ export async function POST(request: NextRequest) {
       title: parsed.parent.title.trim().slice(0, 90),
       content: parsed.parent.content.trim().slice(0, 5000)
     };
+    const sourceText = input.text.trim();
     const points = parsed.points.slice(0, 40).filter(point =>
       point && typeof point.title === "string" && typeof point.content === "string" &&
-      point.title.trim().length > 0 && point.content.trim().length > 0
-    ).map(point => ({ title: point.title.trim().slice(0, 100), content: point.content.trim().slice(0, 4000) }));
+      typeof point.source_excerpt === "string" && point.title.trim().length > 0 &&
+      point.source_excerpt.trim().length > 0 && sourceText.includes(point.source_excerpt.trim())
+    ).map(point => ({ title: point.title.trim().slice(0, 100), content: point.source_excerpt.trim().slice(0, 4000), source_excerpt: point.source_excerpt.trim().slice(0, 4000) }));
 
     if (!parent.title || !parent.content || !points.length) {
       return NextResponse.json({ error: "The paragraph did not produce a complete parent memory and detail points." }, { status: 422 });
