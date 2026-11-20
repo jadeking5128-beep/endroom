@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import BrainScene from "./brain-scene";
 
 type Thought = { id: string; title: string; body: string; createdAt: number; x: number; y: number; links: string[]; sourceText?: string; parentId?: string; role?: "memory" | "detail"; connectionReasons?: Record<string, string> };
-type AiResult = { parent: { title: string; content: string }; points: { title: string; content: string }[]; parentConnections: { existing_thought_id: string; reason: string }[]; connections: { from_point_index: number; to_point_index: number; existing_thought_id: string; reason: string }[] };
+type AiResult = { parent: { title: string; content: string }; points: { title: string; content: string; source_excerpt?: string }[]; parentConnections: { existing_thought_id: string; reason: string }[]; connections: { from_point_index: number; to_point_index: number; existing_thought_id: string; reason: string }[] };
 type Vault = { version: 1; thoughts: Thought[] };
 type StoredVault = { salt: string; iv: string; data: string; version: 1 };
 type RecallState = { query: string; ids: string[]; links: string[]; matches: { id: string; title: string; excerpt: string }[] };
@@ -48,6 +48,7 @@ function makeId() { return crypto.randomUUID(); }
 export default function Home() {
   const [stored, setStored] = useState<StoredVault | null>(null);
   const [ready, setReady] = useState(false);
+  const [serverAuthenticated, setServerAuthenticated] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
   const [password, setPassword] = useState("");
   const [vault, setVault] = useState<Vault | null>(null);
@@ -73,7 +74,11 @@ export default function Home() {
         if (parsed.version === 1 && parsed.salt && parsed.iv && parsed.data) setStored(parsed);
       }
     } catch { setError("This browser could not read the local vault."); }
-    setReady(true);
+    fetch("/api/auth/session", { cache: "no-store" })
+      .then(response => response.ok ? response.json() : { authenticated: false })
+      .then(result => setServerAuthenticated(result.authenticated === true))
+      .catch(() => setServerAuthenticated(false))
+      .finally(() => setReady(true));
   }, []);
 
   const thoughts = vault?.thoughts ?? [];
@@ -84,8 +89,14 @@ export default function Home() {
   async function unlock(e: FormEvent) {
     e.preventDefault();
     setError("");
-    if (password.length < 10) { setError("Use at least 10 characters for your passphrase."); return; }
+    if (password.length < 10) { setError("Use at least 10 characters for your main password."); return; }
     try {
+      if (!serverAuthenticated) {
+        const authResponse = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
+        const authPayload = await authResponse.json();
+        if (!authResponse.ok) throw new Error(authPayload.error || "Main password authentication failed.");
+        setServerAuthenticated(true);
+      }
       let salt: Uint8Array;
       let key: CryptoKey;
       if (stored) {
@@ -105,8 +116,8 @@ export default function Home() {
       setVaultKey(key);
       setPassword("");
       setUnlocked(true);
-    } catch {
-      setError("That passphrase did not unlock this vault. Nothing was changed.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "That password did not unlock this vault. Nothing was changed.");
     }
   }
 
@@ -119,6 +130,8 @@ export default function Home() {
   }
 
   function lock() {
+    fetch("/api/auth/logout", { method: "POST" }).catch(() => undefined);
+    setServerAuthenticated(false);
     setUnlocked(false);
     setVault(null);
     setVaultKey(null);
@@ -159,10 +172,11 @@ export default function Home() {
       const groupRadius = 190 + (Math.floor(thoughts.length / 6) * 72);
       const groupX = Math.cos(groupAngle) * groupRadius;
       const groupY = Math.sin(groupAngle) * groupRadius;
+      const parentTitle = value.split(/\s+/).slice(0, 9).join(" ").slice(0, 90);
       const parent: Thought = {
         id: parentId,
-        title: result.parent.title.slice(0, 90),
-        body: result.parent.content.slice(0, 5000),
+        title: parentTitle || "Captured paragraph",
+        body: value,
         createdAt: now,
         x: groupX,
         y: groupY,
@@ -178,7 +192,8 @@ export default function Home() {
         return {
           id: makeId(),
           title: point.title.slice(0, 100),
-          body: point.content.slice(0, 4000),
+          body: (point.source_excerpt || point.content).slice(0, 4000),
+          sourceText: (point.source_excerpt || point.content).slice(0, 4000),
           createdAt: now + index + 1,
           x: groupX + Math.cos(angle) * radius,
           y: groupY + Math.sin(angle) * radius,
@@ -251,13 +266,18 @@ export default function Home() {
       setRecall({ query, ids: [], links: [], matches: [] });
       return;
     }
-    const directIds = new Set(scored.map(item => item.thought.id));
+    const matchedIds = new Set(scored.map(item => item.thought.id));
+    const directIds = new Set(matchedIds);
     const linkKeys = new Set<string>();
     for (const item of scored) {
+      if (item.thought.parentId) {
+        directIds.add(item.thought.parentId);
+        linkKeys.add([item.thought.id, item.thought.parentId].sort().join(":"));
+      }
       for (const linkId of item.thought.links) {
-        if (!thoughts.some(candidate => candidate.id === linkId)) continue;
-        directIds.add(linkId);
-        linkKeys.add([item.thought.id, linkId].sort().join(":"));
+        const target = thoughts.find(candidate => candidate.id === linkId);
+        const isParentEdge = target?.parentId === item.thought.id || item.thought.parentId === linkId;
+        if (matchedIds.has(linkId) || isParentEdge) linkKeys.add([item.thought.id, linkId].sort().join(":"));
       }
     }
     const matches = scored.map(({ thought, matched }) => ({
@@ -304,11 +324,11 @@ export default function Home() {
           <div className="lock-icon">✳</div>
           <div className="eyebrow">PRIVATE KNOWLEDGE SPACE</div>
           <h2>Tyler&apos;s Brain</h2>
-          <p>{stored ? "Your encrypted vault is waiting. Enter your passphrase to open it." : "Create your private vault. Your passphrase encrypts everything before it is saved on this device."}</p>
-          <input type="password" autoComplete="current-password" placeholder="Passphrase · no username" value={password} onChange={e => setPassword(e.target.value)} minLength={10} required autoFocus />
+          <p>{stored ? "Enter your main password to unlock your private vault." : "Set your main password in Vercel first. This same password unlocks your encrypted vault."}</p>
+          <input type="password" autoComplete="current-password" placeholder="Main password · no username" value={password} onChange={e => setPassword(e.target.value)} minLength={10} required autoFocus />
           <button className="gold-button" type="submit">{stored ? "UNLOCK YOUR BRAIN" : "CREATE PRIVATE VAULT"}</button>
           {error && <p className="error">{error}</p>}
-          <p className="lock-note">AES-256-GCM · PBKDF2 · THIS DEVICE ONLY FOR NOW</p>
+          <p className="lock-note">OWNER-ONLY SESSION · AES-256-GCM VAULT ENCRYPTION</p>
         </form>
       </div>
     </main>
@@ -334,7 +354,7 @@ export default function Home() {
             {recall && <button type="button" className="recall-clear" onClick={() => { setRecall(null); setRecallQuery(""); }} aria-label="Clear memory recall">×</button>}
           </form>
           {recall && <div className="recall-results">
-            <div className="recall-heading"><span>LOCAL MEMORY MATCHES</span><span>{recall.matches.length} FOUND · HIGHLIGHT IS TEMPORARY</span></div>
+            <div className="recall-heading"><span>DIRECT TEXT MATCHES · NO AI GUESSES</span><span>{recall.matches.length} FOUND · TEMPORARY</span></div>
             {recall.matches.length ? recall.matches.map(match => <button key={match.id} className="recall-result" onClick={() => { setSelected(match.id); setEditing(false); }}>
               <strong>{match.title}</strong><span>{match.excerpt}</span>
             </button>) : <p className="recall-empty">No matching stored memories were found. Nothing was generated or added.</p>}
@@ -347,9 +367,9 @@ export default function Home() {
       </section>
       <div className="bottomline"><span>{thoughts.length} THOUGHTS STORED</span><span>ENCRYPTED ON THIS DEVICE</span></div>
       {selectedThought && <aside className="detail">
-        <div className="detail-top"><span className="detail-type">{selectedThought.id === "origin" ? "THE CORE" : selectedThought.role === "detail" ? "MEMORY DETAIL" : "UNIFIED MEMORY NODE"}</span><button className="icon-button" onClick={() => { setSelected(null); setEditing(false); }} aria-label="Close thought">×</button></div>
+        <div className="detail-top"><span className="detail-type">{selectedThought.id === "origin" ? "THE CORE" : selectedThought.role === "detail" ? "EXTRACTED SOURCE DETAIL" : "ORIGINAL MEMORY · UNIFIED NODE"}</span><button className="icon-button" onClick={() => { setSelected(null); setEditing(false); }} aria-label="Close thought">×</button></div>
         {editing ? <><input value={editTitle} onChange={e => setEditTitle(e.target.value)} aria-label="Thought title" style={{ background: "#090909", color: "#eee", border: "1px solid var(--line)", padding: 11, borderRadius: 8, marginTop: 25 }}/><textarea value={editBody} onChange={e => setEditBody(e.target.value)} aria-label="Thought content" style={{ flex: 1, resize: "none", background: "#090909", color: "#ddd", border: "1px solid var(--line)", padding: 12, borderRadius: 8, marginTop: 10 }}/><div className="detail-actions"><button className="gold-button" onClick={saveEdit}>SAVE CHANGES</button><button className="ghost-button" onClick={() => setEditing(false)}>CANCEL</button></div></> : <>
-          <h2>{selectedThought.title}</h2><div className="detail-body">{selectedThought.body}</div><div className="detail-meta">SAVED {new Date(selectedThought.createdAt).toLocaleString()} · {selectedThought.links.length} CONNECTIONS</div>{selectedThought.sourceText && <div className="detail-source"><span className="detail-type">SOURCE PARAGRAPH</span><p>{selectedThought.sourceText}</p></div>}{selectedThought.connectionReasons && Object.keys(selectedThought.connectionReasons).length > 0 && <div className="detail-source"><span className="detail-type">WHY THESE CONNECT</span>{Object.entries(selectedThought.connectionReasons).map(([id, reason]) => <p key={id}>{thoughts.find(item => item.id === id)?.title || "Related point"} — {reason}</p>)}</div>}
+          <h2>{selectedThought.title}</h2><div className="detail-body">{selectedThought.body}</div><div className="detail-meta">SAVED {new Date(selectedThought.createdAt).toLocaleString()} · {selectedThought.links.length} CONNECTIONS</div>{selectedThought.sourceText && <div className="detail-source"><span className="detail-type">{selectedThought.role === "detail" ? "EXACT SOURCE EXCERPT" : "ORIGINAL PARAGRAPH · PRESERVED"}</span><p>{selectedThought.sourceText}</p></div>}{selectedThought.connectionReasons && Object.keys(selectedThought.connectionReasons).length > 0 && <div className="detail-source"><span className="detail-type">WHY THESE CONNECT</span>{Object.entries(selectedThought.connectionReasons).map(([id, reason]) => <p key={id}>{thoughts.find(item => item.id === id)?.title || "Related point"} — {reason}</p>)}</div>}
           <div className="detail-actions"><button className="ghost-button" onClick={beginEdit}>EDIT THOUGHT</button>{selectedThought.id !== "origin" && <button className="ghost-button" onClick={deleteSelected}>DELETE</button>}</div>
         </>}
       </aside>}
