@@ -26,12 +26,10 @@ async function deriveKey(password: string, salt: Uint8Array) {
   return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 600000, hash: "SHA-256" }, material, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
 }
 
-async function seal(vault: Vault, password: string, salt?: Uint8Array): Promise<StoredVault> {
-  const actualSalt = salt ?? crypto.getRandomValues(new Uint8Array(16));
+async function seal(vault: Vault, key: CryptoKey, salt: Uint8Array): Promise<StoredVault> {
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const key = await deriveKey(password, actualSalt);
   const data = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoder.encode(JSON.stringify(vault)));
-  return { version: 1, salt: toB64(actualSalt), iv: toB64(iv), data: toB64(new Uint8Array(data)) };
+  return { version: 1, salt: toB64(salt), iv: toB64(iv), data: toB64(new Uint8Array(data)) };
 }
 
 async function openVault(stored: StoredVault, password: string): Promise<Vault> {
@@ -50,7 +48,7 @@ export default function Home() {
   const [unlocked, setUnlocked] = useState(false);
   const [password, setPassword] = useState("");
   const [vault, setVault] = useState<Vault | null>(null);
-  const [lockPassword, setLockPassword] = useState("");
+  const [vaultKey, setVaultKey] = useState<CryptoKey | null>(null);
   const [error, setError] = useState("");
   const [draft, setDraft] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
@@ -62,6 +60,8 @@ export default function Home() {
   const [editBody, setEditBody] = useState("");
   const graphRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null);
+  const pointersRef = useRef(new Map<number, { x: number; y: number }>());
+  const pinchRef = useRef<{ distance: number; scale: number } | null>(null);
 
   useEffect(() => {
     try {
@@ -82,17 +82,23 @@ export default function Home() {
     setError("");
     if (password.length < 10) { setError("Use at least 10 characters for your passphrase."); return; }
     try {
+      let salt: Uint8Array;
+      let key: CryptoKey;
       if (stored) {
+        salt = fromB64(stored.salt);
         const decoded = await openVault(stored, password);
+        key = await deriveKey(password, salt);
         setVault(decoded);
       } else {
+        salt = crypto.getRandomValues(new Uint8Array(16));
+        key = await deriveKey(password, salt);
         const fresh: Vault = { version: 1, thoughts: initialThoughts };
-        const encrypted = await seal(fresh, password);
+        const encrypted = await seal(fresh, key, salt);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(encrypted));
         setStored(encrypted);
         setVault(fresh);
       }
-      setLockPassword(password);
+      setVaultKey(key);
       setPassword("");
       setUnlocked(true);
     } catch {
@@ -101,8 +107,8 @@ export default function Home() {
   }
 
   async function persist(next: Vault) {
-    if (!lockPassword) return;
-    const encrypted = await seal(next, lockPassword, stored ? fromB64(stored.salt) : undefined);
+    if (!vaultKey || !stored) return;
+    const encrypted = await seal(next, vaultKey, fromB64(stored.salt));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(encrypted));
     setStored(encrypted);
     setVault(next);
@@ -111,7 +117,7 @@ export default function Home() {
   function lock() {
     setUnlocked(false);
     setVault(null);
-    setLockPassword("");
+    setVaultKey(null);
     setSelected(null);
     setEditing(false);
     setScale(1);
@@ -155,17 +161,37 @@ export default function Home() {
   function onPointerDown(e: ReactPointerEvent<HTMLDivElement>) {
     if ((e.target as HTMLElement).closest(".node")) return;
     e.currentTarget.setPointerCapture(e.pointerId);
-    dragRef.current = { x: e.clientX, y: e.clientY, ox: offset.x, oy: offset.y };
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointersRef.current.size === 1) {
+      dragRef.current = { x: e.clientX, y: e.clientY, ox: offset.x, oy: offset.y };
+    } else if (pointersRef.current.size === 2) {
+      const pts = [...pointersRef.current.values()];
+      pinchRef.current = { distance: Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y), scale };
+      dragRef.current = null;
+    }
     setDragging(true);
   }
   function onPointerMove(e: ReactPointerEvent<HTMLDivElement>) {
-    if (!dragRef.current) return;
-    setOffset({ x: dragRef.current.ox + (e.clientX - dragRef.current.x), y: dragRef.current.oy + (e.clientY - dragRef.current.y) });
+    if (!pointersRef.current.has(e.pointerId)) return;
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointersRef.current.size >= 2 && pinchRef.current) {
+      const pts = [...pointersRef.current.values()];
+      const distance = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      setScale(Math.max(.55, Math.min(2.6, pinchRef.current.scale * (distance / Math.max(1, pinchRef.current.distance)))));
+      return;
+    }
+    if (dragRef.current) setOffset({ x: dragRef.current.ox + (e.clientX - dragRef.current.x), y: dragRef.current.oy + (e.clientY - dragRef.current.y) });
   }
-  function onPointerUp() { dragRef.current = null; setDragging(false); }
+  function onPointerUp(e: ReactPointerEvent<HTMLDivElement>) {
+    pointersRef.current.delete(e.pointerId);
+    pinchRef.current = null;
+    const remaining = [...pointersRef.current.values()][0];
+    dragRef.current = remaining ? { x: remaining.x, y: remaining.y, ox: offset.x, oy: offset.y } : null;
+    if (!remaining) setDragging(false);
+  }
   function onWheel(e: ReactWheelEvent<HTMLDivElement>) {
     e.preventDefault();
-    setScale(s => Math.max(.55, Math.min(2.3, s * (e.deltaY < 0 ? 1.08 : .92))));
+    setScale(s => Math.max(.55, Math.min(2.6, s * (e.deltaY < 0 ? 1.08 : .92))));
   }
 
   const graphThoughts = useMemo(() => thoughts.filter(t => t.id !== "origin"), [thoughts]);
@@ -207,20 +233,28 @@ export default function Home() {
               {thoughts.map((t, i) => (
                 <g key={t.id} className={`node ${selected === t.id ? "selected" : ""}`} transform={`translate(${t.x} ${t.y})`} onClick={() => { setSelected(t.id); setEditing(false); }} tabIndex={0} role="button" aria-label={t.title} onKeyDown={e => { if (e.key === "Enter") setSelected(t.id); }}>
                   <circle r={nodeRadius(t.id) + 13} fill="transparent"/>
-                  {t.id === "origin" ? <><circle className="center-core" r="22"/><text textAnchor="middle" dominantBaseline="central" fill="#d9c49e" fontSize="17">✳</text></> : <><circle className="node-ring" r={nodeRadius(t.id)}/><circle className="node-core" r="2.2"/></>}
+                  {t.id === "origin" ? <g className="brain-hologram">
+                    <circle className="brain-orbit orbit-a" r="73"/><circle className="brain-orbit orbit-b" r="88"/>
+                    <circle className="brain-aura" r="56"/>
+                    <path className="brain-outline" d="M0 -48 C-12 -58 -29 -52 -32 -39 C-49 -39 -55 -22 -48 -10 C-57 4 -48 19 -36 22 C-38 40 -21 49 -8 40 C-3 51 4 51 9 40 C24 49 40 38 36 22 C51 16 54 0 47 -10 C55 -25 45 -40 31 -39 C27 -54 10 -58 0 -48Z"/>
+                    <path className="brain-midline" d="M0 -48 C-3 -30 3 -17 0 0 C-3 17 3 30 0 45"/>
+                    <path className="brain-fold" d="M-27 -37 C-12 -33 -18 -20 -31 -17 M-43 -8 C-27 -15 -17 -5 -23 7 M-35 20 C-20 12 -12 24 -16 37 M-10 -42 C-20 -28 -7 -20 -15 -12 M-28 -1 C-11 -4 -9 8 -19 15 M-8 24 C-1 14 -9 5 -3 -4 M28 -37 C12 -33 18 -20 31 -17 M43 -8 C27 -15 17 -5 23 7 M35 20 C20 12 12 24 16 37 M10 -42 C20 -28 7 -20 15 -12 M28 -1 C11 -4 9 8 19 15 M8 24 C1 14 9 5 3 -4"/>
+                    <path className="brain-mesh" d="M-38 -24 Q0 -8 38 -24 M-47 0 Q0 15 47 0 M-34 27 Q0 12 34 27 M-22 -45 Q0 -24 22 -45 M-22 44 Q0 27 22 44"/>
+                    <circle className="brain-spark" cx="-42" cy="-30" r="2"/><circle className="brain-spark spark-two" cx="42" cy="25" r="1.7"/><circle className="brain-spark spark-three" cx="5" cy="-55" r="1.5"/>
+                  </g> : <><circle className="node-ring" r={nodeRadius(t.id)}/><circle className="node-core" r="2.2"/></>}
                   <text className="node-label" x={t.x < -100 ? -12 : t.x > 100 ? 12 : 0} y={t.y < 0 ? -19 : 23} textAnchor={t.x < -100 ? "end" : t.x > 100 ? "start" : "middle"}>{t.title.slice(0, 23)}</text>
                 </g>
               ))}
             </g>
           </svg>
-          <div className="graph-hint">DRAG TO EXPLORE · SCROLL TO ZOOM · SELECT A THOUGHT</div>
+          <div className="graph-hint">DRAG TO EXPLORE · PINCH OR SCROLL TO ZOOM · SELECT A THOUGHT</div>
         </div>
         <div className="capture">
           <form className="capture-box" onSubmit={addThought}><input value={draft} onChange={e => setDraft(e.target.value)} placeholder="Catch a thought before it disappears…" aria-label="New thought" /><button className="capture-button" disabled={!draft.trim()} type="submit">CAPTURE ↗</button></form>
           <div className="quick-row"><button className="quick" onClick={() => setSelected("origin")}>⌘ THE CORE</button><button className="quick" onClick={() => { setDraft("An idea: "); document.querySelector<HTMLInputElement>(".capture-box input")?.focus(); }}>＋ NEW IDEA</button><button className="quick" onClick={() => setSelected(graphThoughts[0]?.id ?? "origin")}>◉ EXPLORE</button></div>
         </div>
       </section>
-      <div className="bottomline"><span>{thoughts.length} THOUGHTS STORED</span><span>LOCAL ENCRYPTED VAULT · NO ACCOUNT</span></div>
+      <div className="bottomline"><span>{thoughts.length} THOUGHTS STORED</span><span>ENCRYPTED ON THIS DEVICE</span></div>
       {selectedThought && <aside className="detail">
         <div className="detail-top"><span className="detail-type">{selectedThought.id === "origin" ? "THE CORE" : "THOUGHT NODE"}</span><button className="icon-button" onClick={() => { setSelected(null); setEditing(false); }} aria-label="Close thought">×</button></div>
         {editing ? <><input value={editTitle} onChange={e => setEditTitle(e.target.value)} aria-label="Thought title" style={{ background: "#090909", color: "#eee", border: "1px solid var(--line)", padding: 11, borderRadius: 8, marginTop: 25 }}/><textarea value={editBody} onChange={e => setEditBody(e.target.value)} aria-label="Thought content" style={{ flex: 1, resize: "none", background: "#090909", color: "#ddd", border: "1px solid var(--line)", padding: 12, borderRadius: 8, marginTop: 10 }}/><div className="detail-actions"><button className="gold-button" onClick={saveEdit}>SAVE CHANGES</button><button className="ghost-button" onClick={() => setEditing(false)}>CANCEL</button></div></> : <>
