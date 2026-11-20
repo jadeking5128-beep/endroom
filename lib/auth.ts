@@ -1,5 +1,5 @@
 import "server-only";
-import { createHmac, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes, pbkdf2, timingSafeEqual } from "node:crypto";
 import type { NextRequest, NextResponse } from "next/server";
 
 export const SESSION_COOKIE = "altbrain_session";
@@ -18,15 +18,17 @@ function sessionSecret() {
 export async function verifyMainPassword(password: string) {
   const encoded = process.env.ALTBRAIN_PASSWORD_HASH;
   if (!encoded) throw new Error("Altbrain main password is not configured.");
-  const [scheme, saltText, hashText] = encoded.split("$");
-  if (scheme !== "scrypt" || !saltText || !hashText) throw new Error("Altbrain password hash has an invalid format.");
+  const [scheme, iterationsText, saltText, hashText] = encoded.split("$");
+  if (scheme !== "pbkdf2" || !iterationsText || !saltText || !hashText) throw new Error("Altbrain password hash has an invalid format.");
+  const iterations = Number(iterationsText);
+  if (!Number.isInteger(iterations) || iterations < 600_000 || iterations > 1_000_000) throw new Error("Altbrain password hash has an invalid iteration count.");
   const salt = Buffer.from(saltText, "base64url");
   const expected = Buffer.from(hashText, "base64url");
-  if (salt.length < 16 || expected.length !== 64) throw new Error("Altbrain password hash has an invalid format.");
+  if (salt.length < 16 || expected.length !== 32) throw new Error("Altbrain password hash has an invalid format.");
   const actual = await new Promise<Buffer>((resolve, reject) => {
-    scrypt(password, salt, 64, { N: 32768, r: 8, p: 1, maxmem: 64 * 1024 * 1024 }, (error, derivedKey) => {
+    pbkdf2(password, salt, iterations, 32, "sha256", (error, derivedKey) => {
       if (error) reject(error);
-      else resolve(derivedKey as Buffer);
+      else resolve(derivedKey);
     });
   });
   return timingSafeEqual(actual, expected);
