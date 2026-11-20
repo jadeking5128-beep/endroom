@@ -191,7 +191,7 @@ export default function Home() {
         const radius = 76 + (Math.floor(index / 8) * 34);
         return {
           id: makeId(),
-          title: (point.source_excerpt || point.content).split(/\\s+/).slice(0, 8).join(" ").slice(0, 100),
+          title: (point.source_excerpt || point.content).split(/\s+/).slice(0, 8).join(" ").slice(0, 100),
           body: (point.source_excerpt || point.content).slice(0, 4000),
           sourceText: (point.source_excerpt || point.content).slice(0, 4000),
           createdAt: now + index + 1,
