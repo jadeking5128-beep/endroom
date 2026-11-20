@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import BrainScene from "./brain-scene";
 
 type Thought = { id: string; title: string; body: string; createdAt: number; x: number; y: number; links: string[]; sourceText?: string; parentId?: string; role?: "memory" | "detail"; connectionReasons?: Record<string, string> };
-type AiResult = { parent: { title: string; content: string }; points: { title: string; content: string; source_excerpt?: string }[]; parentConnections: { existing_thought_id: string; reason: string }[]; connections: { from_point_index: number; to_point_index: number; existing_thought_id: string; reason: string }[] };
+type AiResult = { points: { source_excerpt: string }[]; parentConnections: { existing_thought_id: string; reason: string }[]; connections: { from_point_index: number; to_point_index: number; existing_thought_id: string; reason: string }[] };
 type Vault = { version: 1; thoughts: Thought[] };
 type StoredVault = { salt: string; iv: string; data: string; version: 1 };
 type RecallState = { query: string; ids: string[]; links: string[]; matches: { id: string; title: string; excerpt: string }[] };
@@ -162,7 +162,7 @@ export default function Home() {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || "Groq analysis failed.");
       const result = payload as AiResult;
-      if (!result.parent?.title || !result.parent?.content || !Array.isArray(result.points) || result.points.length === 0) {
+      if (!Array.isArray(result.points) || result.points.length === 0) {
         throw new Error("The paragraph could not be structured into one memory and its details.");
       }
 
@@ -191,9 +191,9 @@ export default function Home() {
         const radius = 76 + (Math.floor(index / 8) * 34);
         return {
           id: makeId(),
-          title: (point.source_excerpt || point.content).split(/\s+/).slice(0, 8).join(" ").slice(0, 100),
-          body: (point.source_excerpt || point.content).slice(0, 4000),
-          sourceText: (point.source_excerpt || point.content).slice(0, 4000),
+          title: point.source_excerpt.split(/\s+/).slice(0, 8).join(" ").slice(0, 100),
+          body: point.source_excerpt.slice(0, 4000),
+          sourceText: point.source_excerpt.slice(0, 4000),
           createdAt: now + index + 1,
           x: groupX + Math.cos(angle) * radius,
           y: groupY + Math.sin(angle) * radius,
