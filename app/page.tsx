@@ -269,7 +269,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query,
-          thoughts: thoughts.slice(0, 160).map(({ id, title, body, sourceText }) => ({
+          thoughts: thoughts.map(({ id, title, body, sourceText }) => ({
             id,
             title,
             body: body.slice(0, 1800),
