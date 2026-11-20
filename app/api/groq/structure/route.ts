@@ -46,7 +46,7 @@ const schema = {
     points: {
       type: "array",
       minItems: 1,
-      maxItems: 40,
+      maxItems: 80,
       items: pointSchema
     },
     parentConnections: {
@@ -136,9 +136,9 @@ export async function POST(request: NextRequest) {
             content: [
               "You are Altbrain's source-grounded extraction engine. The app itself preserves the submitted paragraph as the one unified parent node. Your job is only to extract its details and suggest supported relationships.",
               "Do not create, summarize, title, or rewrite a parent node. The original paragraph is the parent node and must remain byte-for-byte unchanged in the app.",
-              "Then extract every meaningful detail into smaller points: distinct facts, claims, definitions, names, dates, quantities, examples, explanations, conditions, questions, causes, effects, comparisons, exceptions, and qualifications. Do not omit details just to make the result shorter. Use as many points as needed, up to 40.",
+              "Then extract every meaningful detail into smaller points: distinct facts, claims, definitions, names, dates, quantities, examples, explanations, conditions, questions, causes, effects, comparisons, exceptions, and qualifications. Do not omit details just to make the result shorter. Use as many points as needed, up to 80.",
               "Each point must contain only source_excerpt copied EXACTLY as a contiguous substring from the submitted paragraph. Never paraphrase, title, infer, or invent detail text. The app will label each point using its original words.",
-              "Do not simply copy the whole paragraph into every point. Distribute its information carefully so that the points collectively preserve the full detail. The parent provides the unified overview; the points retain the specifics.",
+              "Do not simply copy the whole paragraph into every point. Distribute its information carefully so that the points collectively preserve the full detail. The original paragraph remains the single unified parent node; the extracted points preserve its exact source fragments.",
               "Do not add outside facts, assumptions, invented context, or conclusions. Preserve ambiguity and uncertainty exactly where the source is unclear.",
               "Connect detail points to each other only when a real conceptual relationship exists, such as explanation, cause/effect, example/general rule, contrast, or dependency. Use exact existing memory IDs only when the supplied context supports a meaningful relationship.",
               "Parent connections are only links from the single unified parent node to existing memories. Detail-point connections use zero-based point indices or exact existing memory IDs. Do not invent IDs. Avoid duplicate and self-connections.",
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
     }
 
     const sourceText = input.text.trim();
-    const points = parsed.points.slice(0, 40).filter(point =>
+    const points = parsed.points.slice(0, 80).filter(point =>
       point && typeof point.source_excerpt === "string" &&
       point.source_excerpt.trim().length > 0 && sourceText.includes(point.source_excerpt.trim())
     ).map(point => ({ source_excerpt: point.source_excerpt.trim().slice(0, 4000) }));
