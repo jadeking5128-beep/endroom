@@ -15,6 +15,8 @@ type Props = {
   thoughts: ThoughtNode[];
   selected: string | null;
   onSelect: (id: string) => void;
+  highlightedIds?: string[];
+  highlightedLinks?: string[];
 };
 
 function labelSprite(title: string, active: boolean) {
@@ -37,10 +39,12 @@ function labelSprite(title: string, active: boolean) {
   return sprite;
 }
 
-export default function BrainScene({ thoughts, selected, onSelect }: Props) {
+export default function BrainScene({ thoughts, selected, onSelect, highlightedIds = [], highlightedLinks = [] }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const selectRef = useRef(onSelect);
   selectRef.current = onSelect;
+  const highlightedIdSet = new Set(highlightedIds);
+  const highlightedLinkSet = new Set(highlightedLinks);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -88,8 +92,12 @@ export default function BrainScene({ thoughts, selected, onSelect }: Props) {
         const key = [thought.id, linkId].sort().join(":");
         if (edges.has(key)) return;
         edges.add(key);
+        const isHighlighted = highlightedLinkSet.has(key);
+        const material = isHighlighted
+          ? new THREE.LineBasicMaterial({ color: 0xe0bd7d, transparent: true, opacity: 0.98 })
+          : edgeMaterial;
         const geometry = new THREE.BufferGeometry().setFromPoints([from, to]);
-        graph.add(new THREE.Line(geometry, edgeMaterial));
+        graph.add(new THREE.Line(geometry, material));
       });
     });
 
@@ -97,13 +105,14 @@ export default function BrainScene({ thoughts, selected, onSelect }: Props) {
     const nodeLookup = new Map<THREE.Mesh, string>();
     const labelSprites: THREE.Sprite[] = [];
     thoughts.forEach(thought => {
-      const active = thought.id === selected;
+      const recalled = highlightedIdSet.has(thought.id);
+      const active = thought.id === selected || recalled;
       const node = new THREE.Mesh(
         new THREE.SphereGeometry(thought.id === "origin" ? 0.105 : 0.075, 24, 20),
         new THREE.MeshStandardMaterial({
-          color: active ? 0xe4bd79 : 0xc7d0d6,
-          emissive: active ? 0x8b5c22 : 0x53616c,
-          emissiveIntensity: active ? 1.4 : 0.55,
+          color: recalled ? 0xf2d49b : active ? 0xe4bd79 : 0xc7d0d6,
+          emissive: recalled ? 0xb98536 : active ? 0x8b5c22 : 0x53616c,
+          emissiveIntensity: recalled ? 2.1 : active ? 1.4 : 0.55,
           metalness: 0.55,
           roughness: 0.24
         })
@@ -215,7 +224,7 @@ export default function BrainScene({ thoughts, selected, onSelect }: Props) {
       renderer.dispose();
       canvas.remove();
     };
-  }, [thoughts, selected]);
+  }, [thoughts, selected, highlightedIds, highlightedLinks]);
 
   return <div className="brain-scene" ref={hostRef} role="img" aria-label="Three-dimensional thought node network" />;
 }
