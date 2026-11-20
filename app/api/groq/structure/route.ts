@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type ExistingThought = { id: string; title: string; body: string };
-type DetailPoint = { title: string; content: string; source_excerpt?: string };
+type DetailPoint = { source_excerpt: string };
 type Connection = {
   from_point_index: number;
   to_point_index: number;
@@ -34,26 +34,15 @@ const pointSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
-    title: { type: "string" },
-    content: { type: "string" },
     source_excerpt: { type: "string" }
   },
-  required: ["title", "content", "source_excerpt"]
+  required: ["source_excerpt"]
 };
 
 const schema = {
   type: "object",
   additionalProperties: false,
   properties: {
-    parent: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        title: { type: "string" },
-        content: { type: "string" }
-      },
-      required: ["title", "content"]
-    },
     points: {
       type: "array",
       minItems: 1,
@@ -89,7 +78,7 @@ const schema = {
       }
     }
   },
-  required: ["parent", "points", "parentConnections", "connections"]
+  required: ["points", "parentConnections", "connections"]
 };
 
 export async function POST(request: NextRequest) {
@@ -145,10 +134,10 @@ export async function POST(request: NextRequest) {
           {
             role: "system",
             content: [
-              "You are Altbrain's knowledge-structuring engine. Convert exactly one submitted paragraph into exactly one unified parent memory node plus a set of smaller detail points beneath it.",
-              "The parent is ONE node representing the paragraph as a whole. Give it a concise title and a coherent, compact description that preserves the paragraph's overall meaning. Do not create multiple parent notes.",
+              "You are Altbrain's source-grounded extraction engine. The app itself preserves the submitted paragraph as the one unified parent node. Your job is only to extract its details and suggest supported relationships.",
+              "Do not create, summarize, title, or rewrite a parent node. The original paragraph is the parent node and must remain byte-for-byte unchanged in the app.",
               "Then extract every meaningful detail into smaller points: distinct facts, claims, definitions, names, dates, quantities, examples, explanations, conditions, questions, causes, effects, comparisons, exceptions, and qualifications. Do not omit details just to make the result shorter. Use as many points as needed, up to 40.",
-              "Each point must include source_excerpt copied EXACTLY as a contiguous substring from the submitted paragraph. Never paraphrase or invent this excerpt. The title is only a short navigation label; the saved detail body must be the exact source_excerpt, not a rewritten sentence.",
+              "Each point must contain only source_excerpt copied EXACTLY as a contiguous substring from the submitted paragraph. Never paraphrase, title, infer, or invent detail text. The app will label each point using its original words.",
               "Do not simply copy the whole paragraph into every point. Distribute its information carefully so that the points collectively preserve the full detail. The parent provides the unified overview; the points retain the specifics.",
               "Do not add outside facts, assumptions, invented context, or conclusions. Preserve ambiguity and uncertainty exactly where the source is unclear.",
               "Connect detail points to each other only when a real conceptual relationship exists, such as explanation, cause/effect, example/general rule, contrast, or dependency. Use exact existing memory IDs only when the supplied context supports a meaningful relationship.",
@@ -177,29 +166,22 @@ export async function POST(request: NextRequest) {
     if (typeof raw !== "string") return NextResponse.json({ error: "Groq returned an empty analysis." }, { status: 502 });
 
     const parsed = JSON.parse(raw) as {
-      parent?: DetailPoint;
       points?: DetailPoint[];
       parentConnections?: ParentConnection[];
       connections?: Connection[];
     };
-    if (!parsed.parent || typeof parsed.parent.title !== "string" || typeof parsed.parent.content !== "string" ||
-        !Array.isArray(parsed.points) || !Array.isArray(parsed.parentConnections) || !Array.isArray(parsed.connections)) {
+    if (!Array.isArray(parsed.points) || !Array.isArray(parsed.parentConnections) || !Array.isArray(parsed.connections)) {
       return NextResponse.json({ error: "Groq returned an invalid unified memory structure." }, { status: 502 });
     }
 
-    const parent = {
-      title: parsed.parent.title.trim().slice(0, 90),
-      content: parsed.parent.content.trim().slice(0, 5000)
-    };
     const sourceText = input.text.trim();
     const points = parsed.points.slice(0, 40).filter(point =>
-      point && typeof point.title === "string" && typeof point.content === "string" &&
-      typeof point.source_excerpt === "string" && point.title.trim().length > 0 &&
+      point && typeof point.source_excerpt === "string" &&
       point.source_excerpt.trim().length > 0 && sourceText.includes(point.source_excerpt.trim())
-    ).map(point => ({ title: point.title.trim().slice(0, 100), content: point.source_excerpt.trim().slice(0, 4000), source_excerpt: point.source_excerpt.trim().slice(0, 4000) }));
+    ).map(point => ({ source_excerpt: point.source_excerpt.trim().slice(0, 4000) }));
 
-    if (!parent.title || !parent.content || !points.length) {
-      return NextResponse.json({ error: "The paragraph did not produce a complete parent memory and detail points." }, { status: 422 });
+    if (!points.length) {
+      return NextResponse.json({ error: "The paragraph did not produce any verifiable source excerpts. Nothing was saved." }, { status: 422 });
     }
 
     const parentConnections = parsed.parentConnections.slice(0, 20).filter(connection =>
@@ -227,7 +209,7 @@ export async function POST(request: NextRequest) {
       reason: connection.reason.trim().slice(0, 280)
     }));
 
-    return NextResponse.json({ parent, points, parentConnections, connections }, {
+    return NextResponse.json({ points, parentConnections, connections }, {
       headers: { "Cache-Control": "no-store, private" }
     });
   } catch {
