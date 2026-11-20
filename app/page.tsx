@@ -375,6 +375,7 @@ export default function Home() {
             <button type="submit" disabled={!recallQuery.trim() || isRecalling}>{isRecalling ? "SEARCHING…" : "FIND MEMORY"}</button>
             {recall && <button type="button" className="recall-clear" onClick={() => { setRecall(null); setRecallQuery(""); }} aria-label="Clear memory recall">×</button>}
           </form>
+          <p className="recall-privacy">Groq receives your query and stored memory text for semantic matching. It may return only exact source excerpts; it cannot add or rewrite memories.</p>
           {recallError && <p className="recall-error">{recallError}</p>}
           {recall && <div className="recall-results">
             <div className="recall-heading"><span>{recall.mode === "groq" ? "SOURCE-VERIFIED MEMORY RECALL" : "LOCAL EXACT-TEXT FALLBACK"}</span><span>{recall.matches.length} FOUND · TEMPORARY</span></div>
@@ -384,7 +385,7 @@ export default function Home() {
           </div>}
         </div>
         <div className="capture">
-          <form className="capture-box" onSubmit={addThought}><textarea value={draft} onChange={e => setDraft(e.target.value)} placeholder="Drop a paragraph, idea, or collection of thoughts…" aria-label="Paragraph to structure" rows={2} disabled={isAnalysing} /><button className="capture-button" disabled={!draft.trim() || isAnalysing} type="submit">{isAnalysing ? "ANALYSING…" : "BUILD ONE MEMORY ↗"}</button></form>{aiError && <div className="error ai-error">{aiError}</div>}
+          <form className="capture-box" onSubmit={addThought}><textarea value={draft} onChange={e => setDraft(e.target.value)} placeholder="Drop a paragraph, idea, or collection of thoughts…" aria-label="Paragraph to structure" rows={2} disabled={isAnalysing} /><button className="capture-button" disabled={!draft.trim() || isAnalysing} type="submit">{isAnalysing ? "ANALYSING…" : "BUILD ONE MEMORY ↗"}</button></form><p className="capture-privacy">The original paragraph is stored unchanged. Groq extracts exact source fragments and proposes links; suggested links are labelled, never treated as verified facts.</p>{aiError && <div className="error ai-error">{aiError}</div>}
           <div className="quick-row"><button className="quick" onClick={() => { setRecall(null); setSelected("origin"); }}>⌘ CENTRE NODE</button><button className="quick" onClick={() => { setRecall(null); setDraft("An idea: "); document.querySelector<HTMLTextAreaElement>(".capture-box textarea")?.focus(); }}>＋ NEW IDEA</button><button className="quick" onClick={() => { setRecall(null); setSelected(graphThoughts[0]?.id ?? "origin"); }}>◉ EXPLORE</button></div>
         </div>
       </section>
